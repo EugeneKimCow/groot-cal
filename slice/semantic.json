@@ -1,0 +1,46 @@
+{
+  "metric": {
+    "name": "매출",
+    "type": "amount",
+    "version": 1,
+    "unit": "0.1억원(u)",
+    "properties": {
+      "additive_across_dims": true,
+      "additive_across_time": true,
+      "aggregation_rule": "sum",
+      "has_denominator": false,
+      "sign": "nonnegative"
+    },
+    "decomposition_identities": [
+      {
+        "identity": "매출 = Σ_seg 매출[seg]",
+        "kind": "additive_partition",
+        "dimensions": ["channel", "category", "customer_type"]
+      },
+      {
+        "identity": "매출(온라인) = 주문건수 × 객단가",
+        "kind": "multiplicative",
+        "scope": "channel=온라인",
+        "note": "v1 정의역 밖(공백 등록부) — vrm_lite로 볼륨/단가 2요인만 데모"
+      }
+    ],
+    "generation": {
+      "source": "synthetic ledger v0 (generate_data.py, seed=20260806)",
+      "grain": "일 × 채널 × 카테고리 × 고객구분 (× 권역: 오프라인만)",
+      "known_biases": ["가상 데이터 — exemplars-v0 팩트 시트에 IPF로 정합 생성. 주문 라인 grain은 후속"]
+    },
+    "assignment_mechanism": null
+  },
+  "dimensions": {
+    "channel": {"type": "nominal", "values": ["온라인", "오프라인", "B2B"], "mece": true},
+    "category": {"type": "nominal", "values": ["식품", "생활용품", "뷰티", "가전"], "mece": true},
+    "customer_type": {"type": "nominal", "values": ["신규", "기존"], "mece": true},
+    "region": {"type": "nominal", "values": ["수도권", "영남", "호남", "충청"], "mece": true,
+               "applies_to": {"channel": "오프라인"}}
+  },
+  "question_defaults": {
+    "comparison_basis": "prior_period",
+    "delta_min_u": 20,
+    "exploration_budget": {"max_depth": 2, "max_segments": 40}
+  }
+}
