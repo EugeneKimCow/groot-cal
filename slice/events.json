@@ -1,38 +1,123 @@
 {
   "_note": "이벤트/개입 레지스트리 v0 — 수동 등록 테이블. declared_magnitude_u가 있으면 산술 대조 가능(특정), null이면 규모 미특정(시사 상한).",
   "events": [
-    {"id": "E1", "name": "썸머 웰컴 첫구매 쿠폰 프로모션 종료",
-     "period": "2026-06-10~2026-06-30 진행, 6/30 종료 (7월은 기저효과)",
-     "affects": "2026-07",
-     "target": {"channel": ["온라인"], "customer_type": ["신규"]},
-     "declared_magnitude_u": null,
-     "reference_scale_u": 300,
-     "reference_note": "6월 온라인 신규 62.0억 중 약 30억이 쿠폰 첫구매 귀속 (마케팅팀 집계)"},
-    {"id": "E2", "name": "경쟁사 M몰 미드이어 페스타",
-     "period": "2026-07-15~2026-07-21",
-     "affects": "2026-07",
-     "target": {"channel": ["온라인"], "category": ["가전", "생활용품"]},
-     "declared_magnitude_u": null,
-     "reference_scale_u": null,
-     "reference_note": "자사 이탈 규모 미특정 — 행사 전후 트래픽 데이터 미보유"},
-    {"id": "E3", "name": "오프라인 호남B점 폐점",
-     "period": "2026-06-30 영업 종료",
-     "affects": "2026-07",
-     "target": {"channel": ["오프라인"], "region": ["호남"]},
-     "declared_magnitude_u": -52,
-     "reference_note": "폐점 점포 -5.2억, 잔여 호남A점 +0.2억 (점포 grain은 원장 미보유 — 외부 신고치)"},
-    {"id": "E4", "name": "B2B K전자양판 정기발주 8월 이월",
-     "period": "당초 2026-07-15주 발주 예정",
-     "affects": "2026-07",
-     "target": {"channel": ["B2B"], "category": ["가전"]},
-     "declared_magnitude_u": -60,
-     "reference_note": "이월 규모 약 6.0억 (영업팀 확인). 소멸 아닌 이월 — 8월 환입 여부 미확정"},
-    {"id": "E5", "name": "뷰티 신규 브랜드 2종 입점 + 라이브커머스",
-     "period": "2026-07-01~ 계속",
-     "affects": "2026-07",
-     "target": {"category": ["뷰티"]},
-     "declared_magnitude_u": null,
-     "reference_scale_u": 95,
-     "reference_note": "신규 브랜드 +9.5억, 기존 라인 -1.5억 (브랜드 grain은 원장 미보유)"}
+    {
+      "id": "E1",
+      "name": "썸머 웰컴 첫구매 쿠폰 프로모션 종료",
+      "period": "2026-06-10~2026-06-30 진행, 6/30 종료 (7월은 기저효과)",
+      "affects": "2026-07",
+      "target": {
+        "channel": [
+          "온라인"
+        ],
+        "customer_type": [
+          "신규"
+        ]
+      },
+      "declared_magnitude_u": null,
+      "reference_scale_u": 300,
+      "reference_note": "6월 온라인 신규 62.0억 중 약 30억이 쿠폰 첫구매 귀속 (마케팅팀 집계)",
+      "reference_figures": [
+        {
+          "label": "6월 쿠폰 첫구매 귀속분(마케팅팀 집계)",
+          "value_u": 300
+        }
+      ]
+    },
+    {
+      "id": "E2",
+      "name": "경쟁사 M몰 미드이어 페스타",
+      "period": "2026-07-15~2026-07-21",
+      "affects": "2026-07",
+      "target": {
+        "channel": [
+          "온라인"
+        ],
+        "category": [
+          "가전",
+          "생활용품"
+        ]
+      },
+      "declared_magnitude_u": null,
+      "reference_scale_u": null,
+      "reference_note": "자사 이탈 규모 미특정 — 행사 전후 트래픽 데이터 미보유",
+      "reference_figures": []
+    },
+    {
+      "id": "E3",
+      "name": "오프라인 호남B점 폐점",
+      "period": "2026-06-30 영업 종료",
+      "affects": "2026-07",
+      "target": {
+        "channel": [
+          "오프라인"
+        ],
+        "region": [
+          "호남"
+        ]
+      },
+      "declared_magnitude_u": -52,
+      "reference_note": "폐점 점포 -5.2억, 잔여 호남A점 +0.2억 (점포 grain은 원장 미보유 — 외부 신고치)",
+      "reference_figures": [
+        {
+          "label": "폐점 점포(호남B)",
+          "value_u": -52
+        },
+        {
+          "label": "잔여 호남A점 수요 이전",
+          "value_u": 2
+        }
+      ]
+    },
+    {
+      "id": "E4",
+      "name": "B2B K전자양판 정기발주 8월 이월",
+      "period": "당초 2026-07-15주 발주 예정",
+      "affects": "2026-07",
+      "target": {
+        "channel": [
+          "B2B"
+        ],
+        "category": [
+          "가전"
+        ]
+      },
+      "declared_magnitude_u": -60,
+      "reference_note": "이월 규모 약 6.0억 (영업팀 확인). 소멸 아닌 이월 — 8월 환입 여부 미확정",
+      "reference_figures": [
+        {
+          "label": "K사 이월",
+          "value_u": -60
+        },
+        {
+          "label": "기타 거래처 순증",
+          "value_u": 10
+        }
+      ]
+    },
+    {
+      "id": "E5",
+      "name": "뷰티 신규 브랜드 2종 입점 + 라이브커머스",
+      "period": "2026-07-01~ 계속",
+      "affects": "2026-07",
+      "target": {
+        "category": [
+          "뷰티"
+        ]
+      },
+      "declared_magnitude_u": null,
+      "reference_scale_u": 95,
+      "reference_note": "신규 브랜드 +9.5억, 기존 라인 -1.5억 (브랜드 grain은 원장 미보유)",
+      "reference_figures": [
+        {
+          "label": "신규 브랜드 유입",
+          "value_u": 95
+        },
+        {
+          "label": "기존 라인",
+          "value_u": -15
+        }
+      ]
+    }
   ]
 }

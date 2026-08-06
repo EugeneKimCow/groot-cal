@@ -1,5 +1,6 @@
 {
  "spec": {
+  "status": "spec",
   "question": "7월 매출이 왜 변했나?",
   "signature": {
    "external_criterion": "present",
@@ -7,11 +8,9 @@
   },
   "binding": {
    "metric": "매출@v1",
-   "period": [
-    "2026-06",
-    "2026-07"
-   ],
+   "month": "2026-07",
    "comparison_basis": "prior_period",
+   "within": {},
    "as_of": "2026-08-06"
   },
   "echo": "이렇게 이해했습니다 — 매출[v1], 2026-07, 전월(2026-06) 대비, 전 채널"
@@ -402,6 +401,212 @@
     "해석 문장": "데이터 시사 상한"
    }
   },
+  "drill:online신규×category": {
+   "status": "result",
+   "estimand": "Δ매출(2026-06→2026-07)에 대한 category 세그먼트의 산술 기여분 (제약: {'channel': '온라인', 'customer_type': '신규'})",
+   "output_type": "Attribution",
+   "uncertainty_model": "none",
+   "total": {
+    "before_u": 620,
+    "after_u": 380,
+    "delta_u": -240,
+    "pct_change": -38.7
+   },
+   "share_suppressed": false,
+   "share_suppression_reason": null,
+   "segments": [
+    {
+     "segment": "생활용품",
+     "before_u": 148,
+     "after_u": 82,
+     "delta_u": -66,
+     "pct_change": -44.6,
+     "share_of_change_pct": 27.5,
+     "share_of_abs_pct": 27.5
+    },
+    {
+     "segment": "식품",
+     "before_u": 159,
+     "after_u": 95,
+     "delta_u": -64,
+     "pct_change": -40.3,
+     "share_of_change_pct": 26.7,
+     "share_of_abs_pct": 26.7
+    },
+    {
+     "segment": "가전",
+     "before_u": 121,
+     "after_u": 59,
+     "delta_u": -62,
+     "pct_change": -51.2,
+     "share_of_change_pct": 25.8,
+     "share_of_abs_pct": 25.8
+    },
+    {
+     "segment": "뷰티",
+     "before_u": 192,
+     "after_u": 144,
+     "delta_u": -48,
+     "pct_change": -25.0,
+     "share_of_change_pct": 20.0,
+     "share_of_abs_pct": 20.0
+    }
+   ],
+   "checks": [
+    {
+     "check": "mece_declared",
+     "dim": "category",
+     "checker": "machine",
+     "passed": true,
+     "detail": "선언된 MECE 차원"
+    },
+    {
+     "check": "metric_version_identical",
+     "checker": "machine",
+     "passed": true,
+     "detail": "version=1"
+    },
+    {
+     "check": "mece_runtime_coverage",
+     "dim": "category",
+     "checker": "machine",
+     "passed": true,
+     "detail": "커버리지 완전"
+    },
+    {
+     "check": "identity_recheck",
+     "checker": "machine",
+     "passed": true,
+     "detail": "Σ기여=-240u vs Δ전체=-240u"
+    }
+   ],
+   "label_ceiling": {
+    "contribution": "데이터 확인 (identity_recheck 통과)",
+    "share_of_change": "데이터 확인 (부호 동질·δ_min 통과)",
+    "해석 문장": "데이터 시사 상한"
+   }
+  },
+  "drill:B2B×category": {
+   "status": "result",
+   "estimand": "Δ매출(2026-06→2026-07)에 대한 category 세그먼트의 산술 기여분 (제약: {'channel': 'B2B'})",
+   "output_type": "Attribution",
+   "uncertainty_model": "none",
+   "total": {
+    "before_u": 900,
+    "after_u": 850,
+    "delta_u": -50,
+    "pct_change": -5.6
+   },
+   "share_suppressed": true,
+   "share_suppression_reason": "부호 혼재",
+   "segments": [
+    {
+     "segment": "가전",
+     "before_u": 373,
+     "after_u": 313,
+     "delta_u": -60,
+     "pct_change": -16.1,
+     "share_of_abs_pct": 65.2
+    },
+    {
+     "segment": "뷰티",
+     "before_u": 51,
+     "after_u": 65,
+     "delta_u": 14,
+     "pct_change": 27.5,
+     "share_of_abs_pct": 15.2
+    },
+    {
+     "segment": "생활용품",
+     "before_u": 230,
+     "after_u": 219,
+     "delta_u": -11,
+     "pct_change": -4.8,
+     "share_of_abs_pct": 12.0
+    },
+    {
+     "segment": "식품",
+     "before_u": 246,
+     "after_u": 253,
+     "delta_u": 7,
+     "pct_change": 2.8,
+     "share_of_abs_pct": 7.6
+    }
+   ],
+   "checks": [
+    {
+     "check": "mece_declared",
+     "dim": "category",
+     "checker": "machine",
+     "passed": true,
+     "detail": "선언된 MECE 차원"
+    },
+    {
+     "check": "metric_version_identical",
+     "checker": "machine",
+     "passed": true,
+     "detail": "version=1"
+    },
+    {
+     "check": "mece_runtime_coverage",
+     "dim": "category",
+     "checker": "machine",
+     "passed": true,
+     "detail": "커버리지 완전"
+    },
+    {
+     "check": "identity_recheck",
+     "checker": "machine",
+     "passed": true,
+     "detail": "Σ기여=-50u vs Δ전체=-50u"
+    }
+   ],
+   "label_ceiling": {
+    "contribution": "데이터 확인 (identity_recheck 통과)",
+    "share_of_change": "억제 — Σ|기여| 기준만",
+    "해석 문장": "데이터 시사 상한"
+   }
+  },
+  "plan_gap": {
+   "status": "result",
+   "output_type": "Attribution",
+   "estimand": "2026-07 실적 − 계획(빈티지 2026-06-25)의 채널별 gap",
+   "uncertainty_model": "none",
+   "total": {
+    "plan_u": 4250,
+    "actual_u": 3860,
+    "gap_u": -390,
+    "attainment_pct": 90.8
+   },
+   "rows": [
+    {
+     "channel": "온라인",
+     "plan_u": 1900,
+     "actual_u": 1580,
+     "gap_u": -320,
+     "attainment_pct": 83.2
+    },
+    {
+     "channel": "오프라인",
+     "plan_u": 1450,
+     "actual_u": 1430,
+     "gap_u": -20,
+     "attainment_pct": 98.6
+    },
+    {
+     "channel": "B2B",
+     "plan_u": 900,
+     "actual_u": 850,
+     "gap_u": -50,
+     "attainment_pct": 94.4
+    }
+   ],
+   "plan_basis_note": "6월 실적 +1.2% 성장 전제로 수립. 온라인 프로모션 종료 후 신규 유입 절벽 미반영. 호남B점 폐점은 기반영",
+   "label_ceiling": {
+    "gap 수치": "조건부 확인 — '빈티지 2026-06-25 계획 대비'라는 조건 명시 의무",
+    "계획 결함 해석": "데이터 시사 상한"
+   }
+  },
   "vrm:online": {
    "status": "result",
    "output_type": "Attribution",
@@ -443,6 +648,12 @@
      "declared_magnitude_u": null,
      "reference_scale_u": 300,
      "reference_note": "6월 온라인 신규 62.0억 중 약 30억이 쿠폰 첫구매 귀속 (마케팅팀 집계)",
+     "reference_figures": [
+      {
+       "label": "6월 쿠폰 첫구매 귀속분(마케팅팀 집계)",
+       "value_u": 300
+      }
+     ],
      "evidence_grade": "정합 서술까지(규모 미특정) — 시사 상한"
     },
     {
@@ -462,6 +673,7 @@
      "declared_magnitude_u": null,
      "reference_scale_u": null,
      "reference_note": "자사 이탈 규모 미특정 — 행사 전후 트래픽 데이터 미보유",
+     "reference_figures": [],
      "evidence_grade": "정합 서술까지(규모 미특정) — 시사 상한"
     },
     {
@@ -480,6 +692,16 @@
      "declared_magnitude_u": -52,
      "reference_scale_u": null,
      "reference_note": "폐점 점포 -5.2억, 잔여 호남A점 +0.2억 (점포 grain은 원장 미보유 — 외부 신고치)",
+     "reference_figures": [
+      {
+       "label": "폐점 점포(호남B)",
+       "value_u": -52
+      },
+      {
+       "label": "잔여 호남A점 수요 이전",
+       "value_u": 2
+      }
+     ],
      "evidence_grade": "산술 대조 가능(규모 특정)"
     },
     {
@@ -498,6 +720,16 @@
      "declared_magnitude_u": -60,
      "reference_scale_u": null,
      "reference_note": "이월 규모 약 6.0억 (영업팀 확인). 소멸 아닌 이월 — 8월 환입 여부 미확정",
+     "reference_figures": [
+      {
+       "label": "K사 이월",
+       "value_u": -60
+      },
+      {
+       "label": "기타 거래처 순증",
+       "value_u": 10
+      }
+     ],
      "evidence_grade": "산술 대조 가능(규모 특정)"
     },
     {
@@ -513,6 +745,16 @@
      "declared_magnitude_u": null,
      "reference_scale_u": 95,
      "reference_note": "신규 브랜드 +9.5억, 기존 라인 -1.5억 (브랜드 grain은 원장 미보유)",
+     "reference_figures": [
+      {
+       "label": "신규 브랜드 유입",
+       "value_u": 95
+      },
+      {
+       "label": "기존 라인",
+       "value_u": -15
+      }
+     ],
      "evidence_grade": "정합 서술까지(규모 미특정) — 시사 상한"
     }
    ],
@@ -603,6 +845,31 @@
     "outcome": "result"
    },
    {
+    "operator": "contrib_decomp",
+    "dim": "category",
+    "months": [
+     "2026-06",
+     "2026-07"
+    ],
+    "within": {
+     "channel": "온라인",
+     "customer_type": "신규"
+    },
+    "outcome": "result"
+   },
+   {
+    "operator": "contrib_decomp",
+    "dim": "category",
+    "months": [
+     "2026-06",
+     "2026-07"
+    ],
+    "within": {
+     "channel": "B2B"
+    },
+    "outcome": "result"
+   },
+   {
     "operator": "vrm_lite",
     "months": [
      "2026-06",
@@ -610,6 +877,18 @@
     ],
     "convention": "laspeyres",
     "outcome": "result"
+   },
+   {
+    "operator": "plan_gap",
+    "month": "2026-07",
+    "vintage_id": "2026-06-25",
+    "outcome": "result"
+   },
+   {
+    "operator": "plan_gap",
+    "month": "2026-07",
+    "vintage_id": null,
+    "outcome": "out_of_domain"
    },
    {
     "operator": "event_overlap_scan",
@@ -623,7 +902,7 @@
   "budget": {
    "max_depth": 2,
    "consumed_depth": 2,
-   "segments_examined": 16
+   "segments_examined": 24
   }
  },
  "assumption_ledger": [

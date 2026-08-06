@@ -5,10 +5,12 @@ VRM → Evidence Bundle 조립 → 팩트 시트 외부 대조.
 ①~③(해석·바인딩·선택)은 v0에서 하드코딩 — 질문 서명과 명세를 코드에 동결.
 """
 import json
+import sys
 from pathlib import Path
 
 from kernel import (load_semantic, load_ledger, contrib_decomp, vrm_lite,
-                    event_overlap_scan)
+                    event_overlap_scan, plan_gap)
+from interpret import interpret
 
 HERE = Path(__file__).parent
 OUT = HERE / "out"
@@ -24,14 +26,18 @@ def fmt_u(u):
 def main():
     sem = load_semantic()
     ledger = load_ledger()
-    A, B = "2026-06", "2026-07"
 
-    # 질문 명세 (v0: 하드코딩 — ①~③의 자리 표시)
-    spec = {"question": "7월 매출이 왜 변했나?",
-            "signature": {"external_criterion": "present", "question_type": "change"},
-            "binding": {"metric": "매출@v1", "period": [A, B],
-                        "comparison_basis": "prior_period", "as_of": "2026-08-06"},
-            "echo": "이렇게 이해했습니다 — 매출[v1], 2026-07, 전월(2026-06) 대비, 전 채널"}
+    # ①~③: 해석·바인딩 (interpret.py — 닫힌 어휘 계약)
+    question = sys.argv[1] if len(sys.argv) > 1 else "7월 매출이 왜 변했나?"
+    spec = interpret(question, sem)
+    if spec["status"] != "spec":
+        print(f"질의: {question}")
+        print(f"[{spec['status'].upper()}] {spec['message']}")
+        return
+    B = spec["binding"]["month"]
+    A = f"2026-{int(B[5:7]) - 1:02d}"
+    if spec["binding"]["comparison_basis"] == "yoy":
+        A = f"{int(B[:4]) - 1}{B[4:]}"
 
     record = {"calls": [], "budget": {"max_depth": 2, "consumed_depth": 0, "segments_examined": 0}}
 
@@ -93,6 +99,27 @@ def main():
         for s in region_drill["segments"]:
             print(f"    {s['segment']:4s} Δ {fmt_u(s['delta_u']):>8s} ({s['pct_change']:+.1f}%)")
 
+    # ── 2c: E1∩E2 중첩 슬라이스 드릴 (온라인×신규의 카테고리 구성) ────
+    overlap_drill = contrib_decomp(sem, ledger, "category", A, B, record,
+                                   within={"channel": "온라인", "customer_type": "신규"})
+    record["budget"]["segments_examined"] += len(overlap_drill.get("segments", []))
+    if overlap_drill["status"] == "result":
+        print("\n[드릴다운] 온라인×신규 × 카테고리 (E1∩E2 중첩 슬라이스의 구성)")
+        for s in overlap_drill["segments"]:
+            print(f"    {s['segment']:6s} Δ {fmt_u(s['delta_u']):>8s} ({s['pct_change']:+.1f}%)")
+        ol_ev = sum(s["delta_u"] for s in overlap_drill["segments"]
+                    if s["segment"] in ("가전", "생활용품"))
+        print(f"    → E2 타깃 카테고리(가전+생활) 내 신규분 Δ {fmt_u(ol_ev)} — 중첩의 실측 크기")
+
+    # ── 2d: B2B × 카테고리 (E4 방어용: 가전 vs 기타의 괴리) ──────────
+    b2b_drill = contrib_decomp(sem, ledger, "category", A, B, record,
+                               within={"channel": "B2B"})
+    record["budget"]["segments_examined"] += len(b2b_drill.get("segments", []))
+    if b2b_drill["status"] == "result":
+        print("\n[드릴다운] B2B × 카테고리 (가전 -6.0 vs B2B 전체 -5.0 괴리의 방어)")
+        for s in b2b_drill["segments"]:
+            print(f"    {s['segment']:6s} Δ {fmt_u(s['delta_u']):>8s}")
+
     # ── 3단계: VRM (온라인 볼륨×단가) ────────────────────────────────
     v = vrm_lite(sem, ledger, A, B, record)
     print(f"\n[vrm_lite × 온라인]  status={v['status']}")
@@ -101,6 +128,22 @@ def main():
               f"객단가: {v['price_manwon'][A]:.2f}만원 → {v['price_manwon'][B]:.2f}만원")
         print(f"    볼륨 효과 {fmt_u(v['volume_effect_u'])}, 단가 효과 {fmt_u(v['rate_effect_u'])}"
               f"  (항등식 닫힘: {v['identity_ok']})")
+
+    # ── 3a: 계획 대비 (빈티지 고정) ─────────────────────────────────
+    pg = plan_gap(sem, ledger, B, record, vintage_id="2026-06-25")
+    print(f"\n[plan_gap × 빈티지 2026-06-25]  status={pg['status']}")
+    if pg["status"] == "result":
+        t = pg["total"]
+        print(f"    전사: 계획 {t['plan_u']*U:.1f}억 → 실적 {t['actual_u']*U:.1f}억  "
+              f"gap {fmt_u(t['gap_u'])} (달성률 {t['attainment_pct']:.1f}%)")
+        for r_ in pg["rows"]:
+            print(f"    {r_['channel']:6s} 계획 {r_['plan_u']*U:6.1f} 실적 {r_['actual_u']*U:6.1f}  "
+                  f"gap {fmt_u(r_['gap_u']):>8s} (달성률 {r_['attainment_pct']:.1f}%)")
+        print(f"    계획 전제: {pg['plan_basis_note'][:48]}…")
+    # 빈티지 미지정 시의 게이트 데모
+    pg_no_vintage = plan_gap(sem, ledger, B, record, vintage_id=None)
+    print(f"    (빈티지 미지정 호출 → {pg_no_vintage['status']}: "
+          f"{pg_no_vintage['violated'][0]['detail']})")
 
     # ── 3b: 이벤트 레지스트리 대조 ──────────────────────────────────
     ev = event_overlap_scan(sem, ledger, A, B, record)
@@ -119,6 +162,9 @@ def main():
               "results": {**{f"contrib:{d}": results[d] for d in axes},
                           f"drill:{top_axis}={top_seg}×channel": drill,
                           "drill:offline×region": region_drill,
+                          "drill:online신규×category": overlap_drill,
+                          "drill:B2B×category": b2b_drill,
+                          "plan_gap": pg,
                           "vrm:online": v, "events": ev},
               "execution_record": record,
               "assumption_ledger": [

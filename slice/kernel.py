@@ -101,9 +101,17 @@ def contrib_decomp(sem, ledger, dim, month_a, month_b, record, within=None):
     def sel(r):
         if within:
             for k, v in within.items():
-                if r[k] != v:
+                if (r[k] not in v if isinstance(v, list) else r[k] != v):
                     return False
         return True
+
+    # 데이터 존재 게이트: 비교 기간의 원장이 없으면 suspended (yoy 등)
+    months_present = {r["month"] for r in ledger}
+    missing = [m for m in (month_a, month_b) if m not in months_present]
+    if missing:
+        call["outcome"] = "suspended"
+        return {"status": "suspended", "missing_inputs": [f"ledger {m}" for m in missing],
+                "pass_conditions": f"{missing} 기간의 원장이 적재되면 실행 가능"}
 
     agg = {m: defaultdict(int) for m in (month_a, month_b)}
     for r in ledger:
@@ -157,6 +165,45 @@ def contrib_decomp(sem, ledger, dim, month_a, month_b, record, within=None):
                               "해석 문장": "데이터 시사 상한"}}
 
 
+# ── 연산자: plan_gap (계획 대비 — 빈티지 고정 필수) ──────────────────────
+def plan_gap(sem, ledger, month, record, vintage_id=None):
+    """계획 대비 실적. 빈티지 미지정은 design fact 위반 — estimand 자체가 미정의(어느 계획?)."""
+    call = {"operator": "plan_gap", "month": month, "vintage_id": vintage_id}
+    record["calls"].append(call)
+    store = json.loads((HERE / "plan_vintage.json").read_text())["vintages"]
+    if vintage_id is None:
+        call["outcome"] = "out_of_domain"
+        return {"status": "out_of_domain",
+                "violated": [{"check": "plan_vintage_pinned", "passed": False,
+                              "detail": "빈티지 미지정 — '어느 시점의 계획 대비인가'가 미확정"}],
+                "alternatives": [f"가용 빈티지: {[v['vintage_id'] for v in store]}"]}
+    v = next((x for x in store if x["vintage_id"] == vintage_id and x["plan_month"] == month), None)
+    if v is None:
+        call["outcome"] = "out_of_domain"
+        return {"status": "out_of_domain",
+                "violated": [{"check": "plan_vintage_exists", "passed": False,
+                              "detail": f"빈티지 {vintage_id} × {month} 없음"}], "alternatives": []}
+    actual = defaultdict(int)
+    for r in ledger:
+        if r["month"] == month:
+            actual[r["channel"]] += r["sales_u"]
+    rows = []
+    for ch, plan_u in v["channel_u"].items():
+        a = actual.get(ch, 0)
+        rows.append({"channel": ch, "plan_u": plan_u, "actual_u": a, "gap_u": a - plan_u,
+                     "attainment_pct": round(a / plan_u * 100, 1)})
+    tp, ta = sum(r["plan_u"] for r in rows), sum(r["actual_u"] for r in rows)
+    call["outcome"] = "result"
+    return {"status": "result", "output_type": "Attribution",
+            "estimand": f"{month} 실적 − 계획(빈티지 {vintage_id})의 채널별 gap",
+            "uncertainty_model": "none",
+            "total": {"plan_u": tp, "actual_u": ta, "gap_u": ta - tp,
+                      "attainment_pct": round(ta / tp * 100, 1)},
+            "rows": rows, "plan_basis_note": v["basis_note"],
+            "label_ceiling": {"gap 수치": "조건부 확인 — '빈티지 " + vintage_id + " 계획 대비'라는 조건 명시 의무",
+                              "계획 결함 해석": "데이터 시사 상한"}}
+
+
 # ── 연산자: event_overlap_scan (이벤트 레지스트리 v0 대조) ───────────────
 def event_overlap_scan(sem, ledger, month_a, month_b, record):
     """등록 이벤트별로 타깃 슬라이스의 Δ를 실측하고 선언 규모와 대조.
@@ -199,6 +246,7 @@ def event_overlap_scan(sem, ledger, month_a, month_b, record):
                      "declared_magnitude_u": e["declared_magnitude_u"],
                      "reference_scale_u": e.get("reference_scale_u"),
                      "reference_note": e.get("reference_note"),
+                     "reference_figures": e.get("reference_figures", []),
                      "evidence_grade": "산술 대조 가능(규모 특정)" if specified
                                        else "정합 서술까지(규모 미특정) — 시사 상한"})
     overlaps = []

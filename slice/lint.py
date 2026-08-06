@@ -82,6 +82,9 @@ def lint(text, whitelist):
         if re.search(r"(회복된다|돌아온다|환입된다)[.\s]", s) \
            and not re.search(r"(되면|경우|전제|시\b|예정)", s):
             findings.append(("WARN", "R11", i, "조건절 없는 미래 단정", s[:60]))
+        # R12 분모 명시 (계약 v0.1-5): 'X 감소분의 Y%' 형태는 분모 오라벨 위험
+        if re.search(r"(감소분의|증가분의|하락분의)\s*\d", s):
+            findings.append(("WARN", "R12", i, "분모 명시 검토 — 'X 중 Y%' 구문 권장", s[:60]))
 
     # R06 수치 출처 (문서 전체)
     for m in re.finditer(r"[+\-]?\d+(?:\.\d+)?", text):
