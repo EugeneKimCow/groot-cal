@@ -1,0 +1,174 @@
+{
+ "scenario": "rise",
+ "A_arithmetic": {
+  "channel": {
+   "status": "result",
+   "delta_u": 414,
+   "identity": true,
+   "share_suppressed": false
+  },
+  "category": {
+   "status": "result",
+   "delta_u": 414,
+   "identity": true,
+   "share_suppressed": false
+  },
+  "customer_type": {
+   "status": "result",
+   "delta_u": 414,
+   "identity": true,
+   "share_suppressed": false
+  }
+ },
+ "B_attribution": [
+  {
+   "id": "E1",
+   "measured_slice_delta_u": 259,
+   "true_effect_u": 220,
+   "attribution_gap_u": 39,
+   "evidence_grade": "정합 서술까지(규모 미특정) — 시사 상한",
+   "reference_scale_u": 196,
+   "reference_error_pct": -10.9
+  },
+  {
+   "id": "E5",
+   "measured_slice_delta_u": 236,
+   "true_effect_u": 195,
+   "attribution_gap_u": 41,
+   "evidence_grade": "정합 서술까지(규모 미특정) — 시사 상한",
+   "reference_scale_u": 226,
+   "reference_error_pct": 15.9
+  },
+  {
+   "id": "E6",
+   "measured_slice_delta_u": 380,
+   "true_effect_u": 100,
+   "attribution_gap_u": 280,
+   "evidence_grade": "정합 서술까지(규모 미특정) — 시사 상한"
+  }
+ ],
+ "C_abstention": [
+  {
+   "pair": [
+    "E1",
+    "E5"
+   ],
+   "shared_slice": {
+    "channel": [
+     "온라인"
+    ],
+    "customer_type": [
+     "신규"
+    ],
+    "category": [
+     "뷰티"
+    ]
+   },
+   "shared_delta_u": 83,
+   "true_split_u": {
+    "E1": 54,
+    "E5": 40
+   },
+   "base_residual_u": -11,
+   "policy": "분리 불가 — 기권",
+   "naive_split_max_error_u": {
+    "반반": 12.5,
+    "전부 E1": 40,
+    "전부 E5": 54,
+    "참조 스케일 비례": 15.5
+   },
+   "best_naive_error_u": 12.5,
+   "abstention_justified": true
+  },
+  {
+   "pair": [
+    "E1",
+    "E6"
+   ],
+   "shared_slice": {
+    "channel": [
+     "온라인"
+    ],
+    "customer_type": [
+     "신규"
+    ]
+   },
+   "shared_delta_u": 259,
+   "true_split_u": {
+    "E1": 220,
+    "E6": 29
+   },
+   "base_residual_u": 10,
+   "policy": "분리 불가 — 기권",
+   "naive_split_max_error_u": {
+    "반반": 100.5,
+    "전부 E1": 39,
+    "전부 E6": 230
+   },
+   "best_naive_error_u": 39,
+   "abstention_justified": true
+  },
+  {
+   "pair": [
+    "E5",
+    "E6"
+   ],
+   "shared_slice": {
+    "channel": [
+     "온라인"
+    ],
+    "category": [
+     "뷰티"
+    ]
+   },
+   "shared_delta_u": 174,
+   "true_split_u": {
+    "E5": 121,
+    "E6": 21
+   },
+   "base_residual_u": 32,
+   "policy": "분리 불가 — 기권",
+   "naive_split_max_error_u": {
+    "반반": 66.0,
+    "전부 E5": 53,
+    "전부 E6": 153
+   },
+   "best_naive_error_u": 53,
+   "abstention_justified": true
+  }
+ ],
+ "E_band": {
+  "history_deltas_u": [
+   -210,
+   347,
+   95,
+   132,
+   -222
+  ],
+  "band_data_u": [
+   -661,
+   851
+  ],
+  "band_base_u": [
+   -661,
+   851
+  ],
+  "base_q_delta_u": -88,
+  "measured_q_delta_u": 414,
+  "delta_min_verdict": "유의미(|Δ|≥δ_min)",
+  "band_data_verdict": "통상 변동 범위 내",
+  "counterfactual_check": {
+   "무이벤트 Δ가 base 대역 내": true,
+   "이벤트 충격이 base 대역 밖": false
+  },
+  "warning": "대역 폭은 계절 진폭 지배(원시 MoM Δ, n=5, 계절조정 부재) — 판정은 검정이 아니라 설명 요구 트리거로만 사용"
+ },
+ "G_vrm": {
+  "rate_effect_u": 105.0,
+  "volume_effect_u": 275.0,
+  "true_E6_effect_u": 100,
+  "gap_u": 5.0,
+  "consistent": true,
+  "note": "허용 오차에 Laspeyres 관례·교호작용 차이 포함"
+ }
+}

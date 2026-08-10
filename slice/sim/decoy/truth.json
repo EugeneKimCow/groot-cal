@@ -1,0 +1,51 @@
+{
+ "scenario": "decoy",
+ "seed": 20260810,
+ "question_months": [
+  "2026-06",
+  "2026-07"
+ ],
+ "dirty": false,
+ "note": "",
+ "ledger_monthly_totals_u": {
+  "2026-01": 4055,
+  "2026-02": 3845,
+  "2026-03": 4192,
+  "2026-04": 4287,
+  "2026-05": 4419,
+  "2026-06": 4197,
+  "2026-07": 4109
+ },
+ "monthly_totals_u": {
+  "2026-01": 4055,
+  "2026-02": 3845,
+  "2026-03": 4192,
+  "2026-04": 4287,
+  "2026-05": 4419,
+  "2026-06": 4197,
+  "2026-07": 4109
+ },
+ "base_monthly_totals_u": {
+  "2026-01": 4055,
+  "2026-02": 3845,
+  "2026-03": 4192,
+  "2026-04": 4287,
+  "2026-05": 4419,
+  "2026-06": 4197,
+  "2026-07": 4109
+ },
+ "events": [
+  {
+   "id": "EX",
+   "decoy": true,
+   "target_slice_delta_effect_u": 0,
+   "month_a_slice_effect_u": 0,
+   "month_b_slice_effect_u": 0,
+   "total_delta_effect_u": 0,
+   "declared": null,
+   "reference_scale": null
+  }
+ ],
+ "interaction_residual_u": 0,
+ "overlaps": []
+}

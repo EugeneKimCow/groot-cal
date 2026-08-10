@@ -1,0 +1,57 @@
+{
+ "scenario": "flat",
+ "A_arithmetic": {
+  "channel": {
+   "status": "result",
+   "delta_u": -88,
+   "identity": true,
+   "share_suppressed": true
+  },
+  "category": {
+   "status": "result",
+   "delta_u": -88,
+   "identity": true,
+   "share_suppressed": false
+  },
+  "customer_type": {
+   "status": "result",
+   "delta_u": -88,
+   "identity": true,
+   "share_suppressed": false
+  }
+ },
+ "B_attribution": [],
+ "C_abstention": [],
+ "E_band": {
+  "history_deltas_u": [
+   -210,
+   347,
+   95,
+   132,
+   -222
+  ],
+  "band_data_u": [
+   -661,
+   851
+  ],
+  "band_base_u": [
+   -661,
+   851
+  ],
+  "base_q_delta_u": -88,
+  "measured_q_delta_u": -88,
+  "delta_min_verdict": "유의미(|Δ|≥δ_min)",
+  "band_data_verdict": "통상 변동 범위 내",
+  "counterfactual_check": {
+   "무이벤트 Δ가 base 대역 내": true,
+   "이벤트 충격이 base 대역 밖": null
+  },
+  "warning": "대역 폭은 계절 진폭 지배(원시 MoM Δ, n=5, 계절조정 부재) — 판정은 검정이 아니라 설명 요구 트리거로만 사용"
+ },
+ "G_vrm": {
+  "rate_effect_u": 0.0,
+  "volume_effect_u": -48.0,
+  "consistent": true,
+  "note": "rate 개입 없음 — 단가 효과 ≈ 0 기대"
+ }
+}

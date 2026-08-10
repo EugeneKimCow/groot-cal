@@ -1,0 +1,132 @@
+{
+ "scenario": "rise",
+ "seed": 20260810,
+ "question_months": [
+  "2026-06",
+  "2026-07"
+ ],
+ "dirty": false,
+ "note": "",
+ "ledger_monthly_totals_u": {
+  "2026-01": 4055,
+  "2026-02": 3845,
+  "2026-03": 4192,
+  "2026-04": 4287,
+  "2026-05": 4419,
+  "2026-06": 4197,
+  "2026-07": 4611
+ },
+ "monthly_totals_u": {
+  "2026-01": 4055,
+  "2026-02": 3845,
+  "2026-03": 4192,
+  "2026-04": 4287,
+  "2026-05": 4419,
+  "2026-06": 4197,
+  "2026-07": 4611
+ },
+ "base_monthly_totals_u": {
+  "2026-01": 4055,
+  "2026-02": 3845,
+  "2026-03": 4192,
+  "2026-04": 4287,
+  "2026-05": 4419,
+  "2026-06": 4197,
+  "2026-07": 4109
+ },
+ "events": [
+  {
+   "id": "E1",
+   "target_slice_delta_effect_u": 220,
+   "month_a_slice_effect_u": 0,
+   "month_b_slice_effect_u": 220,
+   "total_delta_effect_u": 220,
+   "declared": null,
+   "reference_scale": 196
+  },
+  {
+   "id": "E5",
+   "target_slice_delta_effect_u": 195,
+   "month_a_slice_effect_u": 0,
+   "month_b_slice_effect_u": 195,
+   "total_delta_effect_u": 195,
+   "declared": null,
+   "reference_scale": 226
+  },
+  {
+   "id": "E6",
+   "target_slice_delta_effect_u": 100,
+   "month_a_slice_effect_u": 0,
+   "month_b_slice_effect_u": 100,
+   "total_delta_effect_u": 100,
+   "declared": null,
+   "reference_scale": null
+  }
+ ],
+ "interaction_residual_u": -13,
+ "overlaps": [
+  {
+   "pair": [
+    "E1",
+    "E5"
+   ],
+   "shared_slice": {
+    "channel": [
+     "온라인"
+    ],
+    "customer_type": [
+     "신규"
+    ],
+    "category": [
+     "뷰티"
+    ]
+   },
+   "shared_slice_delta_full_u": 83,
+   "true_split_u": {
+    "E1": 54,
+    "E5": 40
+   },
+   "base_residual_u": -11
+  },
+  {
+   "pair": [
+    "E1",
+    "E6"
+   ],
+   "shared_slice": {
+    "channel": [
+     "온라인"
+    ],
+    "customer_type": [
+     "신규"
+    ]
+   },
+   "shared_slice_delta_full_u": 259,
+   "true_split_u": {
+    "E1": 220,
+    "E6": 29
+   },
+   "base_residual_u": 10
+  },
+  {
+   "pair": [
+    "E5",
+    "E6"
+   ],
+   "shared_slice": {
+    "channel": [
+     "온라인"
+    ],
+    "category": [
+     "뷰티"
+    ]
+   },
+   "shared_slice_delta_full_u": 174,
+   "true_split_u": {
+    "E5": 121,
+    "E6": 21
+   },
+   "base_residual_u": 32
+  }
+ ]
+}

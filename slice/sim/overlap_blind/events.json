@@ -1,0 +1,45 @@
+{
+ "events": [
+  {
+   "id": "E1",
+   "name": "6월 첫구매 프로모션(6/1~30) — 7월 기저효과",
+   "period": [
+    "2026-06-01",
+    "2026-06-30"
+   ],
+   "affects": "2026-07",
+   "target": {
+    "channel": [
+     "온라인"
+    ],
+    "customer_type": [
+     "신규"
+    ]
+   },
+   "declared_magnitude_u": null,
+   "reference_scale_u": 183,
+   "reference_note": "마케팅팀 집계 — 코호트 데이터 미확보"
+  },
+  {
+   "id": "E2",
+   "name": "경쟁사 M몰 미드이어 페스타(7/14~20)",
+   "period": [
+    "2026-07-14",
+    "2026-07-20"
+   ],
+   "affects": "2026-07",
+   "target": {
+    "channel": [
+     "온라인"
+    ],
+    "category": [
+     "가전",
+     "생활용품"
+    ]
+   },
+   "declared_magnitude_u": null,
+   "reference_scale_u": null,
+   "reference_note": "행사 전후 트래픽 데이터 미보유"
+  }
+ ]
+}

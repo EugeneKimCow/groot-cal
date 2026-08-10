@@ -1,0 +1,202 @@
+{
+ "scenario": "fall",
+ "A_arithmetic": {
+  "channel": {
+   "status": "result",
+   "delta_u": -375,
+   "identity": true,
+   "share_suppressed": false
+  },
+  "category": {
+   "status": "result",
+   "delta_u": -375,
+   "identity": true,
+   "share_suppressed": true
+  },
+  "customer_type": {
+   "status": "result",
+   "delta_u": -375,
+   "identity": true,
+   "share_suppressed": false
+  }
+ },
+ "B_attribution": [
+  {
+   "id": "E1",
+   "measured_slice_delta_u": -230,
+   "true_effect_u": -205,
+   "attribution_gap_u": -25,
+   "evidence_grade": "정합 서술까지(규모 미특정) — 시사 상한",
+   "reference_scale_u": 183,
+   "reference_error_pct": -10.7
+  },
+  {
+   "id": "E2",
+   "measured_slice_delta_u": -179,
+   "true_effect_u": -57,
+   "attribution_gap_u": -122,
+   "evidence_grade": "정합 서술까지(규모 미특정) — 시사 상한"
+  },
+  {
+   "id": "E3",
+   "measured_slice_delta_u": -39,
+   "true_effect_u": -39,
+   "attribution_gap_u": 0,
+   "evidence_grade": "산술 대조 가능(규모 특정)",
+   "declared_u": -39,
+   "declaration_error_u": 0
+  },
+  {
+   "id": "E4",
+   "measured_slice_delta_u": -59,
+   "true_effect_u": -52,
+   "attribution_gap_u": -7,
+   "evidence_grade": "산술 대조 가능(규모 특정)",
+   "injected_u": -55,
+   "declared_u": -55,
+   "declaration_error_u": -3
+  },
+  {
+   "id": "E5",
+   "measured_slice_delta_u": 2,
+   "true_effect_u": 79,
+   "attribution_gap_u": -77,
+   "evidence_grade": "정합 서술까지(규모 미특정) — 시사 상한",
+   "reference_scale_u": 91,
+   "reference_error_pct": 15.2
+  }
+ ],
+ "C_abstention": [
+  {
+   "pair": [
+    "E1",
+    "E2"
+   ],
+   "shared_slice": {
+    "channel": [
+     "온라인"
+    ],
+    "customer_type": [
+     "신규"
+    ],
+    "category": [
+     "가전",
+     "생활용품"
+    ]
+   },
+   "shared_delta_u": -127,
+   "true_split_u": {
+    "E1": -101,
+    "E2": -15
+   },
+   "base_residual_u": -11,
+   "policy": "분리 불가 — 기권",
+   "naive_split_max_error_u": {
+    "반반": 48.5,
+    "전부 E1": 26,
+    "전부 E2": 112
+   },
+   "best_naive_error_u": 26,
+   "abstention_justified": true
+  },
+  {
+   "pair": [
+    "E1",
+    "E5"
+   ],
+   "shared_slice": {
+    "channel": [
+     "온라인"
+    ],
+    "customer_type": [
+     "신규"
+    ],
+    "category": [
+     "뷰티"
+    ]
+   },
+   "shared_delta_u": -37,
+   "true_split_u": {
+    "E1": -40,
+    "E5": 6
+   },
+   "base_residual_u": -3,
+   "policy": "분리 불가 — 기권",
+   "naive_split_max_error_u": {
+    "반반": 24.5,
+    "전부 E1": 6,
+    "전부 E5": 43,
+    "참조 스케일 비례": 18.3
+   },
+   "best_naive_error_u": 6,
+   "abstention_justified": true
+  },
+  {
+   "pair": [
+    "E3",
+    "E5"
+   ],
+   "shared_slice": {
+    "channel": [
+     "오프라인"
+    ],
+    "region": [
+     "호남"
+    ],
+    "category": [
+     "뷰티"
+    ]
+   },
+   "shared_delta_u": -3,
+   "true_split_u": {
+    "E3": -4,
+    "E5": 13
+   },
+   "base_residual_u": -12,
+   "policy": "분리 불가 — 기권 (R04: 후보 전원 특정 시에만 잔차 논법 성립)",
+   "residual_experiment": {
+    "설명": "계약상 차단되는 '전원-1' 잔차 귀속을 시험 수행한 오차 실측",
+    "estimate_u": 0,
+    "true_u": 13,
+    "error_u": -13,
+    "error_decomposition": {
+     "선언 오차(선언−참)": 0,
+     "기저·교호·기타 잔여": -13
+    },
+    "separation_justified": false
+   }
+  }
+ ],
+ "E_band": {
+  "history_deltas_u": [
+   -210,
+   347,
+   95,
+   132,
+   -17
+  ],
+  "band_data_u": [
+   -241,
+   431
+  ],
+  "band_base_u": [
+   -661,
+   851
+  ],
+  "base_q_delta_u": -88,
+  "measured_q_delta_u": -375,
+  "delta_min_verdict": "유의미(|Δ|≥δ_min)",
+  "band_data_verdict": "통상 대역 이탈 — 설명 요구됨",
+  "counterfactual_check": {
+   "무이벤트 Δ가 base 대역 내": true,
+   "이벤트 충격이 base 대역 밖": false
+  },
+  "warning": "대역 폭은 계절 진폭 지배(원시 MoM Δ, n=5, 계절조정 부재) — 판정은 검정이 아니라 설명 요구 트리거로만 사용"
+ },
+ "G_vrm": {
+  "rate_effect_u": 0.0,
+  "volume_effect_u": -274.0,
+  "consistent": true,
+  "note": "rate 개입 없음 — 단가 효과 ≈ 0 기대"
+ }
+}

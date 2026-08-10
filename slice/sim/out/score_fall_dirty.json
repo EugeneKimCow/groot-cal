@@ -1,0 +1,48 @@
+{
+ "scenario": "fall_dirty",
+ "A_arithmetic": {
+  "channel": {
+   "status": "out_of_domain",
+   "violated": [
+    "mece_runtime_coverage",
+    "partition_coverage"
+   ]
+  },
+  "category": {
+   "status": "out_of_domain",
+   "violated": [
+    "partition_coverage"
+   ]
+  },
+  "customer_type": {
+   "status": "out_of_domain",
+   "violated": [
+    "partition_coverage"
+   ]
+  }
+ },
+ "F_gates": {
+  "axes_blocked": {
+   "channel": [
+    "mece_runtime_coverage",
+    "partition_coverage"
+   ],
+   "category": [
+    "partition_coverage"
+   ],
+   "customer_type": [
+    "partition_coverage"
+   ]
+  },
+  "region_drill_status": "out_of_domain",
+  "region_violated": [
+   "mece_runtime_coverage"
+  ],
+  "vrm_status": "suspended",
+  "vrm_missing": [
+   "online_orders (NULL 11행)"
+  ],
+  "negative_rows": 73,
+  "negative_rows_gated": false
+ }
+}

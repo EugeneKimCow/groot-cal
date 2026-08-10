@@ -73,6 +73,13 @@
      "detail": "version=1"
     },
     {
+     "check": "scope_declared",
+     "dim": "channel",
+     "checker": "machine",
+     "passed": true,
+     "detail": "적용 범위 정합"
+    },
+    {
      "check": "mece_runtime_coverage",
      "dim": "channel",
      "checker": "machine",
@@ -80,10 +87,16 @@
      "detail": "커버리지 완전"
     },
     {
+     "check": "partition_coverage",
+     "checker": "machine",
+     "passed": true,
+     "detail": "파티션 차원 커버리지 완전"
+    },
+    {
      "check": "identity_recheck",
      "checker": "machine",
      "passed": true,
-     "detail": "Σ기여=-340u vs Δ전체=-340u"
+     "detail": "Σ기여=-340u vs 원시 스캔 Δ=-340u (방어 계층)"
     }
    ],
    "label_ceiling": {
@@ -154,6 +167,13 @@
      "detail": "version=1"
     },
     {
+     "check": "scope_declared",
+     "dim": "category",
+     "checker": "machine",
+     "passed": true,
+     "detail": "적용 범위 정합"
+    },
+    {
      "check": "mece_runtime_coverage",
      "dim": "category",
      "checker": "machine",
@@ -161,10 +181,16 @@
      "detail": "커버리지 완전"
     },
     {
+     "check": "partition_coverage",
+     "checker": "machine",
+     "passed": true,
+     "detail": "파티션 차원 커버리지 완전"
+    },
+    {
      "check": "identity_recheck",
      "checker": "machine",
      "passed": true,
-     "detail": "Σ기여=-340u vs Δ전체=-340u"
+     "detail": "Σ기여=-340u vs 원시 스캔 Δ=-340u (방어 계층)"
     }
    ],
    "label_ceiling": {
@@ -221,6 +247,13 @@
      "detail": "version=1"
     },
     {
+     "check": "scope_declared",
+     "dim": "customer_type",
+     "checker": "machine",
+     "passed": true,
+     "detail": "적용 범위 정합"
+    },
+    {
      "check": "mece_runtime_coverage",
      "dim": "customer_type",
      "checker": "machine",
@@ -228,10 +261,16 @@
      "detail": "커버리지 완전"
     },
     {
+     "check": "partition_coverage",
+     "checker": "machine",
+     "passed": true,
+     "detail": "파티션 차원 커버리지 완전"
+    },
+    {
      "check": "identity_recheck",
      "checker": "machine",
      "passed": true,
-     "detail": "Σ기여=-340u vs Δ전체=-340u"
+     "detail": "Σ기여=-340u vs 원시 스캔 Δ=-340u (방어 계층)"
     }
    ],
    "label_ceiling": {
@@ -297,6 +336,13 @@
      "detail": "version=1"
     },
     {
+     "check": "scope_declared",
+     "dim": "channel",
+     "checker": "machine",
+     "passed": true,
+     "detail": "적용 범위 정합"
+    },
+    {
      "check": "mece_runtime_coverage",
      "dim": "channel",
      "checker": "machine",
@@ -304,10 +350,16 @@
      "detail": "커버리지 완전"
     },
     {
+     "check": "partition_coverage",
+     "checker": "machine",
+     "passed": true,
+     "detail": "파티션 차원 커버리지 완전"
+    },
+    {
      "check": "identity_recheck",
      "checker": "machine",
      "passed": true,
-     "detail": "Σ기여=-280u vs Δ전체=-280u"
+     "detail": "Σ기여=-280u vs 원시 스캔 Δ=-280u (방어 계층)"
     }
    ],
    "label_ceiling": {
@@ -382,6 +434,13 @@
      "detail": "version=1"
     },
     {
+     "check": "scope_declared",
+     "dim": "region",
+     "checker": "machine",
+     "passed": true,
+     "detail": "적용 범위 정합"
+    },
+    {
      "check": "mece_runtime_coverage",
      "dim": "region",
      "checker": "machine",
@@ -389,10 +448,16 @@
      "detail": "커버리지 완전"
     },
     {
+     "check": "partition_coverage",
+     "checker": "machine",
+     "passed": true,
+     "detail": "파티션 차원 커버리지 완전"
+    },
+    {
      "check": "identity_recheck",
      "checker": "machine",
      "passed": true,
-     "detail": "Σ기여=-70u vs Δ전체=-70u"
+     "detail": "Σ기여=-70u vs 원시 스캔 Δ=-70u (방어 계층)"
     }
    ],
    "label_ceiling": {
@@ -467,6 +532,13 @@
      "detail": "version=1"
     },
     {
+     "check": "scope_declared",
+     "dim": "category",
+     "checker": "machine",
+     "passed": true,
+     "detail": "적용 범위 정합"
+    },
+    {
      "check": "mece_runtime_coverage",
      "dim": "category",
      "checker": "machine",
@@ -474,10 +546,16 @@
      "detail": "커버리지 완전"
     },
     {
+     "check": "partition_coverage",
+     "checker": "machine",
+     "passed": true,
+     "detail": "파티션 차원 커버리지 완전"
+    },
+    {
      "check": "identity_recheck",
      "checker": "machine",
      "passed": true,
-     "detail": "Σ기여=-240u vs Δ전체=-240u"
+     "detail": "Σ기여=-240u vs 원시 스캔 Δ=-240u (방어 계층)"
     }
    ],
    "label_ceiling": {
@@ -548,6 +626,13 @@
      "detail": "version=1"
     },
     {
+     "check": "scope_declared",
+     "dim": "category",
+     "checker": "machine",
+     "passed": true,
+     "detail": "적용 범위 정합"
+    },
+    {
      "check": "mece_runtime_coverage",
      "dim": "category",
      "checker": "machine",
@@ -555,10 +640,16 @@
      "detail": "커버리지 완전"
     },
     {
+     "check": "partition_coverage",
+     "checker": "machine",
+     "passed": true,
+     "detail": "파티션 차원 커버리지 완전"
+    },
+    {
      "check": "identity_recheck",
      "checker": "machine",
      "passed": true,
-     "detail": "Σ기여=-50u vs Δ전체=-50u"
+     "detail": "Σ기여=-50u vs 원시 스캔 Δ=-50u (방어 계층)"
     }
    ],
    "label_ceiling": {
@@ -764,6 +855,22 @@
       "E1",
       "E2"
      ],
+     "shared_slice": {
+      "channel": [
+       "온라인"
+      ],
+      "customer_type": [
+       "신규"
+      ],
+      "category": [
+       "가전",
+       "생활용품"
+      ]
+     },
+     "shared_slice_totals_u": {
+      "2026-06": 269,
+      "2026-07": 141
+     },
      "note": "타깃 슬라이스 교차 — 이 슬라이스의 Δ를 두 이벤트로 배분하는 것은 잔차 귀속(차단 대상)"
     },
     {
@@ -771,6 +878,21 @@
       "E1",
       "E5"
      ],
+     "shared_slice": {
+      "channel": [
+       "온라인"
+      ],
+      "customer_type": [
+       "신규"
+      ],
+      "category": [
+       "뷰티"
+      ]
+     },
+     "shared_slice_totals_u": {
+      "2026-06": 192,
+      "2026-07": 144
+     },
      "note": "타깃 슬라이스 교차 — 이 슬라이스의 Δ를 두 이벤트로 배분하는 것은 잔차 귀속(차단 대상)"
     },
     {
@@ -778,6 +900,21 @@
       "E3",
       "E5"
      ],
+     "shared_slice": {
+      "channel": [
+       "오프라인"
+      ],
+      "region": [
+       "호남"
+      ],
+      "category": [
+       "뷰티"
+      ]
+     },
+     "shared_slice_totals_u": {
+      "2026-06": 30,
+      "2026-07": 31
+     },
      "note": "타깃 슬라이스 교차 — 이 슬라이스의 Δ를 두 이벤트로 배분하는 것은 잔차 귀속(차단 대상)"
     }
    ],

@@ -1,0 +1,109 @@
+{
+ "events": [
+  {
+   "id": "E1",
+   "name": "6월 첫구매 프로모션(6/1~30) — 7월 기저효과",
+   "period": [
+    "2026-06-01",
+    "2026-06-30"
+   ],
+   "affects": "2026-07",
+   "target": {
+    "channel": [
+     "온라인"
+    ],
+    "customer_type": [
+     "신규"
+    ]
+   },
+   "declared_magnitude_u": null,
+   "reference_scale_u": 183,
+   "reference_note": "마케팅팀 집계 — 코호트 데이터 미확보"
+  },
+  {
+   "id": "E2",
+   "name": "경쟁사 M몰 미드이어 페스타(7/14~20)",
+   "period": [
+    "2026-07-14",
+    "2026-07-20"
+   ],
+   "affects": "2026-07",
+   "target": {
+    "channel": [
+     "온라인"
+    ],
+    "category": [
+     "가전",
+     "생활용품"
+    ]
+   },
+   "declared_magnitude_u": null,
+   "reference_scale_u": null,
+   "reference_note": "행사 전후 트래픽 데이터 미보유"
+  },
+  {
+   "id": "E3",
+   "name": "호남 오프라인 B점 폐점(7/1)",
+   "period": [
+    "2026-07-01",
+    "2026-07-31"
+   ],
+   "affects": "2026-07",
+   "target": {
+    "channel": [
+     "오프라인"
+    ],
+    "region": [
+     "호남"
+    ]
+   },
+   "declared_magnitude_u": -39,
+   "reference_scale_u": null,
+   "reference_note": "점포 단위 수치는 원장 밖 신고치"
+  },
+  {
+   "id": "E4",
+   "name": "B2B K전자양판 정기발주 8월 이월",
+   "period": [
+    "2026-07-01",
+    "2026-07-31"
+   ],
+   "affects": "2026-07",
+   "target": {
+    "channel": [
+     "B2B"
+    ],
+    "category": [
+     "가전"
+    ],
+    "customer_type": [
+     "기존"
+    ]
+   },
+   "declared_magnitude_u": -55,
+   "reference_scale_u": null,
+   "reference_note": "영업팀 확인 — 소멸 아닌 이월"
+  },
+  {
+   "id": "E5",
+   "name": "뷰티 신규 브랜드 입점(7/1~)",
+   "period": [
+    "2026-07-01",
+    "2026-07-31"
+   ],
+   "affects": "2026-07",
+   "target": {
+    "channel": [
+     "온라인",
+     "오프라인"
+    ],
+    "category": [
+     "뷰티"
+    ]
+   },
+   "declared_magnitude_u": null,
+   "reference_scale_u": 91,
+   "reference_note": "브랜드 단위는 원장 밖 집계"
+  }
+ ]
+}

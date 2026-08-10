@@ -1,0 +1,84 @@
+{
+ "scenario": "overlap_blind",
+ "seed": 20260810,
+ "question_months": [
+  "2026-06",
+  "2026-07"
+ ],
+ "dirty": false,
+ "note": "",
+ "ledger_monthly_totals_u": {
+  "2026-01": 4055,
+  "2026-02": 3845,
+  "2026-03": 4192,
+  "2026-04": 4287,
+  "2026-05": 4419,
+  "2026-06": 4402,
+  "2026-07": 4052
+ },
+ "monthly_totals_u": {
+  "2026-01": 4055,
+  "2026-02": 3845,
+  "2026-03": 4192,
+  "2026-04": 4287,
+  "2026-05": 4419,
+  "2026-06": 4402,
+  "2026-07": 4052
+ },
+ "base_monthly_totals_u": {
+  "2026-01": 4055,
+  "2026-02": 3845,
+  "2026-03": 4192,
+  "2026-04": 4287,
+  "2026-05": 4419,
+  "2026-06": 4197,
+  "2026-07": 4109
+ },
+ "events": [
+  {
+   "id": "E1",
+   "target_slice_delta_effect_u": -205,
+   "month_a_slice_effect_u": 205,
+   "month_b_slice_effect_u": 0,
+   "total_delta_effect_u": -205,
+   "declared": null,
+   "reference_scale": 183
+  },
+  {
+   "id": "E2",
+   "target_slice_delta_effect_u": -57,
+   "month_a_slice_effect_u": 0,
+   "month_b_slice_effect_u": -57,
+   "total_delta_effect_u": -57,
+   "declared": null,
+   "reference_scale": null
+  }
+ ],
+ "interaction_residual_u": 0,
+ "overlaps": [
+  {
+   "pair": [
+    "E1",
+    "E2"
+   ],
+   "shared_slice": {
+    "channel": [
+     "온라인"
+    ],
+    "customer_type": [
+     "신규"
+    ],
+    "category": [
+     "가전",
+     "생활용품"
+    ]
+   },
+   "shared_slice_delta_full_u": -127,
+   "true_split_u": {
+    "E1": -101,
+    "E2": -15
+   },
+   "base_residual_u": -11
+  }
+ ]
+}

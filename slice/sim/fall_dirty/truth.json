@@ -1,0 +1,158 @@
+{
+ "scenario": "fall_dirty",
+ "seed": 20260810,
+ "question_months": [
+  "2026-06",
+  "2026-07"
+ ],
+ "dirty": true,
+ "note": "이벤트 효과·monthly_totals_u는 dirty 적용 전 원장 기준 — 배포 원장 총계는 ledger_monthly_totals_u 참조",
+ "ledger_monthly_totals_u": {
+  "2026-01": 4041,
+  "2026-02": 3836,
+  "2026-03": 4180,
+  "2026-04": 4281,
+  "2026-05": 4408,
+  "2026-06": 4391,
+  "2026-07": 4017
+ },
+ "monthly_totals_u": {
+  "2026-01": 4055,
+  "2026-02": 3845,
+  "2026-03": 4192,
+  "2026-04": 4287,
+  "2026-05": 4419,
+  "2026-06": 4402,
+  "2026-07": 4027
+ },
+ "base_monthly_totals_u": {
+  "2026-01": 4055,
+  "2026-02": 3845,
+  "2026-03": 4192,
+  "2026-04": 4287,
+  "2026-05": 4419,
+  "2026-06": 4197,
+  "2026-07": 4109
+ },
+ "events": [
+  {
+   "id": "E1",
+   "target_slice_delta_effect_u": -205,
+   "month_a_slice_effect_u": 205,
+   "month_b_slice_effect_u": 0,
+   "total_delta_effect_u": -205,
+   "declared": null,
+   "reference_scale": 183
+  },
+  {
+   "id": "E2",
+   "target_slice_delta_effect_u": -57,
+   "month_a_slice_effect_u": 0,
+   "month_b_slice_effect_u": -57,
+   "total_delta_effect_u": -57,
+   "declared": null,
+   "reference_scale": null
+  },
+  {
+   "id": "E3",
+   "target_slice_delta_effect_u": -39,
+   "month_a_slice_effect_u": 0,
+   "month_b_slice_effect_u": -39,
+   "total_delta_effect_u": -39,
+   "declared": -39,
+   "reference_scale": null
+  },
+  {
+   "id": "E4",
+   "target_slice_delta_effect_u": -52,
+   "month_a_slice_effect_u": 0,
+   "month_b_slice_effect_u": -52,
+   "total_delta_effect_u": -52,
+   "injected_u": -55,
+   "declared": -55,
+   "reference_scale": null
+  },
+  {
+   "id": "E5",
+   "target_slice_delta_effect_u": 79,
+   "month_a_slice_effect_u": 0,
+   "month_b_slice_effect_u": 79,
+   "total_delta_effect_u": 79,
+   "declared": null,
+   "reference_scale": 91
+  }
+ ],
+ "interaction_residual_u": -13,
+ "overlaps": [
+  {
+   "pair": [
+    "E1",
+    "E2"
+   ],
+   "shared_slice": {
+    "channel": [
+     "온라인"
+    ],
+    "customer_type": [
+     "신규"
+    ],
+    "category": [
+     "가전",
+     "생활용품"
+    ]
+   },
+   "shared_slice_delta_full_u": -127,
+   "true_split_u": {
+    "E1": -101,
+    "E2": -15
+   },
+   "base_residual_u": -11
+  },
+  {
+   "pair": [
+    "E1",
+    "E5"
+   ],
+   "shared_slice": {
+    "channel": [
+     "온라인"
+    ],
+    "customer_type": [
+     "신규"
+    ],
+    "category": [
+     "뷰티"
+    ]
+   },
+   "shared_slice_delta_full_u": -37,
+   "true_split_u": {
+    "E1": -40,
+    "E5": 6
+   },
+   "base_residual_u": -3
+  },
+  {
+   "pair": [
+    "E3",
+    "E5"
+   ],
+   "shared_slice": {
+    "channel": [
+     "오프라인"
+    ],
+    "region": [
+     "호남"
+    ],
+    "category": [
+     "뷰티"
+    ]
+   },
+   "shared_slice_delta_full_u": -3,
+   "true_split_u": {
+    "E3": -4,
+    "E5": 13
+   },
+   "base_residual_u": -12
+  }
+ ]
+}

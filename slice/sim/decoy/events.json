@@ -1,0 +1,24 @@
+{
+ "events": [
+  {
+   "id": "EX",
+   "name": "수도권 물류 파업 루머(7월)",
+   "period": [
+    "2026-07-01",
+    "2026-07-31"
+   ],
+   "affects": "2026-07",
+   "target": {
+    "channel": [
+     "오프라인"
+    ],
+    "region": [
+     "수도권"
+    ]
+   },
+   "declared_magnitude_u": null,
+   "reference_scale_u": null,
+   "reference_note": "업계지 보도 — 실제 영향 미확인"
+  }
+ ]
+}
