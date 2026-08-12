@@ -1,0 +1,745 @@
+{
+ "spec": {
+  "status": "spec",
+  "question": "7월 매출이 왜 변했나?",
+  "signature": {
+   "external_criterion": "present",
+   "question_type": "change"
+  },
+  "binding": {
+   "metric": "매출@v1",
+   "month": "2026-07",
+   "comparison_basis": "prior_period",
+   "within": {},
+   "as_of": "2026-08-06"
+  },
+  "echo": "이렇게 이해했습니다 — 매출[v1], 2026-07, 전월(2026-06) 대비, 전 채널"
+ },
+ "results": {
+  "contrib:channel": {
+   "status": "result",
+   "estimand": "Δ매출(2026-06→2026-07)에 대한 channel 세그먼트의 산술 기여분",
+   "output_type": "Attribution",
+   "uncertainty_model": "none",
+   "total": {
+    "before_u": 4197,
+    "after_u": 4611,
+    "delta_u": 414,
+    "pct_change": 9.9
+   },
+   "share_suppressed": false,
+   "share_suppression_reason": null,
+   "segments": [
+    {
+     "segment": "온라인",
+     "before_u": 1824,
+     "after_u": 2204,
+     "delta_u": 380,
+     "pct_change": 20.8,
+     "share_of_change_pct": 91.8,
+     "share_of_abs_pct": 91.8
+    },
+    {
+     "segment": "오프라인",
+     "before_u": 1499,
+     "after_u": 1525,
+     "delta_u": 26,
+     "pct_change": 1.7,
+     "share_of_change_pct": 6.3,
+     "share_of_abs_pct": 6.3
+    },
+    {
+     "segment": "B2B",
+     "before_u": 874,
+     "after_u": 882,
+     "delta_u": 8,
+     "pct_change": 0.9,
+     "share_of_change_pct": 1.9,
+     "share_of_abs_pct": 1.9
+    }
+   ],
+   "checks": [
+    {
+     "check": "mece_declared",
+     "dim": "channel",
+     "checker": "machine",
+     "passed": true,
+     "detail": "선언된 MECE 차원"
+    },
+    {
+     "check": "metric_version_identical",
+     "checker": "machine",
+     "passed": true,
+     "detail": "version=1"
+    },
+    {
+     "check": "scope_declared",
+     "dim": "channel",
+     "checker": "machine",
+     "passed": true,
+     "detail": "적용 범위 정합"
+    },
+    {
+     "check": "mece_runtime_coverage",
+     "dim": "channel",
+     "checker": "machine",
+     "passed": true,
+     "detail": "커버리지 완전"
+    },
+    {
+     "check": "partition_coverage",
+     "checker": "machine",
+     "passed": true,
+     "detail": "파티션 차원 커버리지 완전"
+    },
+    {
+     "check": "identity_recheck",
+     "checker": "machine",
+     "passed": true,
+     "detail": "Σ기여=414u vs 원시 스캔 Δ=414u (방어 계층)"
+    }
+   ],
+   "label_ceiling": {
+    "contribution": "데이터 확인 (identity_recheck 통과)",
+    "share_of_change": "데이터 확인 (부호 동질·δ_min 통과)",
+    "해석 문장": "데이터 시사 상한"
+   }
+  },
+  "contrib:category": {
+   "status": "result",
+   "estimand": "Δ매출(2026-06→2026-07)에 대한 category 세그먼트의 산술 기여분",
+   "output_type": "Attribution",
+   "uncertainty_model": "none",
+   "total": {
+    "before_u": 4197,
+    "after_u": 4611,
+    "delta_u": 414,
+    "pct_change": 9.9
+   },
+   "share_suppressed": false,
+   "share_suppression_reason": null,
+   "segments": [
+    {
+     "segment": "뷰티",
+     "before_u": 643,
+     "after_u": 878,
+     "delta_u": 235,
+     "pct_change": 36.5,
+     "share_of_change_pct": 56.8,
+     "share_of_abs_pct": 56.8
+    },
+    {
+     "segment": "생활용품",
+     "before_u": 1017,
+     "after_u": 1084,
+     "delta_u": 67,
+     "pct_change": 6.6,
+     "share_of_change_pct": 16.2,
+     "share_of_abs_pct": 16.2
+    },
+    {
+     "segment": "가전",
+     "before_u": 1120,
+     "after_u": 1179,
+     "delta_u": 59,
+     "pct_change": 5.3,
+     "share_of_change_pct": 14.3,
+     "share_of_abs_pct": 14.3
+    },
+    {
+     "segment": "식품",
+     "before_u": 1417,
+     "after_u": 1470,
+     "delta_u": 53,
+     "pct_change": 3.7,
+     "share_of_change_pct": 12.8,
+     "share_of_abs_pct": 12.8
+    }
+   ],
+   "checks": [
+    {
+     "check": "mece_declared",
+     "dim": "category",
+     "checker": "machine",
+     "passed": true,
+     "detail": "선언된 MECE 차원"
+    },
+    {
+     "check": "metric_version_identical",
+     "checker": "machine",
+     "passed": true,
+     "detail": "version=1"
+    },
+    {
+     "check": "scope_declared",
+     "dim": "category",
+     "checker": "machine",
+     "passed": true,
+     "detail": "적용 범위 정합"
+    },
+    {
+     "check": "mece_runtime_coverage",
+     "dim": "category",
+     "checker": "machine",
+     "passed": true,
+     "detail": "커버리지 완전"
+    },
+    {
+     "check": "partition_coverage",
+     "checker": "machine",
+     "passed": true,
+     "detail": "파티션 차원 커버리지 완전"
+    },
+    {
+     "check": "identity_recheck",
+     "checker": "machine",
+     "passed": true,
+     "detail": "Σ기여=414u vs 원시 스캔 Δ=414u (방어 계층)"
+    }
+   ],
+   "label_ceiling": {
+    "contribution": "데이터 확인 (identity_recheck 통과)",
+    "share_of_change": "데이터 확인 (부호 동질·δ_min 통과)",
+    "해석 문장": "데이터 시사 상한"
+   }
+  },
+  "contrib:customer_type": {
+   "status": "result",
+   "estimand": "Δ매출(2026-06→2026-07)에 대한 customer_type 세그먼트의 산술 기여분",
+   "output_type": "Attribution",
+   "uncertainty_model": "none",
+   "total": {
+    "before_u": 4197,
+    "after_u": 4611,
+    "delta_u": 414,
+    "pct_change": 9.9
+   },
+   "share_suppressed": false,
+   "share_suppression_reason": null,
+   "segments": [
+    {
+     "segment": "신규",
+     "before_u": 735,
+     "after_u": 999,
+     "delta_u": 264,
+     "pct_change": 35.9,
+     "share_of_change_pct": 63.8,
+     "share_of_abs_pct": 63.8
+    },
+    {
+     "segment": "기존",
+     "before_u": 3462,
+     "after_u": 3612,
+     "delta_u": 150,
+     "pct_change": 4.3,
+     "share_of_change_pct": 36.2,
+     "share_of_abs_pct": 36.2
+    }
+   ],
+   "checks": [
+    {
+     "check": "mece_declared",
+     "dim": "customer_type",
+     "checker": "machine",
+     "passed": true,
+     "detail": "선언된 MECE 차원"
+    },
+    {
+     "check": "metric_version_identical",
+     "checker": "machine",
+     "passed": true,
+     "detail": "version=1"
+    },
+    {
+     "check": "scope_declared",
+     "dim": "customer_type",
+     "checker": "machine",
+     "passed": true,
+     "detail": "적용 범위 정합"
+    },
+    {
+     "check": "mece_runtime_coverage",
+     "dim": "customer_type",
+     "checker": "machine",
+     "passed": true,
+     "detail": "커버리지 완전"
+    },
+    {
+     "check": "partition_coverage",
+     "checker": "machine",
+     "passed": true,
+     "detail": "파티션 차원 커버리지 완전"
+    },
+    {
+     "check": "identity_recheck",
+     "checker": "machine",
+     "passed": true,
+     "detail": "Σ기여=414u vs 원시 스캔 Δ=414u (방어 계층)"
+    }
+   ],
+   "label_ceiling": {
+    "contribution": "데이터 확인 (identity_recheck 통과)",
+    "share_of_change": "데이터 확인 (부호 동질·δ_min 통과)",
+    "해석 문장": "데이터 시사 상한"
+   }
+  },
+  "drill:channel=온라인×category": {
+   "status": "result",
+   "estimand": "Δ매출(2026-06→2026-07)에 대한 category 세그먼트의 산술 기여분 (제약: {'channel': '온라인'})",
+   "output_type": "Attribution",
+   "uncertainty_model": "none",
+   "total": {
+    "before_u": 1824,
+    "after_u": 2204,
+    "delta_u": 380,
+    "pct_change": 20.8
+   },
+   "share_suppressed": false,
+   "share_suppression_reason": null,
+   "segments": [
+    {
+     "segment": "뷰티",
+     "before_u": 361,
+     "after_u": 535,
+     "delta_u": 174,
+     "pct_change": 48.2,
+     "share_of_change_pct": 45.8,
+     "share_of_abs_pct": 45.8
+    },
+    {
+     "segment": "가전",
+     "before_u": 453,
+     "after_u": 529,
+     "delta_u": 76,
+     "pct_change": 16.8,
+     "share_of_change_pct": 20.0,
+     "share_of_abs_pct": 20.0
+    },
+    {
+     "segment": "식품",
+     "before_u": 550,
+     "after_u": 618,
+     "delta_u": 68,
+     "pct_change": 12.4,
+     "share_of_change_pct": 17.9,
+     "share_of_abs_pct": 17.9
+    },
+    {
+     "segment": "생활용품",
+     "before_u": 460,
+     "after_u": 522,
+     "delta_u": 62,
+     "pct_change": 13.5,
+     "share_of_change_pct": 16.3,
+     "share_of_abs_pct": 16.3
+    }
+   ],
+   "checks": [
+    {
+     "check": "mece_declared",
+     "dim": "category",
+     "checker": "machine",
+     "passed": true,
+     "detail": "선언된 MECE 차원"
+    },
+    {
+     "check": "metric_version_identical",
+     "checker": "machine",
+     "passed": true,
+     "detail": "version=1"
+    },
+    {
+     "check": "scope_declared",
+     "dim": "category",
+     "checker": "machine",
+     "passed": true,
+     "detail": "적용 범위 정합"
+    },
+    {
+     "check": "mece_runtime_coverage",
+     "dim": "category",
+     "checker": "machine",
+     "passed": true,
+     "detail": "커버리지 완전"
+    },
+    {
+     "check": "partition_coverage",
+     "checker": "machine",
+     "passed": true,
+     "detail": "파티션 차원 커버리지 완전"
+    },
+    {
+     "check": "identity_recheck",
+     "checker": "machine",
+     "passed": true,
+     "detail": "Σ기여=380u vs 원시 스캔 Δ=380u (방어 계층)"
+    }
+   ],
+   "label_ceiling": {
+    "contribution": "데이터 확인 (identity_recheck 통과)",
+    "share_of_change": "데이터 확인 (부호 동질·δ_min 통과)",
+    "해석 문장": "데이터 시사 상한"
+   }
+  },
+  "drill:channel=온라인×customer_type": {
+   "status": "result",
+   "estimand": "Δ매출(2026-06→2026-07)에 대한 customer_type 세그먼트의 산술 기여분 (제약: {'channel': '온라인'})",
+   "output_type": "Attribution",
+   "uncertainty_model": "none",
+   "total": {
+    "before_u": 1824,
+    "after_u": 2204,
+    "delta_u": 380,
+    "pct_change": 20.8
+   },
+   "share_suppressed": false,
+   "share_suppression_reason": null,
+   "segments": [
+    {
+     "segment": "신규",
+     "before_u": 458,
+     "after_u": 717,
+     "delta_u": 259,
+     "pct_change": 56.6,
+     "share_of_change_pct": 68.2,
+     "share_of_abs_pct": 68.2
+    },
+    {
+     "segment": "기존",
+     "before_u": 1366,
+     "after_u": 1487,
+     "delta_u": 121,
+     "pct_change": 8.9,
+     "share_of_change_pct": 31.8,
+     "share_of_abs_pct": 31.8
+    }
+   ],
+   "checks": [
+    {
+     "check": "mece_declared",
+     "dim": "customer_type",
+     "checker": "machine",
+     "passed": true,
+     "detail": "선언된 MECE 차원"
+    },
+    {
+     "check": "metric_version_identical",
+     "checker": "machine",
+     "passed": true,
+     "detail": "version=1"
+    },
+    {
+     "check": "scope_declared",
+     "dim": "customer_type",
+     "checker": "machine",
+     "passed": true,
+     "detail": "적용 범위 정합"
+    },
+    {
+     "check": "mece_runtime_coverage",
+     "dim": "customer_type",
+     "checker": "machine",
+     "passed": true,
+     "detail": "커버리지 완전"
+    },
+    {
+     "check": "partition_coverage",
+     "checker": "machine",
+     "passed": true,
+     "detail": "파티션 차원 커버리지 완전"
+    },
+    {
+     "check": "identity_recheck",
+     "checker": "machine",
+     "passed": true,
+     "detail": "Σ기여=380u vs 원시 스캔 Δ=380u (방어 계층)"
+    }
+   ],
+   "label_ceiling": {
+    "contribution": "데이터 확인 (identity_recheck 통과)",
+    "share_of_change": "데이터 확인 (부호 동질·δ_min 통과)",
+    "해석 문장": "데이터 시사 상한"
+   }
+  },
+  "plan_gap": {
+   "status": "suspended",
+   "missing_inputs": [
+    "plan_vintage 저장소 — 이 데이터셋에 등록된 계획 빈티지 없음"
+   ],
+   "pass_conditions": "계획 빈티지가 등록되면 실행 가능"
+  },
+  "vrm:online": {
+   "status": "result",
+   "output_type": "Attribution",
+   "estimand": "Δ온라인매출의 볼륨/단가 2요인 분해 (Laspeyres)",
+   "orders": {
+    "2026-06": 364800,
+    "2026-07": 419801
+   },
+   "price_manwon": {
+    "2026-06": 5.0,
+    "2026-07": 5.25
+   },
+   "volume_effect_u": 275.0,
+   "rate_effect_u": 105.0,
+   "identity_ok": true,
+   "label_ceiling": {
+    "효과 수치": "데이터 확인",
+    "해석": "데이터 시사 상한"
+   }
+  },
+  "events": {
+   "status": "result",
+   "output_type": "Description",
+   "estimand": "등록 이벤트별 타깃 슬라이스의 실측 Δ와 선언 규모의 대조",
+   "events": [
+    {
+     "id": "E1",
+     "name": "7월 첫구매 프로모션 개시",
+     "period": [
+      "2026-07-01",
+      "2026-07-31"
+     ],
+     "target": {
+      "channel": [
+       "온라인"
+      ],
+      "customer_type": [
+       "신규"
+      ]
+     },
+     "measured_slice_delta_u": 259,
+     "declared_magnitude_u": null,
+     "reference_scale_u": 196,
+     "reference_note": "마케팅팀 집계 — 코호트 데이터 미확보",
+     "reference_figures": [],
+     "evidence_grade": "정합 서술까지(규모 미특정) — 시사 상한"
+    },
+    {
+     "id": "E5",
+     "name": "뷰티 신규 브랜드 입점(7/1~)",
+     "period": [
+      "2026-07-01",
+      "2026-07-31"
+     ],
+     "target": {
+      "channel": [
+       "온라인",
+       "오프라인"
+      ],
+      "category": [
+       "뷰티"
+      ]
+     },
+     "measured_slice_delta_u": 236,
+     "declared_magnitude_u": null,
+     "reference_scale_u": 226,
+     "reference_note": "브랜드 단위는 원장 밖 집계",
+     "reference_figures": [],
+     "evidence_grade": "정합 서술까지(규모 미특정) — 시사 상한"
+    },
+    {
+     "id": "E6",
+     "name": "온라인 가격 개편(7/1) — 객단가 +5%",
+     "period": [
+      "2026-07-01",
+      "2026-07-31"
+     ],
+     "target": {
+      "channel": [
+       "온라인"
+      ]
+     },
+     "measured_slice_delta_u": 380,
+     "declared_magnitude_u": null,
+     "reference_scale_u": null,
+     "reference_note": "단가 개편 공지 — 매출 효과 미집계",
+     "reference_figures": [],
+     "evidence_grade": "정합 서술까지(규모 미특정) — 시사 상한"
+    }
+   ],
+   "overlap_flags": [
+    {
+     "pair": [
+      "E1",
+      "E5"
+     ],
+     "shared_slice": {
+      "channel": [
+       "온라인"
+      ],
+      "customer_type": [
+       "신규"
+      ],
+      "category": [
+       "뷰티"
+      ]
+     },
+     "shared_slice_totals_u": {
+      "2026-06": 94,
+      "2026-07": 177
+     },
+     "note": "타깃 슬라이스 교차 — 이 슬라이스의 Δ를 두 이벤트로 배분하는 것은 잔차 귀속(차단 대상)"
+    },
+    {
+     "pair": [
+      "E1",
+      "E6"
+     ],
+     "shared_slice": {
+      "channel": [
+       "온라인"
+      ],
+      "customer_type": [
+       "신규"
+      ]
+     },
+     "shared_slice_totals_u": {
+      "2026-06": 458,
+      "2026-07": 717
+     },
+     "note": "타깃 슬라이스 교차 — 이 슬라이스의 Δ를 두 이벤트로 배분하는 것은 잔차 귀속(차단 대상)"
+    },
+    {
+     "pair": [
+      "E5",
+      "E6"
+     ],
+     "shared_slice": {
+      "channel": [
+       "온라인"
+      ],
+      "category": [
+       "뷰티"
+      ]
+     },
+     "shared_slice_totals_u": {
+      "2026-06": 361,
+      "2026-07": 535
+     },
+     "note": "타깃 슬라이스 교차 — 이 슬라이스의 Δ를 두 이벤트로 배분하는 것은 잔차 귀속(차단 대상)"
+    }
+   ],
+   "label_ceiling": {
+    "실측 Δ": "데이터 확인",
+    "이벤트-변화 연결": "데이터 시사 상한",
+    "중첩 슬라이스의 원인 배분": "차단(잔차 귀속) 또는 컨설턴트 판단"
+   }
+  },
+  "band_diagnostic": {
+   "status": "result",
+   "output_type": "Description",
+   "estimand": "전사 월간 Δ의 통상 변동 대역 대비 위치 (무분포 진단)",
+   "history_deltas_u": [
+    -210,
+    347,
+    95,
+    132,
+    -222
+   ],
+   "band_u": [
+    -661,
+    851
+   ],
+   "total_delta_u": 414,
+   "within_band": true,
+   "delta_min_u": 20,
+   "delta_min_verdict": "유의미(|Δ|≥δ_min)",
+   "role": "검정이 아니라 설명 요구 트리거 — 게이트 아님 (ADR-0004)",
+   "caveat": "대역 폭은 계절 진폭 지배(원시 MoM Δ, n=5, 계절조정 부재) — 검정력 없음",
+   "label_ceiling": {
+    "대역 내/이탈": "데이터 확인(계산 자체)",
+    "'통상적/이례적' 해석": "데이터 시사 상한"
+   }
+  }
+ },
+ "execution_record": {
+  "calls": [
+   {
+    "operator": "contrib_decomp",
+    "dim": "channel",
+    "months": [
+     "2026-06",
+     "2026-07"
+    ],
+    "within": {},
+    "outcome": "result"
+   },
+   {
+    "operator": "contrib_decomp",
+    "dim": "category",
+    "months": [
+     "2026-06",
+     "2026-07"
+    ],
+    "within": {},
+    "outcome": "result"
+   },
+   {
+    "operator": "contrib_decomp",
+    "dim": "customer_type",
+    "months": [
+     "2026-06",
+     "2026-07"
+    ],
+    "within": {},
+    "outcome": "result"
+   },
+   {
+    "operator": "contrib_decomp",
+    "dim": "category",
+    "months": [
+     "2026-06",
+     "2026-07"
+    ],
+    "within": {
+     "channel": "온라인"
+    },
+    "outcome": "result"
+   },
+   {
+    "operator": "contrib_decomp",
+    "dim": "customer_type",
+    "months": [
+     "2026-06",
+     "2026-07"
+    ],
+    "within": {
+     "channel": "온라인"
+    },
+    "outcome": "result"
+   },
+   {
+    "operator": "vrm_lite",
+    "months": [
+     "2026-06",
+     "2026-07"
+    ],
+    "convention": "laspeyres",
+    "outcome": "result"
+   },
+   {
+    "operator": "event_overlap_scan",
+    "months": [
+     "2026-06",
+     "2026-07"
+    ],
+    "outcome": "result"
+   }
+  ],
+  "budget": {
+   "max_depth": 2,
+   "consumed_depth": 2,
+   "segments_examined": 15
+  }
+ },
+ "assumption_ledger": [
+  {
+   "assumption": "세그먼트 구성의 기간 간 안정성(개방 코호트)",
+   "status": "unchecked",
+   "evidence_ref": "not_computable_v0",
+   "note": "segment_churn_rate 진단 미구현 — v1 과제"
+  }
+ ],
+ "external_reference_check": null
+}

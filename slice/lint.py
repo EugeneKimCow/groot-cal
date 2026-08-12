@@ -29,9 +29,12 @@ def build_whitelist(bundle):
             # u 단위 → 억 표기
             nums.add(round(f * U, 2))
             nums.add(round(abs(f) * U, 2))
-            # 건수 → 만 단위
+            # 건수 → 만 단위. 원시 건수는 반올림 인용("약 42.0만 건")이 관행이므로
+            # 소수 1자리 반올림 변형까지 허용 — 억 단위 값은 이미 1자리라 불필요.
             if abs(f) >= 1000:
-                nums.add(round(f / 10000, 2))
+                q = f / 10000
+                nums.update({round(q, 2), round(abs(q), 2),
+                             round(q, 1), round(abs(q), 1)})
 
     def walk(x):
         if isinstance(x, dict):
@@ -62,6 +65,19 @@ def build_whitelist(bundle):
                       if isinstance(x, (int, float)) and not isinstance(x, bool)]
                 for a, b in combinations(pv, 2):
                     add(a - b)
+        # 이벤트 행 내부의 선언-실측-참조 대조 차("산술 대조" 등급의 산출물)와
+        # 중첩 플래그의 공유 슬라이스 기간 간 Δ — 계약이 장려하는 파생치.
+        for e in r.get("events", []):
+            trio = [e.get(k) for k in ("measured_slice_delta_u",
+                                       "declared_magnitude_u", "reference_scale_u")]
+            trio = [x for x in trio if isinstance(x, (int, float))]
+            for a, b in combinations(trio, 2):
+                add(a - b)
+        for o in r.get("overlap_flags", []):
+            tv = [x for x in o.get("shared_slice_totals_u", {}).values()
+                  if isinstance(x, (int, float))]
+            for a, b in combinations(tv, 2):
+                add(a - b)
     # 날짜·서수 등 문맥 토큰:
     nums |= {float(x) for x in range(0, 32)}  # 일·월·소절 번호
     nums |= {2026.0, 2025.0}
@@ -76,8 +92,11 @@ def lint(text, whitelist):
     sents = [s.strip() for s in re.split(r"(?<=[.!?다])\s+|\n", text) if s.strip()]
 
     for i, s in enumerate(sents):
-        # R01 인과 단정
-        if re.search(r"(때문이|기인하|의 결과다|이 원인이다)", s) and not re.search(HEDGE, s):
+        # R01 인과 단정 — 단, 인프라 부재의 과정 설명("계획 기준선이 없기 때문")은
+        # 지표 변화에 대한 인과 주장이 아니므로 제외. 명사 목록으로 좁게 한정한다.
+        if re.search(r"(때문이|기인하|의 결과다|이 원인이다)", s) and not re.search(HEDGE, s) \
+           and not re.search(r"(데이터|등록|기준선|빈티지|저장소|원장|집계|산출|필드)"
+                             r"[^.]{0,20}없기 때문", s):
             findings.append(("BLOCK", "R01", i, "인과 단정(헤지 부재)", s[:60]))
         # R02 인과어+확인동사
         if re.search(r"(영향|원인|효과|탓)[이가은는의]?\s*\S{0,8}(확인|입증|규명|검증)(됐|되었|됨|된)", s):
@@ -102,9 +121,9 @@ def lint(text, whitelist):
         if re.search(r"(감소분의|증가분의|하락분의)\s*\d", s):
             findings.append(("WARN", "R12", i, "분모 명시 검토 — 'X 중 Y%' 구문 권장", s[:60]))
 
-    # R06 수치 출처 (문서 전체)
-    for m in re.finditer(r"[+\-]?\d+(?:\.\d+)?", text):
-        tok = m.group()
+    # R06 수치 출처 (문서 전체) — 콤마 자릿수 표기("364,800")를 한 토큰으로 잡는다
+    for m in re.finditer(r"[+\-]?\d{1,3}(?:,\d{3})+(?:\.\d+)?|[+\-]?\d+(?:\.\d+)?", text):
+        tok = m.group().replace(",", "")
         span = text[max(0, m.start() - 8):m.end() + 8]
         if DATE_CTX.search(span) or re.search(r"\d{4}-\d{2}", span) or "/" in span:
             continue  # 날짜·서수 문맥 제외
