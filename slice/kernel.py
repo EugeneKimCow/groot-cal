@@ -103,6 +103,32 @@ def check_metric_version(sem, expected_version=1):
             "detail": f"version={sem['metric']['version']}"}
 
 
+def check_sign_policy(sem, ledger, months, within=None):
+    """결정론적 데이터 검증: 지표의 부호 규범(semantic.metric.properties.sign).
+
+    규범 미선언이면 검사 자체가 실패다 — 규범 없는 원장에서 음수 행은 침묵으로
+    합산되기 때문(빈티지 미지정과 동형). v0 규범 nonnegative: 환불·반품 행은
+    원장 정의역 밖이며 별도 계정으로 분리 적재해야 한다.
+    """
+    policy = sem["metric"]["properties"].get("sign")
+    if policy is None:
+        return {"check": "sign_policy", "checker": "machine", "passed": False,
+                "detail": "부호 규범 미선언 — semantic.metric.properties.sign 필요"}
+    if policy != "nonnegative":
+        return {"check": "sign_policy", "checker": "machine", "passed": True,
+                "detail": f"규범={policy} (음수 허용)"}
+    n, vol = 0, 0
+    for r in ledger:
+        if r["month"] in months and _within_match(r, within) and r["sales_u"] < 0:
+            n += 1
+            vol += r["sales_u"]
+    ok = n == 0
+    return {"check": "sign_policy", "checker": "machine", "passed": ok,
+            "negative_rows": n, "negative_sales_u": vol,
+            "detail": ("음수 행 없음" if ok else
+                       f"음수 행 {n}개 (합 {vol}u) — 환불·반품은 정의역 밖, 별도 계정 분리 필요")}
+
+
 def identity_recheck(independent_delta, contributions):
     """방어 계층(defense-in-depth) post-condition: Σ기여 == 원시 스캔 총계 Δ.
 
@@ -189,15 +215,20 @@ def contrib_decomp(sem, ledger, dim, month_a, month_b, record, within=None):
         return {"status": "suspended", "missing_inputs": [f"ledger {m}" for m in missing],
                 "pass_conditions": f"{missing} 기간의 원장이 적재되면 실행 가능"}
 
-    # deterministic data checks — estimand 범위로 좁힌 축 커버리지 + 파티션 전 차원 커버리지
+    # deterministic data checks — estimand 범위로 좁힌 축 커버리지 + 파티션 전 차원
+    # 커버리지 + 부호 규범
     cov = check_mece_runtime_coverage(sem, ledger, dim, {month_a, month_b}, within)
     part = check_partition_coverage(sem, ledger, {month_a, month_b}, within)
-    checks += [cov, part]
-    if not (cov["passed"] and part["passed"]):
+    sign = check_sign_policy(sem, ledger, {month_a, month_b}, within)
+    checks += [cov, part, sign]
+    if not (cov["passed"] and part["passed"] and sign["passed"]):
         call["outcome"] = "out_of_domain"
+        alts = ["unknown 버킷 편입 후 재실행"] if not (cov["passed"] and part["passed"]) else []
+        if not sign["passed"]:
+            alts.append("환불·반품 행을 별도 계정으로 분리 적재 후 재실행")
         return {"status": "out_of_domain",
-                "violated": [c for c in (cov, part) if not c["passed"]],
-                "alternatives": ["unknown 버킷 편입 후 재실행"]}
+                "violated": [c for c in (cov, part, sign) if not c["passed"]],
+                "alternatives": alts}
 
     def sel(r):
         return _within_match(r, within)
@@ -285,6 +316,11 @@ def plan_gap(sem, ledger, month, record, vintage_id=None):
         return {"status": "out_of_domain",
                 "violated": [{"check": "plan_vintage_exists", "passed": False,
                               "detail": f"빈티지 {vintage_id} × {month} 없음"}], "alternatives": []}
+    sign = check_sign_policy(sem, ledger, {month})
+    if not sign["passed"]:
+        call["outcome"] = "out_of_domain"
+        return {"status": "out_of_domain", "violated": [sign],
+                "alternatives": ["환불·반품 행을 별도 계정으로 분리 적재 후 재실행"]}
     actual = defaultdict(int)
     for r in ledger:
         if r["month"] == month:
@@ -314,6 +350,68 @@ def plan_gap(sem, ledger, month, record, vintage_id=None):
             "rows": rows, "plan_basis_note": v["basis_note"],
             "label_ceiling": {"gap 수치": "조건부 확인 — '빈티지 " + vintage_id + " 계획 대비'라는 조건 명시 의무",
                               "계획 결함 해석": "데이터 시사 상한"}}
+
+
+def _slice_measurement_gate(sem, ledger, months, target):
+    """타깃 슬라이스 실측의 결정론적 게이트 — 소속 불명 행과 부호 위반 행.
+
+    행 분류: 타깃 차원(또는 그 applies_to 차원)의 값이 NULL/미선언이라 슬라이스
+    소속을 판정할 수 없으면 '불명', 선언값이되 타깃 밖이면 '제외', 전부 안이면
+    '소속'. 불명 행이 하나라도 있으면 실측 Δ는 미지의 편향을 갖는다 — 미선언
+    값('마켓플레이스')은 타깃 슬라이스의 오분류일 수 있고, NULL은 소속일 수
+    있다. 소속이 확정된 음수 행(부호 규범 위반)도 실측을 오염시킨다.
+
+    타깃에 없는 차원의 오염은 이 슬라이스의 소속 판정과 무관하므로 게이트하지
+    않는다 (예: category만 제약하는 이벤트는 channel 오염에 영향받지 않음).
+    """
+    declared = {}
+
+    def decl(dim):
+        if dim not in declared:
+            declared[dim] = set(sem["dimensions"][dim]["values"])
+        return declared[dim]
+
+    sign_req = sem["metric"]["properties"].get("sign") == "nonnegative"
+    amb_n = amb_u = neg_n = neg_u = 0
+    for r in ledger:
+        if r["month"] not in months:
+            continue
+        ambiguous = excluded = False
+        for dim, vals in target.items():
+            for k, kv in (sem["dimensions"][dim].get("applies_to") or {}).items():
+                rv = r.get(k)
+                if rv == kv:
+                    continue
+                if rv is not None and rv in decl(k):
+                    excluded = True      # 적용 범위 밖 확정 — 슬라이스 밖
+                else:
+                    ambiguous = True     # 적용 여부 자체가 불명
+            if excluded:
+                break
+            v = r.get(dim)
+            if v is None or v not in decl(dim):
+                ambiguous = True
+            elif v not in vals:
+                excluded = True
+                break
+        if excluded:
+            continue
+        if ambiguous:
+            amb_n += 1
+            amb_u += r["sales_u"]
+        elif sign_req and r["sales_u"] < 0:
+            neg_n += 1
+            neg_u += r["sales_u"]
+    ok = amb_n == 0 and neg_n == 0
+    problems = []
+    if amb_n:
+        problems.append(f"소속 불명 행 {amb_n}개 (합 {amb_u}u — NULL/미선언 값)")
+    if neg_n:
+        problems.append(f"슬라이스 내 음수 행 {neg_n}개 (합 {neg_u}u — 부호 규범 위반)")
+    return {"check": "slice_measurement", "checker": "machine", "passed": ok,
+            "ambiguous_rows": amb_n, "ambiguous_sales_u": amb_u,
+            "negative_rows": neg_n, "negative_sales_u": neg_u,
+            "detail": "실측 가능(소속 오염 없음)" if ok else "; ".join(problems)}
 
 
 # ── 연산자: event_overlap_scan (이벤트 레지스트리 v0 대조) ───────────────
@@ -351,20 +449,33 @@ def event_overlap_scan(sem, ledger, month_a, month_b, record, events_path=None):
                 return False
         return True
 
+    # 측정 게이트: 실측치(원장 파생)는 슬라이스 소속 오염 시 보류하되, 선언치·
+    # 참조치(외부 신고 — 원장 비의존)는 보존한다. 측정과 선언은 재질이 다르다.
+    months = {month_a, month_b}
     rows = []
     for e in events:
         if e["affects"] != month_b:
             continue
-        d = slice_delta(e["target"])
+        gate = _slice_measurement_gate(sem, ledger, months, e["target"])
         specified = e["declared_magnitude_u"] is not None
+        if gate["passed"]:
+            d = slice_delta(e["target"])
+            mstat = "result"
+            grade = ("산술 대조 가능(규모 특정)" if specified
+                     else "정합 서술까지(규모 미특정) — 시사 상한")
+        else:
+            d = None
+            mstat = "suspended"
+            grade = ("선언치만(외부 신고) — 실측 보류(원장 오염)" if specified
+                     else "실측 보류(원장 오염) — 정합 서술 성립 안 함")
         rows.append({"id": e["id"], "name": e["name"], "period": e["period"],
                      "target": e["target"], "measured_slice_delta_u": d,
+                     "measurement_status": mstat, "measurement_gate": gate,
                      "declared_magnitude_u": e["declared_magnitude_u"],
                      "reference_scale_u": e.get("reference_scale_u"),
                      "reference_note": e.get("reference_note"),
                      "reference_figures": e.get("reference_figures", []),
-                     "evidence_grade": "산술 대조 가능(규모 특정)" if specified
-                                       else "정합 서술까지(규모 미특정) — 시사 상한"})
+                     "evidence_grade": grade})
     overlaps = []
     for i in range(len(rows)):
         for j in range(i + 1, len(rows)):
@@ -378,18 +489,28 @@ def event_overlap_scan(sem, ledger, month_a, month_b, record, events_path=None):
             for dm, vals in ej["target"].items():
                 shared[dm] = (sorted(set(shared[dm]) & set(vals)) if dm in shared
                               else list(vals))
-            tots = slice_tots(shared)
-            if not tots[month_a] and not tots[month_b]:
-                continue
+            gate = _slice_measurement_gate(sem, ledger, months, shared)
+            if gate["passed"]:
+                tots = slice_tots(shared)
+                if not tots[month_a] and not tots[month_b]:
+                    continue
+            else:
+                tots = None   # 실측 보류 — 교차 자체는 설계 사실이라 플래그 유지
             overlaps.append({"pair": [rows[i]["id"], rows[j]["id"]],
                              "shared_slice": shared,
                              "shared_slice_totals_u": tots,
+                             "measurement_status": "result" if gate["passed"] else "suspended",
+                             "measurement_gate": gate,
                              "note": "타깃 슬라이스 교차 — 이 슬라이스의 Δ를 두 이벤트로 배분하는 것은 잔차 귀속(차단 대상)"})
     call["outcome"] = "result"
     return {"status": "result", "output_type": "Description",
             "estimand": "등록 이벤트별 타깃 슬라이스의 실측 Δ와 선언 규모의 대조",
             "events": rows, "overlap_flags": overlaps,
-            "label_ceiling": {"실측 Δ": "데이터 확인", "이벤트-변화 연결": "데이터 시사 상한",
+            "ledger_checks": [check_partition_coverage(sem, ledger, months),
+                              check_sign_policy(sem, ledger, months)],
+            "label_ceiling": {"실측 Δ": "데이터 확인 (measurement_status=result일 때만)",
+                              "보류된 실측": "인용 불가 — 선언치·참조치만 외부 신고로 인용",
+                              "이벤트-변화 연결": "데이터 시사 상한",
                               "중첩 슬라이스의 원인 배분": "차단(잔차 귀속) 또는 컨설턴트 판단"}}
 
 
@@ -398,6 +519,11 @@ def vrm_lite(sem, ledger, month_a, month_b, record):
     """온라인 매출 = 건수 × 객단가의 2요인 분해 (배분 관례: Laspeyres — 파라미터로 선언)."""
     call = {"operator": "vrm_lite", "months": [month_a, month_b], "convention": "laspeyres"}
     record["calls"].append(call)
+    sign = check_sign_policy(sem, ledger, {month_a, month_b}, within={"channel": "온라인"})
+    if not sign["passed"]:
+        call["outcome"] = "out_of_domain"
+        return {"status": "out_of_domain", "violated": [sign],
+                "alternatives": ["환불·반품 행을 별도 계정으로 분리 적재 후 재실행"]}
     q, s = defaultdict(int), defaultdict(int)
     null_rows = 0
     for r in ledger:

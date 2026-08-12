@@ -28,8 +28,8 @@
 
 ## fall_dirty
 
-- **A 산술/게이트**: 3축 분해 게이트 발동 {'channel': ['mece_runtime_coverage', 'partition_coverage'], 'category': ['partition_coverage'], 'customer_type': ['partition_coverage']}
-- **F 게이트 발화**: 전 축 차단 {'channel': ['mece_runtime_coverage', 'partition_coverage'], 'category': ['partition_coverage'], 'customer_type': ['partition_coverage']}; region 드릴 → out_of_domain(mece_runtime_coverage); vrm → suspended(['online_orders (NULL 11행)']); 환불(음수) 행 73개는 **무게이트 통과 — 알려진 공백**
+- **A 산술/게이트**: 3축 분해 게이트 발동 {'channel': ['mece_runtime_coverage', 'partition_coverage', 'sign_policy'], 'category': ['partition_coverage', 'sign_policy'], 'customer_type': ['partition_coverage', 'sign_policy']}
+- **F 게이트 발화**: 전 축 차단 {'channel': ['mece_runtime_coverage', 'partition_coverage', 'sign_policy'], 'category': ['partition_coverage', 'sign_policy'], 'customer_type': ['partition_coverage', 'sign_policy']}; region 드릴 → out_of_domain(mece_runtime_coverage, sign_policy); vrm → out_of_domain(['sign_policy']); 부호 규범 → 발화(음수 행 21개 (합 -21u) — 환불·반품은 정의역 밖, 별도 계정 분리 필요); 스캔 실측 보류 5/5건(선언치는 보존, 중첩 실측 보류=True)
 
 ## flat
 

@@ -5,19 +5,22 @@
    "status": "out_of_domain",
    "violated": [
     "mece_runtime_coverage",
-    "partition_coverage"
+    "partition_coverage",
+    "sign_policy"
    ]
   },
   "category": {
    "status": "out_of_domain",
    "violated": [
-    "partition_coverage"
+    "partition_coverage",
+    "sign_policy"
    ]
   },
   "customer_type": {
    "status": "out_of_domain",
    "violated": [
-    "partition_coverage"
+    "partition_coverage",
+    "sign_policy"
    ]
   }
  },
@@ -25,24 +28,38 @@
   "axes_blocked": {
    "channel": [
     "mece_runtime_coverage",
-    "partition_coverage"
+    "partition_coverage",
+    "sign_policy"
    ],
    "category": [
-    "partition_coverage"
+    "partition_coverage",
+    "sign_policy"
    ],
    "customer_type": [
-    "partition_coverage"
+    "partition_coverage",
+    "sign_policy"
    ]
   },
   "region_drill_status": "out_of_domain",
   "region_violated": [
-   "mece_runtime_coverage"
+   "mece_runtime_coverage",
+   "sign_policy"
   ],
-  "vrm_status": "suspended",
-  "vrm_missing": [
-   "online_orders (NULL 11행)"
+  "vrm_status": "out_of_domain",
+  "vrm_reason": [
+   "sign_policy"
   ],
-  "negative_rows": 73,
-  "negative_rows_gated": false
+  "negative_rows_window": 21,
+  "sign_gated": true,
+  "sign_detail": "음수 행 21개 (합 -21u) — 환불·반품은 정의역 밖, 별도 계정 분리 필요",
+  "scan_suspended": [
+   "E1",
+   "E2",
+   "E3",
+   "E4",
+   "E5"
+  ],
+  "scan_total": 5,
+  "scan_overlap_suspended": true
  }
 }

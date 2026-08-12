@@ -27,7 +27,7 @@ import statistics
 from pathlib import Path
 
 from kernel import (load_semantic, load_ledger, contrib_decomp, event_overlap_scan,
-                    vrm_lite)
+                    vrm_lite, check_sign_policy)
 
 HERE = Path(__file__).parent
 SIM = HERE / "sim"
@@ -101,20 +101,30 @@ def score_scenario(name):
         axes[dim] = row
     S["A_arithmetic"] = axes
 
-    # F. 게이트 발화 (dirty 시나리오): 전 축 + region 드릴 + vrm + 부호 규범
+    # F. 게이트 발화 (dirty 시나리오): 전 축 + region 드릴 + vrm + 부호 규범 + 스캔 측정
     if truth.get("dirty"):
         rg = contrib_decomp(sem, ledger, "region", Q_A, Q_B, record,
                             within={"channel": "오프라인"})
         v = vrm_lite(sem, ledger, Q_A, Q_B, record)
-        neg_rows = sum(1 for r in ledger if r["sales_u"] < 0)
+        sign = check_sign_policy(sem, ledger, {Q_A, Q_B})
+        ev = event_overlap_scan(sem, ledger, Q_A, Q_B, record,
+                                events_path=d / "events.json")
         S["F_gates"] = {"axes_blocked": {k: a.get("violated") for k, a in axes.items()
                                          if a["status"] != "result"},
                         "region_drill_status": rg["status"],
                         "region_violated": [c["check"] for c in rg.get("violated", [])],
                         "vrm_status": v["status"],
-                        "vrm_missing": v.get("missing_inputs"),
-                        "negative_rows": neg_rows,
-                        "negative_rows_gated": False}   # 부호 규범 미검사 — 알려진 공백
+                        "vrm_reason": (v.get("missing_inputs")
+                                       or [c["check"] for c in v.get("violated", [])]),
+                        "negative_rows_window": sign.get("negative_rows"),
+                        "sign_gated": not sign["passed"],
+                        "sign_detail": sign["detail"],
+                        "scan_suspended": [r["id"] for r in ev["events"]
+                                           if r["measurement_status"] == "suspended"],
+                        "scan_total": len(ev["events"]),
+                        "scan_overlap_suspended": all(
+                            o["measurement_status"] == "suspended"
+                            for o in ev["overlap_flags"]) if ev["overlap_flags"] else None}
         return S  # dirty는 게이트 채점까지만
 
     # B. 이벤트 귀속 — 실측 Δ vs 참 효과, 선언 오차(선언−참)
@@ -282,8 +292,11 @@ def main():
             f = S["F_gates"]
             lines.append(f"- **F 게이트 발화**: 전 축 차단 {f['axes_blocked']}; region 드릴 → "
                          f"{f['region_drill_status']}({', '.join(f['region_violated'])}); "
-                         f"vrm → {f['vrm_status']}({f['vrm_missing']}); "
-                         f"환불(음수) 행 {f['negative_rows']}개는 **무게이트 통과 — 알려진 공백**\n")
+                         f"vrm → {f['vrm_status']}({f['vrm_reason']}); "
+                         f"부호 규범 → {'발화' if f['sign_gated'] else '통과'}"
+                         f"({f['sign_detail']}); "
+                         f"스캔 실측 보류 {len(f['scan_suspended'])}/{f['scan_total']}건"
+                         f"(선언치는 보존, 중첩 실측 보류={f['scan_overlap_suspended']})\n")
             continue
         for a in S.get("B_attribution", []):
             decl = ""

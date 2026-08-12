@@ -93,6 +93,14 @@
      "detail": "파티션 차원 커버리지 완전"
     },
     {
+     "check": "sign_policy",
+     "checker": "machine",
+     "passed": true,
+     "negative_rows": 0,
+     "negative_sales_u": 0,
+     "detail": "음수 행 없음"
+    },
+    {
      "check": "identity_recheck",
      "checker": "machine",
      "passed": true,
@@ -187,6 +195,14 @@
      "detail": "파티션 차원 커버리지 완전"
     },
     {
+     "check": "sign_policy",
+     "checker": "machine",
+     "passed": true,
+     "negative_rows": 0,
+     "negative_sales_u": 0,
+     "detail": "음수 행 없음"
+    },
+    {
      "check": "identity_recheck",
      "checker": "machine",
      "passed": true,
@@ -265,6 +281,14 @@
      "checker": "machine",
      "passed": true,
      "detail": "파티션 차원 커버리지 완전"
+    },
+    {
+     "check": "sign_policy",
+     "checker": "machine",
+     "passed": true,
+     "negative_rows": 0,
+     "negative_sales_u": 0,
+     "detail": "음수 행 없음"
     },
     {
      "check": "identity_recheck",
@@ -354,6 +378,14 @@
      "checker": "machine",
      "passed": true,
      "detail": "파티션 차원 커버리지 완전"
+    },
+    {
+     "check": "sign_policy",
+     "checker": "machine",
+     "passed": true,
+     "negative_rows": 0,
+     "negative_sales_u": 0,
+     "detail": "음수 행 없음"
     },
     {
      "check": "identity_recheck",
@@ -454,6 +486,14 @@
      "detail": "파티션 차원 커버리지 완전"
     },
     {
+     "check": "sign_policy",
+     "checker": "machine",
+     "passed": true,
+     "negative_rows": 0,
+     "negative_sales_u": 0,
+     "detail": "음수 행 없음"
+    },
+    {
      "check": "identity_recheck",
      "checker": "machine",
      "passed": true,
@@ -552,6 +592,14 @@
      "detail": "파티션 차원 커버리지 완전"
     },
     {
+     "check": "sign_policy",
+     "checker": "machine",
+     "passed": true,
+     "negative_rows": 0,
+     "negative_sales_u": 0,
+     "detail": "음수 행 없음"
+    },
+    {
      "check": "identity_recheck",
      "checker": "machine",
      "passed": true,
@@ -646,6 +694,14 @@
      "detail": "파티션 차원 커버리지 완전"
     },
     {
+     "check": "sign_policy",
+     "checker": "machine",
+     "passed": true,
+     "negative_rows": 0,
+     "negative_sales_u": 0,
+     "detail": "음수 행 없음"
+    },
+    {
      "check": "identity_recheck",
      "checker": "machine",
      "passed": true,
@@ -736,6 +792,17 @@
       ]
      },
      "measured_slice_delta_u": -240,
+     "measurement_status": "result",
+     "measurement_gate": {
+      "check": "slice_measurement",
+      "checker": "machine",
+      "passed": true,
+      "ambiguous_rows": 0,
+      "ambiguous_sales_u": 0,
+      "negative_rows": 0,
+      "negative_sales_u": 0,
+      "detail": "실측 가능(소속 오염 없음)"
+     },
      "declared_magnitude_u": null,
      "reference_scale_u": 300,
      "reference_note": "6월 온라인 신규 62.0억 중 약 30억이 쿠폰 첫구매 귀속 (마케팅팀 집계)",
@@ -761,6 +828,17 @@
       ]
      },
      "measured_slice_delta_u": -181,
+     "measurement_status": "result",
+     "measurement_gate": {
+      "check": "slice_measurement",
+      "checker": "machine",
+      "passed": true,
+      "ambiguous_rows": 0,
+      "ambiguous_sales_u": 0,
+      "negative_rows": 0,
+      "negative_sales_u": 0,
+      "detail": "실측 가능(소속 오염 없음)"
+     },
      "declared_magnitude_u": null,
      "reference_scale_u": null,
      "reference_note": "자사 이탈 규모 미특정 — 행사 전후 트래픽 데이터 미보유",
@@ -780,6 +858,17 @@
       ]
      },
      "measured_slice_delta_u": -50,
+     "measurement_status": "result",
+     "measurement_gate": {
+      "check": "slice_measurement",
+      "checker": "machine",
+      "passed": true,
+      "ambiguous_rows": 0,
+      "ambiguous_sales_u": 0,
+      "negative_rows": 0,
+      "negative_sales_u": 0,
+      "detail": "실측 가능(소속 오염 없음)"
+     },
      "declared_magnitude_u": -52,
      "reference_scale_u": null,
      "reference_note": "폐점 점포 -5.2억, 잔여 호남A점 +0.2억 (점포 grain은 원장 미보유 — 외부 신고치)",
@@ -808,6 +897,17 @@
       ]
      },
      "measured_slice_delta_u": -60,
+     "measurement_status": "result",
+     "measurement_gate": {
+      "check": "slice_measurement",
+      "checker": "machine",
+      "passed": true,
+      "ambiguous_rows": 0,
+      "ambiguous_sales_u": 0,
+      "negative_rows": 0,
+      "negative_sales_u": 0,
+      "detail": "실측 가능(소속 오염 없음)"
+     },
      "declared_magnitude_u": -60,
      "reference_scale_u": null,
      "reference_note": "이월 규모 약 6.0억 (영업팀 확인). 소멸 아닌 이월 — 8월 환입 여부 미확정",
@@ -833,6 +933,17 @@
       ]
      },
      "measured_slice_delta_u": 80,
+     "measurement_status": "result",
+     "measurement_gate": {
+      "check": "slice_measurement",
+      "checker": "machine",
+      "passed": true,
+      "ambiguous_rows": 0,
+      "ambiguous_sales_u": 0,
+      "negative_rows": 0,
+      "negative_sales_u": 0,
+      "detail": "실측 가능(소속 오염 없음)"
+     },
      "declared_magnitude_u": null,
      "reference_scale_u": 95,
      "reference_note": "신규 브랜드 +9.5억, 기존 라인 -1.5억 (브랜드 grain은 원장 미보유)",
@@ -871,6 +982,17 @@
       "2026-06": 269,
       "2026-07": 141
      },
+     "measurement_status": "result",
+     "measurement_gate": {
+      "check": "slice_measurement",
+      "checker": "machine",
+      "passed": true,
+      "ambiguous_rows": 0,
+      "ambiguous_sales_u": 0,
+      "negative_rows": 0,
+      "negative_sales_u": 0,
+      "detail": "실측 가능(소속 오염 없음)"
+     },
      "note": "타깃 슬라이스 교차 — 이 슬라이스의 Δ를 두 이벤트로 배분하는 것은 잔차 귀속(차단 대상)"
     },
     {
@@ -892,6 +1014,17 @@
      "shared_slice_totals_u": {
       "2026-06": 192,
       "2026-07": 144
+     },
+     "measurement_status": "result",
+     "measurement_gate": {
+      "check": "slice_measurement",
+      "checker": "machine",
+      "passed": true,
+      "ambiguous_rows": 0,
+      "ambiguous_sales_u": 0,
+      "negative_rows": 0,
+      "negative_sales_u": 0,
+      "detail": "실측 가능(소속 오염 없음)"
      },
      "note": "타깃 슬라이스 교차 — 이 슬라이스의 Δ를 두 이벤트로 배분하는 것은 잔차 귀속(차단 대상)"
     },
@@ -915,11 +1048,39 @@
       "2026-06": 30,
       "2026-07": 31
      },
+     "measurement_status": "result",
+     "measurement_gate": {
+      "check": "slice_measurement",
+      "checker": "machine",
+      "passed": true,
+      "ambiguous_rows": 0,
+      "ambiguous_sales_u": 0,
+      "negative_rows": 0,
+      "negative_sales_u": 0,
+      "detail": "실측 가능(소속 오염 없음)"
+     },
      "note": "타깃 슬라이스 교차 — 이 슬라이스의 Δ를 두 이벤트로 배분하는 것은 잔차 귀속(차단 대상)"
     }
    ],
+   "ledger_checks": [
+    {
+     "check": "partition_coverage",
+     "checker": "machine",
+     "passed": true,
+     "detail": "파티션 차원 커버리지 완전"
+    },
+    {
+     "check": "sign_policy",
+     "checker": "machine",
+     "passed": true,
+     "negative_rows": 0,
+     "negative_sales_u": 0,
+     "detail": "음수 행 없음"
+    }
+   ],
    "label_ceiling": {
-    "실측 Δ": "데이터 확인",
+    "실측 Δ": "데이터 확인 (measurement_status=result일 때만)",
+    "보류된 실측": "인용 불가 — 선언치·참조치만 외부 신고로 인용",
     "이벤트-변화 연결": "데이터 시사 상한",
     "중첩 슬라이스의 원인 배분": "차단(잔차 귀속) 또는 컨설턴트 판단"
    }
