@@ -44,7 +44,25 @@ def build_whitelist(bundle):
             add(x)
 
     walk(bundle)
-    # 항등식 파생 허용치: 번들 내 u값들의 합·차는 이미 대부분 번들에 존재. 날짜·서수 등 문맥 토큰:
+    # 항등식 파생치 1단계 (계약 R06 "Bundle 수치 + 등록 항등식 파생치"):
+    # 같은 결과 블록 안의 형제 수치만 — ① 세그먼트 delta_u 2개의 합(부분합 인용,
+    # 예: E1∩E2 타깃 가전+생활 -12.8억), ② 기간 딕셔너리(orders 등) 두 값의 차
+    # (예: 주문 -4.4만 건). 블록 경계를 넘는 합산은 계약 §2가 금지하므로 넣지 않는다.
+    from itertools import combinations
+    for r in bundle.get("results", {}).values():
+        if not isinstance(r, dict):
+            continue
+        deltas = [s["delta_u"] for s in r.get("segments", [])
+                  if isinstance(s, dict) and isinstance(s.get("delta_u"), (int, float))]
+        for a, b in combinations(deltas, 2):
+            add(a + b)
+        for v in r.values():
+            if isinstance(v, dict):
+                pv = [x for x in v.values()
+                      if isinstance(x, (int, float)) and not isinstance(x, bool)]
+                for a, b in combinations(pv, 2):
+                    add(a - b)
+    # 날짜·서수 등 문맥 토큰:
     nums |= {float(x) for x in range(0, 32)}  # 일·월·소절 번호
     nums |= {2026.0, 2025.0}
     return nums
@@ -74,10 +92,8 @@ def lint(text, whitelist):
         # R05 반사실 신수치
         if re.search(r"(없었다면|없었더라면|아니었다면)", s) and re.search(r"\d", s):
             findings.append(("WARN", "R05", i, "반사실 절 내 수치", s[:60]))
-        # R09 수치 없는 기각
-        if re.search(r"(아님|해당 없음|설명력 약|아니다)[.,)\s]", s + " ") \
-           and re.search(r"^[-*•]|—", s) and not re.search(r"\d", s):
-            findings.append(("BLOCK", "R09", i, "수치 없는 기각", s[:60]))
+# R09는 계약 §10이 "불릿" 단위로 규정 — 문장 분할이 반증 수치를 다음 문장으로
+# 떼어내면 오탐이므로 행 단위로 검사한다 (lint() 본문 하단).
         # R11 미래 단정
         if re.search(r"(회복된다|돌아온다|환입된다)[.\s]", s) \
            and not re.search(r"(되면|경우|전제|시\b|예정)", s):
@@ -95,6 +111,15 @@ def lint(text, whitelist):
         val = round(abs(float(tok)), 2)
         if val not in whitelist:
             findings.append(("BLOCK", "R06", -1, "번들 미등재 수치", f"{tok} (문맥: …{span}…)"))
+
+    # R09 수치 없는 기각 (불릿=행 단위 — 계약 §10)
+    for ln in text.splitlines():
+        ls = ln.strip()
+        if not ls:
+            continue
+        if re.search(r"(아님|해당 없음|설명력 약|아니다)[.,)\s]", ls + " ") \
+           and re.search(r"^[-*•]|—", ls) and not re.search(r"\d", ls):
+            findings.append(("BLOCK", "R09", -1, "수치 없는 기각", ls[:60]))
 
     # R10 분리불가 → 해소경로 (문서 수준)
     if re.search(r"(분리(가|는)?\s*(안|불가|어렵)|특정할\s*(수 없|근거)|배분\S{0,10}(미확정|어렵))", text):
