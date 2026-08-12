@@ -36,7 +36,7 @@
 ## 1. 지도 — 13개 영역
 
 ```mermaid
-flowchart LR
+flowchart TD
   subgraph LOW["서쪽 저지대 — 결정론 (v1의 본토)"]
     MA["MA 측정론·집계 타입론<br/>Stevens, Mosteller-Tukey, Lord"]
     IA["IA 산술 항등식·분해 대수<br/>Kitagawa, 지수론, PVM, Shapley/LMDI"]
