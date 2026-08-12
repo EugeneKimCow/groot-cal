@@ -8,8 +8,9 @@ truth.json은 정답지이므로 번들에 싣지 않는다.
 
 계획 대비: 시뮬 데이터셋에는 계획 빈티지 저장소가 없어 suspended로 정직 기록.
 
-사용: python3 run_sim.py [scenario ...]   (기본: rise flat fall_dirty)
-출력: out/loop8x/<scenario>/bundle.json
+사용: python3 run_sim.py [--outbase DIR] [scenario ...]   (기본: rise flat fall_dirty)
+출력: <outbase>/<scenario>/bundle.json   (outbase 기본값: out/loop8x)
+주의: 과거 측정 회차의 번들은 동결 산출물이다 — 재생성 시 --outbase로 새 디렉토리를 쓸 것.
 """
 import json
 import statistics
@@ -30,7 +31,7 @@ def usual_band(deltas):
     return med - BAND_K * mad, med + BAND_K * mad
 
 
-def build(scenario):
+def build(scenario, outbase=None):
     sem = load_semantic()
     d = HERE / "sim" / scenario
     ledger = load_ledger(d / "ledger.csv")
@@ -104,7 +105,7 @@ def build(scenario):
               ],
               "external_reference_check": None}
 
-    outdir = HERE / "out" / "loop8x" / scenario
+    outdir = (Path(outbase) if outbase else HERE / "out" / "loop8x") / scenario
     outdir.mkdir(parents=True, exist_ok=True)
     (outdir / "bundle.json").write_text(json.dumps(bundle, ensure_ascii=False, indent=1))
 
@@ -117,5 +118,10 @@ def build(scenario):
 
 
 if __name__ == "__main__":
-    for sc in (sys.argv[1:] or ["rise", "flat", "fall_dirty"]):
-        build(sc)
+    args = sys.argv[1:]
+    outbase = None
+    if args and args[0] == "--outbase":
+        outbase = args[1]
+        args = args[2:]
+    for sc in (args or ["rise", "flat", "fall_dirty"]):
+        build(sc, outbase)

@@ -74,7 +74,7 @@ def build_whitelist(bundle):
             for a, b in combinations(trio, 2):
                 add(a - b)
         for o in r.get("overlap_flags", []):
-            tv = [x for x in o.get("shared_slice_totals_u", {}).values()
+            tv = [x for x in (o.get("shared_slice_totals_u") or {}).values()
                   if isinstance(x, (int, float))]
             for a, b in combinations(tv, 2):
                 add(a - b)
@@ -87,7 +87,17 @@ def build_whitelist(bundle):
 DATE_CTX = re.compile(r"(\d+)\s*(년|월|일|주차|장|절|번|개|건|회|명|호|페이지|p|%p)")
 
 
-def lint(text, whitelist):
+REFUSAL = (r"거부|차단|불가|보류|중단|기각|제공하지 못|(산출|제시|제공)할 수\s*없"
+           r"|산출되지\s*않|판정.{0,6}(불가|유보)|오염|품질")
+SOURCE_ATTR = r"신고|집계|확인|외부|영업|마케팅|팀"
+
+
+def _headline_zone(text):
+    parts = re.split(r"^## ", text, flags=re.M)
+    return parts[1] if len(parts) >= 2 else text[:800]
+
+
+def lint(text, whitelist, bundle=None):
     findings = []
     sents = [s.strip() for s in re.split(r"(?<=[.!?다])\s+|\n", text) if s.strip()]
 
@@ -151,6 +161,35 @@ def lint(text, whitelist):
             if not re.search(r"\d|프로모션|쿠폰|폐점|발주|행사|페스타|브랜드|라이브", s):
                 findings.append(("WARN", "R08", i, "근거 토큰 없는 시사 문장", s[:60]))
 
+    # ── v0.2 조항 (번들 문맥 필요 — bundle 미전달 시 생략) ────────────────
+    if bundle is not None:
+        results = bundle.get("results", {})
+        # R13 게이트 거부의 요약 의무 (계약 §12-1): 핵심 연산(분해 축) 거부 회차에는
+        # 요약(첫 섹션)이 거부 사실을 명시해야 한다.
+        refused = [k for k, v in results.items()
+                   if k.startswith("contrib:") and isinstance(v, dict)
+                   and v.get("status") != "result"]
+        if refused and not re.search(REFUSAL, _headline_zone(text)):
+            findings.append(("BLOCK", "R13", -1,
+                             "게이트 거부 회차의 요약에 거부 명시 부재",
+                             f"거부된 연산: {', '.join(refused)}"))
+        # R14 보류 회차의 선언치 출처 부기 (계약 §12-2): 실측이 보류된 이벤트의
+        # 선언치·참조치를 인용하는 문장에는 외부 신고 출처가 동반돼야 한다.
+        ev = results.get("events", {})
+        for e in (ev.get("events", []) if isinstance(ev, dict) else []):
+            if e.get("measurement_status") != "suspended":
+                continue
+            for key in ("declared_magnitude_u", "reference_scale_u"):
+                v = e.get(key)
+                if not isinstance(v, (int, float)):
+                    continue
+                # 숫자 경계 강제 — "45.5억" 속의 "5.5" 같은 부분 문자열 오폭 방지
+                pat = re.compile(r"(?<![\d.])" + re.escape(f"{abs(v) * U:.1f}") + r"(?![\d])")
+                for i, s in enumerate(sents):
+                    if pat.search(s) and not re.search(SOURCE_ATTR, s):
+                        findings.append(("WARN", "R14", i,
+                                         f"{e['id']} 선언치 인용에 출처 부기 부재", s[:60]))
+
     return findings
 
 
@@ -158,7 +197,7 @@ def main():
     path = Path(sys.argv[1])
     text = path.read_text()
     bundle = json.loads((HERE / "out" / "bundle.json").read_text())
-    findings = lint(text, build_whitelist(bundle))
+    findings = lint(text, build_whitelist(bundle), bundle)
     blocks = [f for f in findings if f[0] == "BLOCK"]
     for sev, rule, i, why, ctx in findings:
         print(f"[{sev}] {rule} (문장 {i}): {why} — {ctx}")

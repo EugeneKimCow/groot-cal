@@ -1,0 +1,502 @@
+{
+ "spec": {
+  "status": "spec",
+  "question": "7월 매출이 왜 변했나?",
+  "signature": {
+   "external_criterion": "present",
+   "question_type": "change"
+  },
+  "binding": {
+   "metric": "매출@v1",
+   "month": "2026-07",
+   "comparison_basis": "prior_period",
+   "within": {},
+   "as_of": "2026-08-06"
+  },
+  "echo": "이렇게 이해했습니다 — 매출[v1], 2026-07, 전월(2026-06) 대비, 전 채널"
+ },
+ "results": {
+  "contrib:channel": {
+   "status": "out_of_domain",
+   "violated": [
+    {
+     "check": "mece_runtime_coverage",
+     "dim": "channel",
+     "checker": "machine",
+     "passed": false,
+     "detail": "미선언 값=['마켓플레이스'], NULL=0"
+    },
+    {
+     "check": "partition_coverage",
+     "checker": "machine",
+     "passed": false,
+     "detail": "오염 차원: {'channel': ['마켓플레이스']}"
+    },
+    {
+     "check": "sign_policy",
+     "checker": "machine",
+     "passed": false,
+     "negative_rows": 21,
+     "negative_sales_u": -21,
+     "detail": "음수 행 21개 (합 -21u) — 환불·반품은 정의역 밖, 별도 계정 분리 필요"
+    }
+   ],
+   "alternatives": [
+    "unknown 버킷 편입 후 재실행",
+    "환불·반품 행을 별도 계정으로 분리 적재 후 재실행"
+   ]
+  },
+  "contrib:category": {
+   "status": "out_of_domain",
+   "violated": [
+    {
+     "check": "partition_coverage",
+     "checker": "machine",
+     "passed": false,
+     "detail": "오염 차원: {'channel': ['마켓플레이스']}"
+    },
+    {
+     "check": "sign_policy",
+     "checker": "machine",
+     "passed": false,
+     "negative_rows": 21,
+     "negative_sales_u": -21,
+     "detail": "음수 행 21개 (합 -21u) — 환불·반품은 정의역 밖, 별도 계정 분리 필요"
+    }
+   ],
+   "alternatives": [
+    "unknown 버킷 편입 후 재실행",
+    "환불·반품 행을 별도 계정으로 분리 적재 후 재실행"
+   ]
+  },
+  "contrib:customer_type": {
+   "status": "out_of_domain",
+   "violated": [
+    {
+     "check": "partition_coverage",
+     "checker": "machine",
+     "passed": false,
+     "detail": "오염 차원: {'channel': ['마켓플레이스']}"
+    },
+    {
+     "check": "sign_policy",
+     "checker": "machine",
+     "passed": false,
+     "negative_rows": 21,
+     "negative_sales_u": -21,
+     "detail": "음수 행 21개 (합 -21u) — 환불·반품은 정의역 밖, 별도 계정 분리 필요"
+    }
+   ],
+   "alternatives": [
+    "unknown 버킷 편입 후 재실행",
+    "환불·반품 행을 별도 계정으로 분리 적재 후 재실행"
+   ]
+  },
+  "plan_gap": {
+   "status": "suspended",
+   "missing_inputs": [
+    "plan_vintage 저장소 — 이 데이터셋에 등록된 계획 빈티지 없음"
+   ],
+   "pass_conditions": "계획 빈티지가 등록되면 실행 가능"
+  },
+  "vrm:online": {
+   "status": "out_of_domain",
+   "violated": [
+    {
+     "check": "sign_policy",
+     "checker": "machine",
+     "passed": false,
+     "negative_rows": 11,
+     "negative_sales_u": -11,
+     "detail": "음수 행 11개 (합 -11u) — 환불·반품은 정의역 밖, 별도 계정 분리 필요"
+    }
+   ],
+   "alternatives": [
+    "환불·반품 행을 별도 계정으로 분리 적재 후 재실행"
+   ]
+  },
+  "events": {
+   "status": "result",
+   "output_type": "Description",
+   "estimand": "등록 이벤트별 타깃 슬라이스의 실측 Δ와 선언 규모의 대조",
+   "events": [
+    {
+     "id": "E1",
+     "name": "6월 첫구매 프로모션(6/1~30) — 7월 기저효과",
+     "period": [
+      "2026-06-01",
+      "2026-06-30"
+     ],
+     "target": {
+      "channel": [
+       "온라인"
+      ],
+      "customer_type": [
+       "신규"
+      ]
+     },
+     "measured_slice_delta_u": null,
+     "measurement_status": "suspended",
+     "measurement_gate": {
+      "check": "slice_measurement",
+      "checker": "machine",
+      "passed": false,
+      "ambiguous_rows": 23,
+      "ambiguous_sales_u": 22,
+      "negative_rows": 3,
+      "negative_sales_u": -3,
+      "detail": "소속 불명 행 23개 (합 22u — NULL/미선언 값); 슬라이스 내 음수 행 3개 (합 -3u — 부호 규범 위반)"
+     },
+     "declared_magnitude_u": null,
+     "reference_scale_u": 183,
+     "reference_note": "마케팅팀 집계 — 코호트 데이터 미확보",
+     "reference_figures": [],
+     "evidence_grade": "실측 보류(원장 오염) — 정합 서술 성립 안 함"
+    },
+    {
+     "id": "E2",
+     "name": "경쟁사 M몰 미드이어 페스타(7/14~20)",
+     "period": [
+      "2026-07-14",
+      "2026-07-20"
+     ],
+     "target": {
+      "channel": [
+       "온라인"
+      ],
+      "category": [
+       "가전",
+       "생활용품"
+      ]
+     },
+     "measured_slice_delta_u": null,
+     "measurement_status": "suspended",
+     "measurement_gate": {
+      "check": "slice_measurement",
+      "checker": "machine",
+      "passed": false,
+      "ambiguous_rows": 10,
+      "ambiguous_sales_u": 12,
+      "negative_rows": 5,
+      "negative_sales_u": -5,
+      "detail": "소속 불명 행 10개 (합 12u — NULL/미선언 값); 슬라이스 내 음수 행 5개 (합 -5u — 부호 규범 위반)"
+     },
+     "declared_magnitude_u": null,
+     "reference_scale_u": null,
+     "reference_note": "행사 전후 트래픽 데이터 미보유",
+     "reference_figures": [],
+     "evidence_grade": "실측 보류(원장 오염) — 정합 서술 성립 안 함"
+    },
+    {
+     "id": "E3",
+     "name": "호남 오프라인 B점 폐점(7/1)",
+     "period": [
+      "2026-07-01",
+      "2026-07-31"
+     ],
+     "target": {
+      "channel": [
+       "오프라인"
+      ],
+      "region": [
+       "호남"
+      ]
+     },
+     "measured_slice_delta_u": null,
+     "measurement_status": "suspended",
+     "measurement_gate": {
+      "check": "slice_measurement",
+      "checker": "machine",
+      "passed": false,
+      "ambiguous_rows": 89,
+      "ambiguous_sales_u": 158,
+      "negative_rows": 0,
+      "negative_sales_u": 0,
+      "detail": "소속 불명 행 89개 (합 158u — NULL/미선언 값)"
+     },
+     "declared_magnitude_u": -39,
+     "reference_scale_u": null,
+     "reference_note": "점포 단위 수치는 원장 밖 신고치",
+     "reference_figures": [],
+     "evidence_grade": "선언치만(외부 신고) — 실측 보류(원장 오염)"
+    },
+    {
+     "id": "E4",
+     "name": "B2B K전자양판 정기발주 8월 이월",
+     "period": [
+      "2026-07-01",
+      "2026-07-31"
+     ],
+     "target": {
+      "channel": [
+       "B2B"
+      ],
+      "category": [
+       "가전"
+      ],
+      "customer_type": [
+       "기존"
+      ]
+     },
+     "measured_slice_delta_u": null,
+     "measurement_status": "suspended",
+     "measurement_gate": {
+      "check": "slice_measurement",
+      "checker": "machine",
+      "passed": false,
+      "ambiguous_rows": 0,
+      "ambiguous_sales_u": 0,
+      "negative_rows": 2,
+      "negative_sales_u": -2,
+      "detail": "슬라이스 내 음수 행 2개 (합 -2u — 부호 규범 위반)"
+     },
+     "declared_magnitude_u": -55,
+     "reference_scale_u": null,
+     "reference_note": "영업팀 확인 — 소멸 아닌 이월",
+     "reference_figures": [],
+     "evidence_grade": "선언치만(외부 신고) — 실측 보류(원장 오염)"
+    },
+    {
+     "id": "E5",
+     "name": "뷰티 신규 브랜드 입점(7/1~)",
+     "period": [
+      "2026-07-01",
+      "2026-07-31"
+     ],
+     "target": {
+      "channel": [
+       "온라인",
+       "오프라인"
+      ],
+      "category": [
+       "뷰티"
+      ]
+     },
+     "measured_slice_delta_u": null,
+     "measurement_status": "suspended",
+     "measurement_gate": {
+      "check": "slice_measurement",
+      "checker": "machine",
+      "passed": false,
+      "ambiguous_rows": 11,
+      "ambiguous_sales_u": 18,
+      "negative_rows": 4,
+      "negative_sales_u": -4,
+      "detail": "소속 불명 행 11개 (합 18u — NULL/미선언 값); 슬라이스 내 음수 행 4개 (합 -4u — 부호 규범 위반)"
+     },
+     "declared_magnitude_u": null,
+     "reference_scale_u": 91,
+     "reference_note": "브랜드 단위는 원장 밖 집계",
+     "reference_figures": [],
+     "evidence_grade": "실측 보류(원장 오염) — 정합 서술 성립 안 함"
+    }
+   ],
+   "overlap_flags": [
+    {
+     "pair": [
+      "E1",
+      "E2"
+     ],
+     "shared_slice": {
+      "channel": [
+       "온라인"
+      ],
+      "customer_type": [
+       "신규"
+      ],
+      "category": [
+       "가전",
+       "생활용품"
+      ]
+     },
+     "shared_slice_totals_u": null,
+     "measurement_status": "suspended",
+     "measurement_gate": {
+      "check": "slice_measurement",
+      "checker": "machine",
+      "passed": false,
+      "ambiguous_rows": 10,
+      "ambiguous_sales_u": 12,
+      "negative_rows": 2,
+      "negative_sales_u": -2,
+      "detail": "소속 불명 행 10개 (합 12u — NULL/미선언 값); 슬라이스 내 음수 행 2개 (합 -2u — 부호 규범 위반)"
+     },
+     "note": "타깃 슬라이스 교차 — 이 슬라이스의 Δ를 두 이벤트로 배분하는 것은 잔차 귀속(차단 대상)"
+    },
+    {
+     "pair": [
+      "E1",
+      "E5"
+     ],
+     "shared_slice": {
+      "channel": [
+       "온라인"
+      ],
+      "customer_type": [
+       "신규"
+      ],
+      "category": [
+       "뷰티"
+      ]
+     },
+     "shared_slice_totals_u": null,
+     "measurement_status": "suspended",
+     "measurement_gate": {
+      "check": "slice_measurement",
+      "checker": "machine",
+      "passed": false,
+      "ambiguous_rows": 9,
+      "ambiguous_sales_u": 8,
+      "negative_rows": 0,
+      "negative_sales_u": 0,
+      "detail": "소속 불명 행 9개 (합 8u — NULL/미선언 값)"
+     },
+     "note": "타깃 슬라이스 교차 — 이 슬라이스의 Δ를 두 이벤트로 배분하는 것은 잔차 귀속(차단 대상)"
+    },
+    {
+     "pair": [
+      "E3",
+      "E5"
+     ],
+     "shared_slice": {
+      "channel": [
+       "오프라인"
+      ],
+      "region": [
+       "호남"
+      ],
+      "category": [
+       "뷰티"
+      ]
+     },
+     "shared_slice_totals_u": null,
+     "measurement_status": "suspended",
+     "measurement_gate": {
+      "check": "slice_measurement",
+      "checker": "machine",
+      "passed": false,
+      "ambiguous_rows": 25,
+      "ambiguous_sales_u": 38,
+      "negative_rows": 0,
+      "negative_sales_u": 0,
+      "detail": "소속 불명 행 25개 (합 38u — NULL/미선언 값)"
+     },
+     "note": "타깃 슬라이스 교차 — 이 슬라이스의 Δ를 두 이벤트로 배분하는 것은 잔차 귀속(차단 대상)"
+    }
+   ],
+   "ledger_checks": [
+    {
+     "check": "partition_coverage",
+     "checker": "machine",
+     "passed": false,
+     "detail": "오염 차원: {'channel': ['마켓플레이스']}"
+    },
+    {
+     "check": "sign_policy",
+     "checker": "machine",
+     "passed": false,
+     "negative_rows": 21,
+     "negative_sales_u": -21,
+     "detail": "음수 행 21개 (합 -21u) — 환불·반품은 정의역 밖, 별도 계정 분리 필요"
+    }
+   ],
+   "label_ceiling": {
+    "실측 Δ": "데이터 확인 (measurement_status=result일 때만)",
+    "보류된 실측": "인용 불가 — 선언치·참조치만 외부 신고로 인용",
+    "이벤트-변화 연결": "데이터 시사 상한",
+    "중첩 슬라이스의 원인 배분": "차단(잔차 귀속) 또는 컨설턴트 판단"
+   }
+  },
+  "band_diagnostic": {
+   "status": "result",
+   "output_type": "Description",
+   "estimand": "전사 월간 Δ의 통상 변동 대역 대비 위치 (무분포 진단)",
+   "history_deltas_u": [
+    -205,
+    344,
+    101,
+    127,
+    -17
+   ],
+   "band_u": [
+    -253,
+    455
+   ],
+   "total_delta_u": -374,
+   "within_band": false,
+   "delta_min_u": 20,
+   "delta_min_verdict": "유의미(|Δ|≥δ_min)",
+   "role": "검정이 아니라 설명 요구 트리거 — 게이트 아님 (ADR-0004)",
+   "caveat": "대역 폭은 계절 진폭 지배(원시 MoM Δ, n=5, 계절조정 부재) — 검정력 없음",
+   "label_ceiling": {
+    "대역 내/이탈": "데이터 확인(계산 자체)",
+    "'통상적/이례적' 해석": "데이터 시사 상한"
+   }
+  }
+ },
+ "execution_record": {
+  "calls": [
+   {
+    "operator": "contrib_decomp",
+    "dim": "channel",
+    "months": [
+     "2026-06",
+     "2026-07"
+    ],
+    "within": {},
+    "outcome": "out_of_domain"
+   },
+   {
+    "operator": "contrib_decomp",
+    "dim": "category",
+    "months": [
+     "2026-06",
+     "2026-07"
+    ],
+    "within": {},
+    "outcome": "out_of_domain"
+   },
+   {
+    "operator": "contrib_decomp",
+    "dim": "customer_type",
+    "months": [
+     "2026-06",
+     "2026-07"
+    ],
+    "within": {},
+    "outcome": "out_of_domain"
+   },
+   {
+    "operator": "vrm_lite",
+    "months": [
+     "2026-06",
+     "2026-07"
+    ],
+    "convention": "laspeyres",
+    "outcome": "out_of_domain"
+   },
+   {
+    "operator": "event_overlap_scan",
+    "months": [
+     "2026-06",
+     "2026-07"
+    ],
+    "outcome": "result"
+   }
+  ],
+  "budget": {
+   "max_depth": 2,
+   "consumed_depth": 0,
+   "segments_examined": 0
+  }
+ },
+ "assumption_ledger": [
+  {
+   "assumption": "세그먼트 구성의 기간 간 안정성(개방 코호트)",
+   "status": "unchecked",
+   "evidence_ref": "not_computable_v0",
+   "note": "segment_churn_rate 진단 미구현 — v1 과제"
+  }
+ ],
+ "external_reference_check": null
+}
