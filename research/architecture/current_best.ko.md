@@ -140,3 +140,14 @@ migration을 가법 산술로 축약하지 않도록 잠정 `set_transition@v1`�
 Shadow semantic corpus는 10/10이다. 이 결과는 E-018의 controlled metric-level
 routing만 지지한다. 다른 capability는 shadow에 남으며 drilldown의 dynamic data
 requirement 투명성은 아직 해결되지 않았다.
+
+E-018은 controlled metric-level routing을 완료했다. `engine.run_question`에
+기본값이 현행 경로를 보존하는 가역 route selector가 추가됐다. `c4_level`은
+metric level만 C4 compiler/executor로 실행하고 다른 family는 전부 명시적으로
+거부하며, public bundle 경계에는 legacy 철자를 사칭하지 않는 선언된 identity의
+canonical Result Envelope를 노출한다. 값·단위·label·실패 위치·보고·
+materialization·provenance parity가 성립했고, H2 enforced corpus는 라우팅된
+selector에서 10/10로 이후 모든 capability의 상설 exit gate가 됐다. 유일한
+반례는 예측대로 public 경계에서 나왔다: domain pack의 미검증 가정 ledger가
+누락되어 선언된 불확실성이 조용히 약해지는 문제였고, 이제 모든 경로가 보존한다.
+다음 판별 대상은 period delta + additive contribution routing(E-019)이다.

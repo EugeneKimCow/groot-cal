@@ -130,7 +130,7 @@ capability, but does not block metric-level controlled routing.
 
 ## Increment 5 — Route one capability at a time
 
-1. Metric level
+1. Metric level (complete 2026-08-16, E-018)
 2. Period delta
 3. Additive contribution
 4. Explicit nested drilldown
@@ -140,6 +140,15 @@ capability, but does not block metric-level controlled routing.
 Use reversible feature selection during migration. Do not remove the old path
 until each capability's golden, adversarial, reporter, and provenance tests
 pass through the new executor.
+
+E-018 added the `route` selector to `engine.run_question` (default preserves
+the current route) and `slice/c4_route.py` as the single public-boundary
+adapter. Metric level passes value/unit/label, failure-location, reporting,
+materialization, and provenance parity on both selectors; non-level plans are
+refused explicitly, with fallback only by caller choice. The H2 enforced corpus
+is now part of every routing exit gate (10/10 routed parity). One
+public-boundary counterexample was found and fixed: the commerce domain pack's
+unchecked assumption ledger must be preserved by every route.
 
 ## Increment 6 — Remove historical architecture
 

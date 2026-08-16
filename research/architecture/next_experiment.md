@@ -1,34 +1,39 @@
 # Next experiment
 
-## E-018 — Controlled metric-level routing
+## E-019 — Controlled period-delta routing
 
-Route only `inspect_level` through the C4 compiler/executor behind a reversible
-selector while preserving the current public envelope, result payload, storage,
-reporting, provenance, and failure behavior.
+Route `explain_change`'s comparison root (simple period delta plus the current
+per-axis additive contribution outputs) through the C4 compiler/executor behind
+the same reversible selector, preserving the public bundle boundary validated
+in E-018.
 
-1. Add an explicit route selector whose default preserves the current route.
-2. Adapt only successful and normalized failure metric-level C4 results to the
-   existing public bundle boundary; do not add shape probing outside E-014.
-3. Run all five metric algebras, scoped level, missing data, bad binding, bad
-   scope, label ceiling, materialization, reporting, and provenance cases through
-   both selectors.
-4. Require byte- or normalized-field parity at the public boundary and preserve
-   deterministic Plan/binding identity in the execution record.
-5. Refuse any non-level Plan on the routed selector and fall back only by an
-   explicit caller choice, never silently.
-6. Keep contribution, plan, set-transition, and drilldown routing disabled.
+1. Extend the routed selector to `explain_change` for metrics whose change
+   path is additive contribution or set transition; keep rate change a refusal
+   on both routes.
+2. Adapt multi-output C4 results (per-axis contribution, set transition) to the
+   public `contrib:<dim>` / `distinct:<dim>` result keys through one adapter,
+   preserving change values, segment identities, and declared before/after
+   evidence without legacy operator spelling.
+3. Run the sales three-axis change, typed operating-profit/inventory/distinct
+   changes, scoped changes, missing comparison month, vintage clarification,
+   reporting, materialization, and provenance through both selectors.
+4. Keep the H2 enforced corpus 10/10 as a routing exit gate.
+5. Refuse plan comparison and drilldown on the routed selector until their own
+   gates pass.
 
 ## Discriminating risks
 
-- Existing callers may depend on legacy result field spelling even though E-014
-  consumers no longer do. The route adapter must not broaden compatibility debt.
-- Current execution records use legacy operator names and short hashes; the C4
-  record must preserve public evidence references without pretending identity.
-- Report and materialization parity may reveal that the public bundle boundary,
-  not arithmetic, is the real migration constraint.
+- The current route emits one result key per axis from hardcoded decomposition
+  identities; the C4 plan emits explicit Calls. Key-mapping is where silent
+  reordering or dropped axes would hide.
+- Reporter dominance selection (`largest_absolute_segment_contribution`) must
+  select the same axis on both routes.
+- Distinct change carries entity sets for set transition; the public boundary
+  must not leak raw entity identifiers beyond what the current route exposes.
 
-## Sequenced work after E-018
+## Sequenced work after E-019
 
-Route period delta next, then additive contribution, explicit nested drilldown,
-plan comparison, and registered non-additive operators. Revisit Ref-capable
-dynamic Slice requirements before enabling drilldown.
+Additive contribution ranking/limit (E-020 target for the demo), then explicit
+nested drilldown (requires the dynamic Slice decision), plan comparison, and
+registered non-additive operators. After the demo increment, revisit drilldown
+data-requirement transparency before any further routing.

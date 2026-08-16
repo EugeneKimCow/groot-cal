@@ -189,3 +189,21 @@ over C3 is minimal grammar, not proven implementation cost.
 - product tests: 164 discovered, 163 pass, one environment skip
 - current golden / semantic / research: 17/17, 10/10, 58/58
 - production routing changes: 0
+
+## E-018 controlled metric-level routing
+
+- routed level algebra parity (adapter view): 5/5
+- scoped level parity: 1/1
+- identical failure payloads at the query_spec boundary: missing month, bad scope
+- duplicate-binding fail-closed on both routes: 1/1
+- reporting claim text/label parity with clean lint: 1/1
+- deterministic materialization IDs with declared operator identity: 2/2 routes
+- H2 enforced corpus routed parity: 10/10
+- golden level cases normalized on C4 route: 3/3
+- silent fallbacks: 0 (non-level refusal is explicit; fallback is caller-chosen)
+- public-boundary counterexamples found and fixed: 1 (assumption ledger
+  dropped from routed bundles; now shared domain-pack constant)
+- E-018 tests: 14/14
+- production tests: 178 discovered, 178 pass in standard sandbox
+- current golden / semantic / research: 17/17, 10/10, 58/58
+- default-route behavior changes: 0

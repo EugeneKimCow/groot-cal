@@ -226,12 +226,14 @@ class ShadowExecutorParityTest(unittest.TestCase):
                             values.append(output.get("value"))
                     self.assertIn(expected_values[case["id"]], values)
 
-    def test_shadow_executor_is_not_imported_by_current_engine(self):
-        engine_source = (Path(__file__).parent / "engine.py").read_text()
-        self.assertNotIn("shadow_executor", engine_source)
+    def test_default_route_preserves_legacy_execution(self):
+        # E-018 이후 C4 실행은 명시적 selector 뒤에만 있다. 기본 호출은 legacy
+        # 결과 형태를 그대로 반환해야 한다.
         envelope, bundle = run_question("7월 매출은?", self.contexts)
         self.assertEqual("spec", envelope["status"])
         self.assertEqual(3860, bundle["results"]["level"]["value_u"])
+        self.assertNotIn("envelope_version", bundle["results"]["level"])
+        self.assertNotIn("route", bundle["execution_record"])
 
 
 if __name__ == "__main__":

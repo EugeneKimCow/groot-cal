@@ -140,3 +140,16 @@ migrations are not collapsed into additive arithmetic. The enforced semantic
 shadow corpus is 10/10. This supports E-018 controlled metric-level routing, but
 other capabilities remain shadow; drilldown still has unresolved dynamic data-
 requirement transparency.
+
+E-018 completed controlled metric-level routing. `engine.run_question` now has a
+reversible route selector whose default preserves the current route; `c4_level`
+executes only metric level through the C4 compiler/executor, refuses every other
+family explicitly, and exposes canonical Result Envelope payloads at the public
+bundle boundary with declared — never legacy-spelled — operator identity. Parity
+held for values, units, labels, failure locations, reporting, materialization,
+and provenance; the H2 enforced corpus is 10/10 on the routed selector and is
+now a standing exit gate for every subsequent capability. The one counterexample
+was at the public boundary, as predicted: dropped domain-pack assumption ledger
+entries silently weakened declared uncertainty, and are now preserved by every
+route. Period delta plus additive contribution routing (E-019) is the active
+discriminator.

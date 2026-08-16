@@ -1,6 +1,7 @@
 """Metric/result catalog 해소부터 실행 profile 선택까지의 공개 진입점."""
 import re
 
+from c4_route import execute_level_query, refuse_non_level
 from catalog import context_by_metric_ref, resolve_metric
 from interpret import interpret
 from pipeline import _input_hash, execute_query
@@ -8,6 +9,14 @@ from result_store import assess_staleness
 from reporter import (build_report_spec, create_structured_report,
                       lint_structured_report)
 from typed_pipeline import execute_typed_query
+
+
+# E-018 가역 selector. 기본값은 현행 경로를 그대로 보존하고, c4_level은
+# inspect_level만 C4 compiler/executor로 실행하며 그 밖의 family는 명시적으로
+# 거부한다. c4_level_or_current는 비대상 family를 현행 경로로 보내는 caller의
+# 명시적 fallback 선택이다. 결과/보고 workflow 질문은 Analytical IR 밖이므로
+# selector와 무관하게 현행 경로를 유지한다.
+ROUTES = ("current", "c4_level", "c4_level_or_current")
 
 
 def prepare_question(question, contexts=None):
@@ -48,7 +57,9 @@ def _run_staleness_question(question, result_catalog, contexts=None, result_ref=
 
 def run_question(question, contexts=None, result_catalog=None, result_ref="latest",
                  report_context=None, report_result_key=None,
-                 report_genre="executive_memo"):
+                 report_genre="executive_memo", route="current"):
+    if route not in ROUTES:
+        raise ValueError(f"지원하지 않는 route: {route}")
     if re.search(r"(경영진|CFO|임원).{0,8}(메모|보고서)|메모로 작성", question):
         if report_context is None:
             return ({"status": "clarify", "reason": "보고 결과 미확정",
@@ -70,6 +81,13 @@ def run_question(question, contexts=None, result_catalog=None, result_ref="lates
     envelope, context = prepare_question(question, contexts)
     if envelope["status"] != "spec":
         return envelope, None
+    if route != "current":
+        family = envelope["query_spec"]["intent"]["operation_family"]
+        if family == "inspect_level":
+            return envelope, execute_level_query(envelope, context, contexts)
+        if route == "c4_level":
+            return envelope, refuse_non_level(envelope, family)
+        # c4_level_or_current: caller가 명시적으로 선택한 현행 경로 fallback.
     if context["execution_profile"] == "commerce_extensions":
         bundle = execute_query(envelope, context["sem"], context["rows"])
     elif context["execution_profile"] == "typed_core":

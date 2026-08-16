@@ -131,14 +131,16 @@ def _evaluate(inputs, contexts, record):
             "metric_ref": metric_ref, "slice": metric_slice.to_dict(),
             "provenance_ref": envelope.provenance_ref,
         })
+        wire = envelope.to_dict()
         if envelope.status != "result":
-            return envelope.to_dict()
+            return wire
         return {
             "status": "result", "output_type": "MetricEvaluation",
             "metric_ref": metric_ref, "slice": metric_slice,
             "value": envelope.value["value"], "unit": envelope.value["unit"],
-            "segments": [], "evidence": envelope.to_dict()["evidence"],
+            "segments": [], "evidence": wire["evidence"],
             "label_ceiling": envelope.label_ceiling,
+            "envelope": wire,
         }
 
     dimension = group_by[0]

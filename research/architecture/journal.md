@@ -513,3 +513,46 @@ The provisional drilldown operator hides dynamic child evaluations; this is a
 data-requirement transparency debt, not approval to route it. E-018 should route
 metric level only behind an explicit selector and test the public bundle,
 reporting, materialization, provenance, and failure boundary.
+
+## Iteration 9 — E-018 controlled metric-level routing
+
+### Hypothesis
+
+Metric level can route through the C4 compiler/executor behind a reversible
+selector with full public-boundary parity, and the real migration constraint
+will be the bundle boundary rather than arithmetic.
+
+### Experiment
+
+Added a `route` selector to `engine.run_question` (default: current route) and
+`slice/c4_route.py` as the single adapter from C4 execution to the public
+bundle. Ran five level algebras, scoped level, missing month, bad scope,
+duplicate binding, reporting, materialization, staleness, provenance, non-level
+refusal/fallback, the H2 enforced corpus, and golden level cases through both
+selectors.
+
+### Counterexample and revision
+
+Reporting parity failed first: the routed bundle dropped the commerce domain
+pack's unchecked open-cohort assumption, silently weakening the report's
+declared uncertainty. The assumption belongs to the domain pack, not the
+execution path; both routes now share one `COMMERCE_ASSUMPTION_LEDGER`
+constant. Arithmetic, unit, and label parity never failed — the predicted
+boundary constraint, confirmed.
+
+### Result
+
+E-018 tests 14/14; product discovery 178 all passing in the standard sandbox;
+current golden 17/17; enforced semantic 10/10 on both selectors; research
+58/58. Non-level plans refuse explicitly; fallback exists only as a caller
+choice. Plan hashes and materialized result IDs are deterministic, with
+declared operator identity (`evaluate_metric@v1`).
+
+### Qualification and next hypothesis
+
+Golden's legacy field assertions (`value_u`) stay tied to the current route;
+the C4 route holds the same facts under normalized names. Legacy interpret
+still drops unconsumed year clauses on both routes — an intent-compiler concern
+for the demo entry point. E-019 routes period delta plus additive contribution,
+where per-axis result-key mapping and reporter dominance selection are the
+discriminating risks.

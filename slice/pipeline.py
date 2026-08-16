@@ -20,6 +20,15 @@ def _input_hash(ledger):
     return hashlib.sha256(raw).hexdigest()[:16]
 
 
+# commerce domain pack이 선언하는 미검증 가정. 실행 경로가 아니라 데이터에 대한
+# 선언이므로, 같은 context를 실행하는 모든 경로(E-018 C4 포함)가 보존해야 한다.
+COMMERCE_ASSUMPTION_LEDGER = ({
+    "assumption": "세그먼트 구성의 기간 간 안정성(개방 코호트)",
+    "status": "unchecked", "evidence_ref": "not_computable_v0",
+    "note": "segment_churn_rate 진단 미구현 — v1 과제",
+},)
+
+
 def execute_query(spec_envelope, sem, ledger, events_path=None):
     """interpret()의 spec envelope을 실행하고 Evidence Bundle을 반환한다."""
     spec = spec_envelope["query_spec"]
@@ -114,10 +123,6 @@ def execute_query(spec_envelope, sem, ledger, events_path=None):
         "spec": spec_envelope,
         "results": results,
         "execution_record": record,
-        "assumption_ledger": [{
-            "assumption": "세그먼트 구성의 기간 간 안정성(개방 코호트)",
-            "status": "unchecked", "evidence_ref": "not_computable_v0",
-            "note": "segment_churn_rate 진단 미구현 — v1 과제",
-        }],
+        "assumption_ledger": [dict(entry) for entry in COMMERCE_ASSUMPTION_LEDGER],
         "external_reference_check": None,
     }
