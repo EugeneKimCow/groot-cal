@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "groot-cal/metric-scalar-v1",
+  "title": "Metric Scalar v1",
+  "type": "object",
+  "required": ["metric_ref", "slice", "value", "unit", "aggregation", "checks", "provenance"],
+  "properties": {
+    "metric_ref": {"type": "string", "pattern": "^[^@]+@v[1-9][0-9]*$"},
+    "slice": {"$ref": "analytical-plan-v1.schema.json#/$defs/slice"},
+    "value": {"type": "number"},
+    "unit": {"type": "string", "minLength": 1},
+    "aggregation": {
+      "type": "object",
+      "required": ["rule", "expression", "components"],
+      "properties": {
+        "rule": {"enum": ["sum", "denominator_weighted_mean", "semi_additive:last", "non_aggregable"]},
+        "expression": {"type": "object"},
+        "components": {
+          "type": "object",
+          "additionalProperties": {"type": "number"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["check", "passed", "detail"],
+        "properties": {
+          "check": {"type": "string"},
+          "passed": {"type": "boolean"},
+          "detail": {"type": "string"},
+          "checker": {"type": "string"}
+        },
+        "additionalProperties": true
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["metric_ref", "semantic_model_ref", "input_snapshot_ref", "as_of"],
+      "properties": {
+        "metric_ref": {"type": "string"},
+        "semantic_model_ref": {"type": "string"},
+        "input_snapshot_ref": {"type": "string", "pattern": "^sha256:[0-9a-f]{16}$"},
+        "as_of": {"type": "string", "format": "date"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "groot-cal/analytical-plan-v1",
+  "title": "Analytical Plan v1",
+  "type": "object",
+  "required": ["plan_version", "calls", "outputs", "limits", "binding_ledger", "metadata"],
+  "properties": {
+    "plan_version": {"const": "1"},
+    "calls": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/call"}
+    },
+    "outputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/ref"}
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": {"type": "integer", "minimum": 0}
+    },
+    "binding_ledger": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/binding"}
+    },
+    "metadata": {"type": "object"}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "ref": {
+      "type": "object",
+      "required": ["$ref", "path"],
+      "properties": {
+        "$ref": {"type": "string", "minLength": 1},
+        "path": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "slice": {
+      "type": "object",
+      "required": ["time_window", "as_of", "predicates"],
+      "properties": {
+        "time_window": {
+          "type": "object",
+          "required": ["kind", "period"],
+          "properties": {
+            "kind": {"const": "month"},
+            "period": {"type": "string", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"}
+          },
+          "additionalProperties": false
+        },
+        "as_of": {"type": "string", "format": "date"},
+        "predicates": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array", "minItems": 1,
+            "items": {"type": "string"}, "uniqueItems": true
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "input": {
+      "oneOf": [
+        {"$ref": "#/$defs/ref"},
+        {"$ref": "#/$defs/slice"},
+        {"type": "string"},
+        {"type": "number"},
+        {"type": "boolean"},
+        {"type": "null"},
+        {"type": "array"}
+      ]
+    },
+    "call": {
+      "type": "object",
+      "required": ["call_id", "operator_ref", "inputs"],
+      "properties": {
+        "call_id": {"type": "string", "minLength": 1},
+        "operator_ref": {"type": "string", "pattern": "^[^@]+@v[1-9][0-9]*$"},
+        "inputs": {
+          "type": "object",
+          "additionalProperties": {"$ref": "#/$defs/input"}
+        },
+        "guard": {"$ref": "#/$defs/ref"}
+      },
+      "additionalProperties": false
+    },
+    "binding": {
+      "type": "object",
+      "required": ["clause", "state", "value", "consumers"],
+      "properties": {
+        "clause": {"type": "string", "minLength": 1},
+        "state": {"enum": ["consumed", "preserved", "unconsumed"]},
+        "value": {},
+        "consumers": {"type": "array", "items": {"type": "string"}},
+        "note": {"type": "string"}
+      },
+      "additionalProperties": false
+    }
+  }
+}

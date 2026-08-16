@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "groot-cal/analytical-result-envelope-v1",
+  "title": "Analytical Result Envelope v1",
+  "oneOf": [
+    {
+      "type": "object",
+      "required": ["envelope_version", "status", "result_type", "value", "evidence"],
+      "properties": {
+        "envelope_version": {"const": "1"},
+        "status": {"const": "result"},
+        "result_type": {"type": "string", "minLength": 1},
+        "value": {},
+        "evidence": {
+          "type": "object",
+          "required": ["operator_ref", "provenance_ref"],
+          "properties": {
+            "operator_ref": {"type": "string", "pattern": "^[^@]+@v[1-9][0-9]*$"},
+            "provenance_ref": {"type": "string", "minLength": 1},
+            "label_ceiling": {"type": "string", "minLength": 1}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": ["envelope_version", "status", "result_type", "violated"],
+      "properties": {
+        "envelope_version": {"const": "1"},
+        "status": {"enum": ["out_of_domain", "budget_exhausted"]},
+        "result_type": {"type": "string", "minLength": 1},
+        "violated": {
+          "type": "array", "minItems": 1,
+          "items": {"type": "object"}
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "required": ["envelope_version", "status", "result_type", "missing_inputs", "pass_conditions"],
+      "properties": {
+        "envelope_version": {"const": "1"},
+        "status": {"const": "suspended"},
+        "result_type": {"type": "string", "minLength": 1},
+        "missing_inputs": {
+          "type": "array", "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "pass_conditions": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    }
+  ]
+}

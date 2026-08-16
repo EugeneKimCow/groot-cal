@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "groot-cal/source-clause-bindings-v1",
+  "title": "Source Clause Binding Record v1",
+  "type": "object",
+  "required": ["record_version", "question", "clauses", "defaults"],
+  "properties": {
+    "record_version": {"const": "1"},
+    "question": {"type": "string", "minLength": 1},
+    "clauses": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/clause"}
+    },
+    "defaults": {"type": "object"}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "source": {
+      "type": "object",
+      "required": ["text", "span", "material"],
+      "properties": {
+        "text": {"type": "string", "minLength": 1},
+        "span": {
+          "type": "array",
+          "prefixItems": [
+            {"type": "integer", "minimum": 0},
+            {"type": "integer", "minimum": 1}
+          ],
+          "items": false
+        },
+        "material": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "value": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "value"],
+          "properties": {
+            "kind": {"enum": ["metric_ref", "reducer_ref", "month", "dimension_ref", "analysis_ref", "scenario_ref", "output_ref"]},
+            "value": {"type": "string"}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["kind", "value"],
+          "properties": {
+            "kind": {"const": "predicate"},
+            "value": {
+              "type": "object",
+              "required": ["dimension_ref", "values"],
+              "properties": {
+                "dimension_ref": {"type": "string"},
+                "values": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true}
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["kind", "value"],
+          "properties": {
+            "kind": {"const": "ranking"},
+            "value": {
+              "type": "object",
+              "required": ["measure", "order", "limit"],
+              "properties": {
+                "measure": {"enum": ["value", "contribution"]},
+                "order": {"enum": ["ascending", "descending"]},
+                "limit": {"type": "integer", "minimum": 1}
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "binding": {
+      "type": "object",
+      "required": ["state", "role", "value", "target_refs"],
+      "properties": {
+        "state": {"enum": ["consumed", "preserved", "ambiguous", "unsupported", "non_semantic"]},
+        "role": {
+          "type": ["string", "null"],
+          "enum": [null, "subject", "reducer", "time.target", "time.baseline", "filter", "breakdown", "analysis", "ranking", "nested_breakdown", "scenario", "output"]
+        },
+        "value": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/value"}]},
+        "target_refs": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "reason": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "clause": {
+      "type": "object",
+      "required": ["clause_id", "source", "binding"],
+      "properties": {
+        "clause_id": {"type": "string", "minLength": 1},
+        "source": {"$ref": "#/$defs/source"},
+        "binding": {"$ref": "#/$defs/binding"}
+      },
+      "additionalProperties": false
+    }
+  }
+}
