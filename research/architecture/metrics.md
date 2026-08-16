@@ -222,3 +222,15 @@ over C3 is minimal grammar, not proven implementation cost.
 - production tests: 189 discovered, 189 pass in standard sandbox
 - current golden / semantic / research: 17/17, 10/10, 58/58
 - default-route behavior changes: 0
+
+## E-020 demo entry point
+
+- adversarial corpus through demo: 9/9 accounted (2 executed, 5 intent
+  refusals, 2 named unrouted-capability refusals), substitutions 0
+- change paraphrases executed on routed operators: 5/5
+- intent-compiler vs Query-Spec-route agreement (category contribution): exact
+- level demo vs current route: exact (3860)
+- E-020 tests: 8/8
+- production tests: 197 discovered, 197 pass in standard sandbox
+- current golden / semantic / research: 17/17, 10/10, 58/58
+- default CLI/engine behavior changes: 0

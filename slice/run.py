@@ -61,7 +61,20 @@ def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("question", nargs="?", default="7월 매출이 왜 변했나?")
     parser.add_argument("--out", default=str(HERE / "out" / "bundle-v1.json"))
+    parser.add_argument(
+        "--route", choices=["current", "c4"], default="current",
+        help="c4: intent compiler→라우팅된 C4 executor 시연 경로 (기본 경로 무변경)")
+    parser.add_argument(
+        "--show-plan", action="store_true",
+        help="시연 경로에서 컴파일된 Call DAG를 함께 출력")
     args = parser.parse_args(argv)
+
+    if args.route == "c4":
+        from demo import demo_question, render_demo
+        outcome = demo_question(args.question)
+        print(render_demo(outcome, show_plan=args.show_plan))
+        return 0 if outcome["stage"] == "executed" and \
+            outcome["execution"]["status"] == "result" else 1
 
     envelope, bundle = run_question(args.question)
     if envelope["status"] != "spec":

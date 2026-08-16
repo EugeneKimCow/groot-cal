@@ -589,3 +589,34 @@ fixtures and recorded as unresolved #19; share-suppression and label-capability
 ownership as #20–21. Routed capabilities now cover the demo scenario; the next
 increment is the demo entry point (intent compiler → routed executor behind an
 explicit CLI mode), not further capability routing.
+
+## Iteration 11 — E-020 demo entry point
+
+### Hypothesis
+
+The governed intent compiler and the routed executor can carry a Korean
+question end to end, with unrouted capabilities named and refused, making the
+contract itself the demonstration.
+
+### Experiment
+
+Added slice/demo.py (compile → routed-vocabulary check → execute → four-layer
+render) and an opt-in --route c4 / --show-plan CLI mode. Ran the E-016
+adversarial corpus and change paraphrases through the demo path and compared
+intent-compiled execution against the Query-Spec route.
+
+### Result
+
+9/9 adversarial questions accounted with zero substitutions; 5/5 paraphrases
+execute on routed operators; intent and Query Spec compilation meet at the
+same executor with identical numbers (Δ−340 category map); explicit-2025
+suspends honestly with resume conditions. E-020 tests 8/8; product 197; all
+standing gates green; default paths untouched.
+
+### Qualification and next hypothesis
+
+Demo recall is bounded by the governed vocabulary — by design. The next
+discriminator is the LLM proposal adapter over the clause-binding contract
+(C2′), which also completes H2's original comparison. Rank/drilldown routing
+would visibly enrich the demo when their gates (dynamic Slice, failure
+isolation) are settled.

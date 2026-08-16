@@ -166,3 +166,12 @@ before further routing: DAG failure-isolation semantics, share-suppression
 ownership, and label-capability ownership. The demo increment proceeds on
 routed level + change; plan comparison, drilldown, and non-additive operators
 stay gated.
+
+E-020 closed the demo increment: a Korean question now runs end to end through
+the clause-binding compiler and the routed executor behind an opt-in CLI mode,
+rendering the binding ledger, Call DAG, execution record, and evidence-bounded
+results. Unrouted capabilities are refused by name, never substituted. The two
+compilers (intent and Query Spec) meet at the same executor with identical
+numbers. The active discriminator is now the LLM proposal adapter over the
+clause-binding contract (C2′), with rank/drilldown routing gated behind
+unresolved #19.

@@ -162,3 +162,11 @@ canonical Attribution change view를 배웠다. 값·세그먼트·백분율·�
 실패 격리 의미론, share 억제 규범의 소유권, label capability의 소유권. 시연
 increment는 라우팅된 level + change 위에서 진행하고, plan comparison·drilldown·
 비가법 연산자는 게이트 뒤에 남는다.
+
+E-020은 시연 increment를 닫았다: 한국어 질의가 opt-in CLI 모드 뒤에서
+clause-binding compiler와 라우팅된 executor를 거쳐 끝까지 실행되고, 바인딩
+대장·Call DAG·실행 기록·증거 한정 결과가 계층 렌더링된다. 미라우팅
+capability는 이름을 밝혀 거부되며 결코 대체되지 않는다. 두 compiler(intent와
+Query Spec)는 같은 executor에서 같은 수치로 만난다. 다음 판별 대상은
+clause-binding 계약 위의 LLM proposal adapter(C2′)이고, rank/drilldown
+라우팅은 미해결 #19 뒤에 있다.
