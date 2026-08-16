@@ -1,198 +1,81 @@
-"""수직 조각 러너 — 질문: "7월 매출이 왜 변했나? (전월 대비)"
+"""Query Spec v1 기반 수직 조각 CLI.
 
-절차(§7.1의 ④~⑦ 구간): 원장 적재 → 3축 분해 → 최대 기여 축 드릴다운(예산 상한 2) →
-VRM → Evidence Bundle 조립 → 팩트 시트 외부 대조.
-①~③(해석·바인딩·선택)은 v0에서 하드코딩 — 질문 서명과 명세를 코드에 동결.
+기존 `out/bundle.json`은 과거 측정·보고서의 동결 입력이다. 이 러너는 실행 계약 v1의
+산출물을 `out/bundle-v1.json`에 기록한다.
 """
+import argparse
 import json
-import sys
 from pathlib import Path
 
-from kernel import (load_semantic, load_ledger, contrib_decomp, vrm_lite,
-                    event_overlap_scan, plan_gap)
-from interpret import interpret
+from engine import run_question
+from result_adapter import adapt_result
 
 HERE = Path(__file__).parent
-OUT = HERE / "out"
-OUT.mkdir(exist_ok=True)
-
-U = 0.1  # 1u = 0.1억원
 
 
-def fmt_u(u):
-    return f"{u * U:+.1f}억" if isinstance(u, int) else f"{u * U:+.1f}억"
+def _format_value(value, unit, signed=False):
+    sign = "+" if signed else ""
+    if unit == "ratio":
+        return f"{value * 100:{sign}.1f}%"
+    if unit == "0.1억원(u)" or unit is None:
+        return f"{value * 0.1:{sign}.1f}억"
+    return f"{value:{sign}g}{unit}"
 
 
-def main():
-    sem = load_semantic()
-    ledger = load_ledger()
-
-    # ①~③: 해석·바인딩 (interpret.py — 닫힌 어휘 계약)
-    question = sys.argv[1] if len(sys.argv) > 1 else "7월 매출이 왜 변했나?"
-    spec = interpret(question, sem)
-    if spec["status"] != "spec":
-        print(f"질의: {question}")
-        print(f"[{spec['status'].upper()}] {spec['message']}")
+def _summary(bundle):
+    spec = bundle["spec"]
+    print(f"질의: {spec.get('question')}")
+    print(f"명세 반향: {spec.get('echo')}")
+    if bundle["execution_record"] is None:
+        for value in bundle["results"].values():
+            print(f"query_spec: {value['status']}")
+            for item in value.get("violated", []):
+                print(f"  - {item['detail']}")
+            for item in value.get("missing_inputs", []):
+                print(f"  - {item}")
         return
-    B = spec["binding"]["month"]
-    A = f"2026-{int(B[5:7]) - 1:02d}"
-    if spec["binding"]["comparison_basis"] == "yoy":
-        A = f"{int(B[:4]) - 1}{B[4:]}"
+    for name, value in bundle["results"].items():
+        suffix = ""
+        adapted = adapt_result(value, name)
+        scalar = (adapted["view"].get("scalar")
+                  if adapted["status"] == "result" else None)
+        change = (adapted["view"].get("change")
+                  if adapted["status"] == "result" else None)
+        if change is not None:
+            suffix = f" Δ={_format_value(change['value'], change['unit'], signed=True)}"
+        elif scalar is not None:
+            suffix = f" value={_format_value(scalar['value'], scalar['unit'])}"
+        print(f"{name}: {value['status']}{suffix}")
+    budget = bundle["execution_record"]["budget"]
+    print("예산: "
+          f"depth {budget['consumed_depth']}/{budget['max_depth']}, "
+          f"segments {budget['segments_examined']}/{budget['max_segments']}, "
+          f"hypotheses {budget['hypotheses_examined']}/{budget['max_hypotheses']}, "
+          f"calls {budget['operator_calls']}/{budget['max_operator_calls']}")
+    rejected = bundle["execution_record"]["operators_considered"]["runtime_rejected"]
+    for item in rejected:
+        print(f"제외: {item['operator']} — {item['reason']}")
 
-    record = {"calls": [], "budget": {"max_depth": 2, "consumed_depth": 0, "segments_examined": 0}}
 
-    print("=" * 72)
-    print(f"질의: {spec['question']}")
-    print(f"명세 반향: {spec['echo']}")
-    print("=" * 72)
+def main(argv=None):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("question", nargs="?", default="7월 매출이 왜 변했나?")
+    parser.add_argument("--out", default=str(HERE / "out" / "bundle-v1.json"))
+    args = parser.parse_args(argv)
 
-    # ── 1단계: 3축 분해 ──────────────────────────────────────────────
-    axes = sem["metric"]["decomposition_identities"][0]["dimensions"]
-    results = {}
-    for dim in axes:
-        r = contrib_decomp(sem, ledger, dim, A, B, record)
-        results[dim] = r
-        record["budget"]["segments_examined"] += len(r.get("segments", []))
-        print(f"\n[contrib_decomp × {dim}]  status={r['status']}")
-        if r["status"] != "result":
-            print("  ", r)
-            continue
-        t = r["total"]
-        print(f"  전체: {t['before_u']*U:.1f}억 → {t['after_u']*U:.1f}억  "
-              f"Δ {fmt_u(t['delta_u'])} ({t['pct_change']:+.1f}%)")
-        if r["share_suppressed"]:
-            print(f"  ⚠ share_of_change 억제: {r['share_suppression_reason']} → Σ|기여| 기준 병기")
-        for s in r["segments"]:
-            share = (f"기여도 {s['share_of_change_pct']:+.1f}%" if "share_of_change_pct" in s
-                     else f"|기여| {s['share_of_abs_pct']:.1f}%")
-            print(f"    {s['segment']:6s} {s['before_u']*U:7.1f} → {s['after_u']*U:7.1f}  "
-                  f"Δ {fmt_u(s['delta_u']):>8s} ({s['pct_change']:+.1f}%)  {share}")
-        for c in r["checks"]:
-            mark = "✓" if c["passed"] else "✗"
-            print(f"    {mark} {c['check']}: {c['detail']}")
+    envelope, bundle = run_question(args.question)
+    if envelope["status"] != "spec":
+        print(f"질의: {args.question}")
+        print(f"[{envelope['status'].upper()}] {envelope['message']}")
+        return 2
 
-    # ── 2단계: 최대 기여 축의 top 세그먼트 드릴다운 (예산 depth=2) ────
-    top_axis = max((d for d in axes if results[d]["status"] == "result"),
-                   key=lambda d: max(abs(s["delta_u"]) for s in results[d]["segments"]))
-    top_seg = results[top_axis]["segments"][0]["segment"]
-    record["budget"]["consumed_depth"] = 2
-    print(f"\n[드릴다운] 최대 기여 축={top_axis}, 세그먼트={top_seg} → 채널 교차 분해")
-    drill = contrib_decomp(sem, ledger, "channel", A, B, record,
-                           within={top_axis: top_seg})
-    record["budget"]["segments_examined"] += len(drill.get("segments", []))
-    if drill["status"] == "result":
-        total_delta_all = results[top_axis]["total"]["delta_u"]
-        for s in drill["segments"]:
-            vs_all = s["delta_u"] / total_delta_all * 100
-            print(f"    {top_seg}×{s['segment']:6s} Δ {fmt_u(s['delta_u']):>8s} "
-                  f"({s['pct_change']:+.1f}%)  전체 Δ 대비 {vs_all:+.1f}%")
-        for c in drill["checks"]:
-            if c["check"] == "identity_recheck":
-                print(f"    {'✓' if c['passed'] else '✗'} {c['check']}: {c['detail']}")
-
-    # ── 2b: 권역 드릴다운 (오프라인 내) ──────────────────────────────
-    region_drill = contrib_decomp(sem, ledger, "region", A, B, record,
-                                  within={"channel": "오프라인"})
-    record["budget"]["segments_examined"] += len(region_drill.get("segments", []))
-    if region_drill["status"] == "result":
-        print("\n[드릴다운] 오프라인 × 권역")
-        for s in region_drill["segments"]:
-            print(f"    {s['segment']:4s} Δ {fmt_u(s['delta_u']):>8s} ({s['pct_change']:+.1f}%)")
-
-    # ── 2c: E1∩E2 중첩 슬라이스 드릴 (온라인×신규의 카테고리 구성) ────
-    overlap_drill = contrib_decomp(sem, ledger, "category", A, B, record,
-                                   within={"channel": "온라인", "customer_type": "신규"})
-    record["budget"]["segments_examined"] += len(overlap_drill.get("segments", []))
-    if overlap_drill["status"] == "result":
-        print("\n[드릴다운] 온라인×신규 × 카테고리 (E1∩E2 중첩 슬라이스의 구성)")
-        for s in overlap_drill["segments"]:
-            print(f"    {s['segment']:6s} Δ {fmt_u(s['delta_u']):>8s} ({s['pct_change']:+.1f}%)")
-        ol_ev = sum(s["delta_u"] for s in overlap_drill["segments"]
-                    if s["segment"] in ("가전", "생활용품"))
-        print(f"    → E2 타깃 카테고리(가전+생활) 내 신규분 Δ {fmt_u(ol_ev)} — 중첩의 실측 크기")
-
-    # ── 2d: B2B × 카테고리 (E4 방어용: 가전 vs 기타의 괴리) ──────────
-    b2b_drill = contrib_decomp(sem, ledger, "category", A, B, record,
-                               within={"channel": "B2B"})
-    record["budget"]["segments_examined"] += len(b2b_drill.get("segments", []))
-    if b2b_drill["status"] == "result":
-        print("\n[드릴다운] B2B × 카테고리 (가전 -6.0 vs B2B 전체 -5.0 괴리의 방어)")
-        for s in b2b_drill["segments"]:
-            print(f"    {s['segment']:6s} Δ {fmt_u(s['delta_u']):>8s}")
-
-    # ── 3단계: VRM (온라인 볼륨×단가) ────────────────────────────────
-    v = vrm_lite(sem, ledger, A, B, record)
-    print(f"\n[vrm_lite × 온라인]  status={v['status']}")
-    if v["status"] == "result":
-        print(f"    건수: {v['orders'][A]/10000:.1f}만 → {v['orders'][B]/10000:.1f}만  "
-              f"객단가: {v['price_manwon'][A]:.2f}만원 → {v['price_manwon'][B]:.2f}만원")
-        print(f"    볼륨 효과 {fmt_u(v['volume_effect_u'])}, 단가 효과 {fmt_u(v['rate_effect_u'])}"
-              f"  (항등식 닫힘: {v['identity_ok']})")
-
-    # ── 3a: 계획 대비 (빈티지 고정) ─────────────────────────────────
-    pg = plan_gap(sem, ledger, B, record, vintage_id="2026-06-25")
-    print(f"\n[plan_gap × 빈티지 2026-06-25]  status={pg['status']}")
-    if pg["status"] == "result":
-        t = pg["total"]
-        print(f"    전사: 계획 {t['plan_u']*U:.1f}억 → 실적 {t['actual_u']*U:.1f}억  "
-              f"gap {fmt_u(t['gap_u'])} (달성률 {t['attainment_pct']:.1f}%)")
-        for r_ in pg["rows"]:
-            print(f"    {r_['channel']:6s} 계획 {r_['plan_u']*U:6.1f} 실적 {r_['actual_u']*U:6.1f}  "
-                  f"gap {fmt_u(r_['gap_u']):>8s} (달성률 {r_['attainment_pct']:.1f}%)")
-        print(f"    계획 전제: {pg['plan_basis_note'][:48]}…")
-    # 빈티지 미지정 시의 게이트 데모
-    pg_no_vintage = plan_gap(sem, ledger, B, record, vintage_id=None)
-    print(f"    (빈티지 미지정 호출 → {pg_no_vintage['status']}: "
-          f"{pg_no_vintage['violated'][0]['detail']})")
-
-    # ── 3b: 이벤트 레지스트리 대조 ──────────────────────────────────
-    ev = event_overlap_scan(sem, ledger, A, B, record)
-    print(f"\n[event_overlap_scan]  status={ev['status']}")
-    for e in ev["events"]:
-        decl = (f"선언 {e['declared_magnitude_u']*U:+.1f}억" if e["declared_magnitude_u"] is not None
-                else f"규모 미특정" + (f" (참조 스케일 {e['reference_scale_u']*U:.1f}억)"
-                                     if e["reference_scale_u"] else ""))
-        print(f"    {e['id']} {e['name'][:22]:24s} 슬라이스 실측 Δ {fmt_u(e['measured_slice_delta_u']):>8s}"
-              f"  | {decl}  | {e['evidence_grade']}")
-    for o in ev["overlap_flags"]:
-        print(f"    ⚠ 중첩: {'+'.join(o['pair'])} — {o['note'][:40]}…")
-
-    # ── 4단계: Evidence Bundle 조립 ──────────────────────────────────
-    bundle = {"spec": spec,
-              "results": {**{f"contrib:{d}": results[d] for d in axes},
-                          f"drill:{top_axis}={top_seg}×channel": drill,
-                          "drill:offline×region": region_drill,
-                          "drill:online신규×category": overlap_drill,
-                          "drill:B2B×category": b2b_drill,
-                          "plan_gap": pg,
-                          "vrm:online": v, "events": ev},
-              "execution_record": record,
-              "assumption_ledger": [
-                  {"assumption": "세그먼트 구성의 기간 간 안정성(개방 코호트)",
-                   "status": "unchecked", "evidence_ref": "not_computable_v0",
-                   "note": "segment_churn_rate 진단 미구현 — v1 과제"},
-              ],
-              "external_reference_check": None}
-
-    # ── 5단계: 팩트 시트 외부 대조 (exemplars-v0의 기대값) ────────────
-    expect = {"channel": {"온라인": -220, "오프라인": -70, "B2B": -50},
-              "category": {"식품": -80, "생활용품": -140, "뷰티": 80, "가전": -200},
-              "customer_type": {"신규": -280, "기존": -60}}
-    mism = []
-    for dim, exp in expect.items():
-        got = {s["segment"]: s["delta_u"] for s in results[dim]["segments"]}
-        for seg, e in exp.items():
-            if got.get(seg) != e:
-                mism.append((dim, seg, e, got.get(seg)))
-    bundle["external_reference_check"] = {"passed": not mism, "mismatches": mism}
-    print(f"\n[팩트 시트 대조] {'✓ 전 세그먼트 일치' if not mism else '✗ 불일치: ' + str(mism)}")
-    print(f"[탐색 예산] depth {record['budget']['consumed_depth']}/{record['budget']['max_depth']}, "
-          f"검토 세그먼트 {record['budget']['segments_examined']}개, "
-          f"커널 호출 {len(record['calls'])}회 — 이 결론은 이 예산 안에서 선택된 것")
-
-    (OUT / "bundle.json").write_text(json.dumps(bundle, ensure_ascii=False, indent=1))
-    print(f"\nEvidence Bundle → {OUT/'bundle.json'}")
+    _summary(bundle)
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(bundle, ensure_ascii=False, indent=1))
+    print(f"Evidence Bundle v1 → {out}")
+    return 0 if bundle["execution_record"] is not None else 1
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

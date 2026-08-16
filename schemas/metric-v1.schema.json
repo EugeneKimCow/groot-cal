@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "groot-cal/metric-v1",
+  "title": "Metric Descriptor v1",
+  "type": "object",
+  "required": ["id", "name", "type", "version", "unit", "properties", "generation"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]+$"},
+    "name": {"type": "string"},
+    "aliases": {"type": "array", "items": {"type": "string"}},
+    "type": {"enum": ["amount", "count", "rate", "balance", "distinct"]},
+    "version": {"type": "integer", "minimum": 1},
+    "unit": {"type": "string"},
+    "properties": {"type": "object"},
+    "bindings": {
+      "type": "object",
+      "additionalProperties": {"type": "string"}
+    },
+    "decomposition_identities": {"type": "array"},
+    "generation": {
+      "type": "object",
+      "required": ["source", "grain"],
+      "properties": {
+        "source": {"type": "string"},
+        "grain": {"type": "string"},
+        "known_biases": {"type": "array"}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

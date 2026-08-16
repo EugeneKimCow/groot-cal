@@ -190,6 +190,35 @@ def check_scope_declared(sem, dim, within):
             "detail": "적용 범위 정합" if ok else "; ".join(problems)}
 
 
+def metric_level(sem, ledger, month, record, within=None):
+    """바인딩된 범위의 단일 기간 지표 수준 조회."""
+    call = {"operator": "metric_level", "month": month, "within": within or {}}
+    record["calls"].append(call)
+    months_present = {r["month"] for r in ledger}
+    if month not in months_present:
+        call["outcome"] = "suspended"
+        return {"status": "suspended", "missing_inputs": [f"ledger {month}"],
+                "pass_conditions": "요청 기간 원장이 적재되면 실행 가능"}
+    scope_checks = [check_scope_declared(sem, dim, within) for dim in (within or {})]
+    if not all(c["passed"] for c in scope_checks):
+        call["outcome"] = "out_of_domain"
+        return {"status": "out_of_domain",
+                "violated": [c for c in scope_checks if not c["passed"]]}
+    coverage = check_partition_coverage(sem, ledger, {month}, within)
+    sign = check_sign_policy(sem, ledger, {month}, within)
+    if not (coverage["passed"] and sign["passed"]):
+        call["outcome"] = "out_of_domain"
+        return {"status": "out_of_domain",
+                "violated": [c for c in (coverage, sign) if not c["passed"]]}
+    value = raw_scope_total(ledger, month, within)
+    call["outcome"] = "result"
+    return {"status": "result", "output_type": "MetricLevel",
+            "estimand": f"{month} {sem['metric']['name']} 수준"
+                        + (f" (제약: {within})" if within else ""),
+            "month": month, "value_u": value, "checks": scope_checks + [coverage, sign],
+            "label_ceiling": {"수준": "데이터 확인"}}
+
+
 # ── 연산자: contrib_decomp ───────────────────────────────────────────────
 def contrib_decomp(sem, ledger, dim, month_a, month_b, record, within=None):
     """가법 세그먼트 기여도 분해. within: 상위 세그먼트 제약(드릴다운용) {dim: value}."""
@@ -299,9 +328,10 @@ def contrib_decomp(sem, ledger, dim, month_a, month_b, record, within=None):
 
 
 # ── 연산자: plan_gap (계획 대비 — 빈티지 고정 필수) ──────────────────────
-def plan_gap(sem, ledger, month, record, vintage_id=None):
+def plan_gap(sem, ledger, month, record, vintage_id=None, within=None):
     """계획 대비 실적. 빈티지 미지정은 design fact 위반 — estimand 자체가 미정의(어느 계획?)."""
-    call = {"operator": "plan_gap", "month": month, "vintage_id": vintage_id}
+    call = {"operator": "plan_gap", "month": month, "vintage_id": vintage_id,
+            "within": within or {}}
     record["calls"].append(call)
     store = json.loads((HERE / "plan_vintage.json").read_text())["vintages"]
     if vintage_id is None:
@@ -316,14 +346,21 @@ def plan_gap(sem, ledger, month, record, vintage_id=None):
         return {"status": "out_of_domain",
                 "violated": [{"check": "plan_vintage_exists", "passed": False,
                               "detail": f"빈티지 {vintage_id} × {month} 없음"}], "alternatives": []}
-    sign = check_sign_policy(sem, ledger, {month})
+    unsupported = [k for k in (within or {}) if k != "channel"]
+    if unsupported:
+        call["outcome"] = "out_of_domain"
+        return {"status": "out_of_domain",
+                "violated": [{"check": "plan_scope_supported", "passed": False,
+                              "detail": f"계획은 channel scope만 지원: {unsupported}"}],
+                "alternatives": ["해당 차원의 계획 빈티지를 등록"]}
+    sign = check_sign_policy(sem, ledger, {month}, within)
     if not sign["passed"]:
         call["outcome"] = "out_of_domain"
         return {"status": "out_of_domain", "violated": [sign],
                 "alternatives": ["환불·반품 행을 별도 계정으로 분리 적재 후 재실행"]}
     actual = defaultdict(int)
     for r in ledger:
-        if r["month"] == month:
+        if r["month"] == month and _within_match(r, within):
             actual[r["channel"]] += r["sales_u"]
     # 커버리지 게이트: 계획 키 밖 채널의 실적이 침묵 탈락하면 '전사 실적' 라벨이 거짓이 된다
     unallocated = {ch: a for ch, a in actual.items() if ch not in v["channel_u"] and a != 0}
@@ -336,14 +373,21 @@ def plan_gap(sem, ledger, month, record, vintage_id=None):
                                         f"전사 실적 집계에서 침묵 탈락 불가"}],
                 "alternatives": ["계획 빈티지에 채널 추가 또는 unallocated 행 명시 후 재실행"]}
     rows = []
+    scoped_channels = None
+    if within and "channel" in within:
+        got = within["channel"]
+        scoped_channels = set(got if isinstance(got, list) else [got])
     for ch, plan_u in v["channel_u"].items():
+        if scoped_channels is not None and ch not in scoped_channels:
+            continue
         a = actual.get(ch, 0)
         rows.append({"channel": ch, "plan_u": plan_u, "actual_u": a, "gap_u": a - plan_u,
                      "attainment_pct": round(a / plan_u * 100, 1) if plan_u else None})
     tp, ta = sum(r["plan_u"] for r in rows), sum(r["actual_u"] for r in rows)
     call["outcome"] = "result"
     return {"status": "result", "output_type": "Attribution",
-            "estimand": f"{month} 실적 − 계획(빈티지 {vintage_id})의 채널별 gap",
+            "estimand": f"{month} 실적 − 계획(빈티지 {vintage_id})의 채널별 gap"
+                        + (f" (제약: {within})" if within else ""),
             "uncertainty_model": "none",
             "total": {"plan_u": tp, "actual_u": ta, "gap_u": ta - tp,
                       "attainment_pct": round(ta / tp * 100, 1)},
@@ -415,13 +459,14 @@ def _slice_measurement_gate(sem, ledger, months, target):
 
 
 # ── 연산자: event_overlap_scan (이벤트 레지스트리 v0 대조) ───────────────
-def event_overlap_scan(sem, ledger, month_a, month_b, record, events_path=None):
+def event_overlap_scan(sem, ledger, month_a, month_b, record, events_path=None, within=None):
     """등록 이벤트별로 타깃 슬라이스의 Δ를 실측하고 선언 규모와 대조.
 
     출력은 증거 행이지 판정이 아니다: 금액 특정 이벤트는 '산술 대조', 미특정은 '시사 상한',
     같은 슬라이스에 겹치는 이벤트 쌍은 '분리 불가' 플래그. (Hill: 관점은 색인이지 판정 함수가 아님)
     """
-    call = {"operator": "event_overlap_scan", "months": [month_a, month_b]}
+    call = {"operator": "event_overlap_scan", "months": [month_a, month_b],
+            "within": within or {}}
     record["calls"].append(call)
     events = json.loads(Path(events_path or HERE / "events.json").read_text())["events"]
 
@@ -456,10 +501,24 @@ def event_overlap_scan(sem, ledger, month_a, month_b, record, events_path=None):
     for e in events:
         if e["affects"] != month_b:
             continue
-        gate = _slice_measurement_gate(sem, ledger, months, e["target"])
+        target = {k: list(v) for k, v in e["target"].items()}
+        compatible = True
+        for dim, scoped in (within or {}).items():
+            scoped_vals = set(scoped if isinstance(scoped, list) else [scoped])
+            if dim in target:
+                overlap = sorted(set(target[dim]) & scoped_vals)
+                if not overlap:
+                    compatible = False
+                    break
+                target[dim] = overlap
+            else:
+                target[dim] = sorted(scoped_vals)
+        if not compatible:
+            continue
+        gate = _slice_measurement_gate(sem, ledger, months, target)
         specified = e["declared_magnitude_u"] is not None
         if gate["passed"]:
-            d = slice_delta(e["target"])
+            d = slice_delta(target)
             mstat = "result"
             grade = ("산술 대조 가능(규모 특정)" if specified
                      else "정합 서술까지(규모 미특정) — 시사 상한")
@@ -469,7 +528,8 @@ def event_overlap_scan(sem, ledger, month_a, month_b, record, events_path=None):
             grade = ("선언치만(외부 신고) — 실측 보류(원장 오염)" if specified
                      else "실측 보류(원장 오염) — 정합 서술 성립 안 함")
         rows.append({"id": e["id"], "name": e["name"], "period": e["period"],
-                     "target": e["target"], "measured_slice_delta_u": d,
+                     "target": e["target"], "effective_target": target,
+                     "measured_slice_delta_u": d,
                      "measurement_status": mstat, "measurement_gate": gate,
                      "declared_magnitude_u": e["declared_magnitude_u"],
                      "reference_scale_u": e.get("reference_scale_u"),
@@ -479,14 +539,14 @@ def event_overlap_scan(sem, ledger, month_a, month_b, record, events_path=None):
     overlaps = []
     for i in range(len(rows)):
         for j in range(i + 1, len(rows)):
-            ei = next(e for e in events if e["id"] == rows[i]["id"])
-            ej = next(e for e in events if e["id"] == rows[j]["id"])
-            if not targets_intersect(ei["target"], ej["target"]):
+            ei = next((x for x in rows if x["id"] == rows[i]["id"]))
+            ej = next((x for x in rows if x["id"] == rows[j]["id"]))
+            if not targets_intersect(ei["effective_target"], ej["effective_target"]):
                 continue
             # 차원별 교집합만으로는 공유 차원이 없는 쌍이 무조건 교차 판정됨(가짜 중첩).
             # 실측 교집합 슬라이스의 매출이 양 기간 모두 0이면 경험적으로 무의미 — 플래그 억제.
-            shared = dict(ei["target"])
-            for dm, vals in ej["target"].items():
+            shared = dict(ei["effective_target"])
+            for dm, vals in ej["effective_target"].items():
                 shared[dm] = (sorted(set(shared[dm]) & set(vals)) if dm in shared
                               else list(vals))
             gate = _slice_measurement_gate(sem, ledger, months, shared)

@@ -1,0 +1,94 @@
+[
+  {
+    "id": "scope-online-change",
+    "question": "온라인 매출이 7월에 왜 빠졌어?",
+    "expect": {
+      "envelope_status": "spec",
+      "spec": {"metric_id": "commerce.net_sales", "metric_version": 1, "operation_family": "explain_change", "scope": {"channel": "온라인"}, "focal_period": "2026-07", "comparison": {"kind": "prior_period", "period": "2026-06", "vintage_id": null}},
+      "selection": {"must_include": ["contrib_decomp:category", "contrib_decomp:customer_type"], "must_exclude": ["contrib_decomp:channel"]},
+      "result_key": "contrib:category", "result_status": "result", "path": "total.delta_u", "value": -220,
+      "persistence_required": true
+    }
+  },
+  {
+    "id": "calendar-year-boundary",
+    "question": "1월 매출이 왜 변했나?",
+    "expect": {
+      "envelope_status": "spec",
+      "spec": {"metric_id": "commerce.net_sales", "metric_version": 1, "operation_family": "explain_change", "scope": {}, "focal_period": "2026-01", "comparison": {"kind": "prior_period", "period": "2025-12", "vintage_id": null}},
+      "selection": {"must_include": [], "must_exclude": []},
+      "result_key": "query_spec", "result_status": "suspended",
+      "persistence_required": false
+    }
+  },
+  {
+    "id": "plan-vintage-missing",
+    "question": "7월 매출 계획 대비 어때?",
+    "expect": {"envelope_status": "clarify", "reason": "계획 빈티지 미확정"}
+  },
+  {
+    "id": "plan-vintage-pinned",
+    "question": "2026-06-25 계획 대비 7월 매출 어때?",
+    "expect": {
+      "envelope_status": "spec",
+      "spec": {"metric_id": "commerce.net_sales", "metric_version": 1, "operation_family": "compare_plan", "scope": {}, "focal_period": "2026-07", "comparison": {"kind": "plan", "period": null, "vintage_id": "2026-06-25"}},
+      "selection": {"must_include": ["plan_gap"], "must_exclude": []},
+      "result_key": "plan_gap", "result_status": "result", "path": "total.gap_u", "value": -390,
+      "persistence_required": true
+    }
+  },
+  {
+    "id": "plan-scope-online",
+    "question": "2026-06-25 계획 대비 7월 온라인 매출 어때?",
+    "expect": {
+      "envelope_status": "spec",
+      "spec": {"metric_id": "commerce.net_sales", "metric_version": 1, "operation_family": "compare_plan", "scope": {"channel": "온라인"}, "focal_period": "2026-07", "comparison": {"kind": "plan", "period": null, "vintage_id": "2026-06-25"}},
+      "selection": {"must_include": ["plan_gap"], "must_exclude": []},
+      "result_key": "plan_gap", "result_status": "result", "path": "total.gap_u", "value": -320,
+      "persistence_required": true
+    }
+  },
+  {
+    "id": "level-scope-online",
+    "question": "7월 온라인 매출은?",
+    "expect": {
+      "envelope_status": "spec",
+      "spec": {"metric_id": "commerce.net_sales", "metric_version": 1, "operation_family": "inspect_level", "scope": {"channel": "온라인"}, "focal_period": "2026-07", "comparison": {"kind": "none", "period": null, "vintage_id": null}},
+      "selection": {"must_include": ["metric_level"], "must_exclude": []},
+      "result_key": "level", "result_status": "result", "path": "value_u", "value": 1580,
+      "persistence_required": true
+    }
+  },
+  {
+    "id": "invalid-month",
+    "question": "13월 매출이 왜 변했나?",
+    "expect": {"envelope_status": "clarify", "reason": "기간 범위 오류"}
+  },
+  {
+    "id": "yoy-input-missing",
+    "question": "전년 대비 7월 매출이 왜 변했나?",
+    "expect": {
+      "envelope_status": "spec",
+      "spec": {"metric_id": "commerce.net_sales", "metric_version": 1, "operation_family": "explain_change", "scope": {}, "focal_period": "2026-07", "comparison": {"kind": "year_over_year", "period": "2025-07", "vintage_id": null}},
+      "selection": {"must_include": [], "must_exclude": []},
+      "result_key": "query_spec", "result_status": "suspended",
+      "persistence_required": false
+    }
+  },
+  {
+    "id": "unknown-metric",
+    "question": "7월 이익이 왜 줄었지?",
+    "expect": {"envelope_status": "x1", "reason": "지표 미확정 — 질문에서 등록된 지표를 찾지 못함"}
+  },
+  {
+    "id": "scope-category-change",
+    "question": "가전 매출이 7월에 왜 변했나?",
+    "expect": {
+      "envelope_status": "spec",
+      "spec": {"metric_id": "commerce.net_sales", "metric_version": 1, "operation_family": "explain_change", "scope": {"category": "가전"}, "focal_period": "2026-07", "comparison": {"kind": "prior_period", "period": "2026-06", "vintage_id": null}},
+      "selection": {"must_include": ["contrib_decomp:channel", "contrib_decomp:customer_type"], "must_exclude": ["contrib_decomp:category"]},
+      "result_key": "contrib:channel", "result_status": "result", "path": "total.delta_u", "value": -200,
+      "persistence_required": true
+    }
+  }
+]

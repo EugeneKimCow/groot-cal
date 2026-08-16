@@ -1,0 +1,27 @@
+{
+  "metric": {
+    "id": "commerce.order_count",
+    "name": "주문 건수",
+    "aliases": ["주문 건수", "주문 수"],
+    "type": "count",
+    "version": 1,
+    "unit": "건",
+    "properties": {
+      "additive_across_dims": true,
+      "additive_across_time": true,
+      "aggregation_rule": "sum",
+      "sign": "nonnegative"
+    },
+    "bindings": {"value_field": "orders"},
+    "generation": {"source": "challenge fixture", "grain": "월 × 채널"}
+  },
+  "dimensions": {
+    "channel": {"type": "nominal", "values": ["온라인", "오프라인"], "mece": true}
+  },
+  "rows": [
+    {"month": "2026-06", "channel": "온라인", "orders": 8},
+    {"month": "2026-06", "channel": "오프라인", "orders": 11},
+    {"month": "2026-07", "channel": "온라인", "orders": 10},
+    {"month": "2026-07", "channel": "오프라인", "orders": 12}
+  ]
+}

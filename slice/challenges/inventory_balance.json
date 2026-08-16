@@ -1,0 +1,28 @@
+{
+  "metric": {
+    "id": "operations.inventory_on_hand",
+    "name": "재고 잔액",
+    "aliases": ["재고 잔액", "재고"],
+    "type": "balance",
+    "version": 1,
+    "unit": "개",
+    "properties": {
+      "additive_across_dims": true,
+      "additive_across_time": false,
+      "aggregation_rule": "semi_additive:last",
+      "time_semantics": "period_end",
+      "sign": "nonnegative"
+    },
+    "bindings": {"value_field": "inventory_qty"},
+    "generation": {"source": "challenge fixture", "grain": "월말 × 창고"}
+  },
+  "dimensions": {
+    "warehouse": {"type": "nominal", "values": ["서울", "부산"], "mece": true}
+  },
+  "rows": [
+    {"month": "2026-06", "warehouse": "서울", "inventory_qty": 100},
+    {"month": "2026-06", "warehouse": "부산", "inventory_qty": 80},
+    {"month": "2026-07", "warehouse": "서울", "inventory_qty": 120},
+    {"month": "2026-07", "warehouse": "부산", "inventory_qty": 70}
+  ]
+}

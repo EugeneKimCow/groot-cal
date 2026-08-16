@@ -1,0 +1,126 @@
+{
+  "experiment_version": "1",
+  "harness_revision": "v4",
+  "model": "gpt-5.6-terra",
+  "reasoning": "medium",
+  "attempts": [1, 2, 3, 4, 5],
+  "cases_per_condition": 10,
+  "scoring_policy": {
+    "invalid_trace": "overall failure and failure at every applicable stage",
+    "paired_test": "exact two-sided McNemar; exploratory because five repeats share ten case prompts"
+  },
+  "batch": {
+    "collected_traces": 100,
+    "runner_errors": 0,
+    "valid_traces": 98,
+    "invalid_traces": 2,
+    "capability_violations": 0,
+    "invalid_trace_ids": [
+      "raw/plan-scope-online#4",
+      "advisory/scope-category-change#2"
+    ]
+  },
+  "conditions": {
+    "raw": {
+      "traces": 50,
+      "valid_traces": 49,
+      "fully_passed": 7,
+      "stages": {
+        "resolution": {"pass": 7, "applicable": 50, "pass_rate": 0.14},
+        "binding": {"pass": 0, "applicable": 35, "pass_rate": 0.0},
+        "selection": {"pass": 10, "applicable": 35, "pass_rate": 0.285714},
+        "execution": {"pass": 11, "applicable": 35, "pass_rate": 0.314286},
+        "persistence": {"pass": 0, "applicable": 35, "pass_rate": 0.0},
+        "reporting": {"pass": 12, "applicable": 25, "pass_rate": 0.48}
+      },
+      "usage": {
+        "turns": 50,
+        "input_tokens": 3270731,
+        "cached_input_tokens": 607744,
+        "output_tokens": 105664,
+        "reasoning_output_tokens": 84398
+      }
+    },
+    "advisory": {
+      "traces": 50,
+      "valid_traces": 49,
+      "fully_passed": 14,
+      "stages": {
+        "resolution": {"pass": 40, "applicable": 50, "pass_rate": 0.8},
+        "binding": {"pass": 14, "applicable": 35, "pass_rate": 0.4},
+        "selection": {"pass": 25, "applicable": 35, "pass_rate": 0.714286},
+        "execution": {"pass": 23, "applicable": 35, "pass_rate": 0.657143},
+        "persistence": {"pass": 0, "applicable": 35, "pass_rate": 0.0},
+        "reporting": {"pass": 14, "applicable": 25, "pass_rate": 0.56}
+      },
+      "usage": {
+        "turns": 50,
+        "input_tokens": 5121172,
+        "cached_input_tokens": 1420544,
+        "output_tokens": 106559,
+        "reasoning_output_tokens": 84119
+      }
+    },
+    "enforced": {
+      "deterministic_unique_cases": 10,
+      "fully_passed": 10,
+      "stages": {
+        "resolution": {"pass": 10, "applicable": 10, "pass_rate": 1.0},
+        "binding": {"pass": 7, "applicable": 7, "pass_rate": 1.0},
+        "selection": {"pass": 7, "applicable": 7, "pass_rate": 1.0},
+        "execution": {"pass": 7, "applicable": 7, "pass_rate": 1.0},
+        "persistence": {"pass": 7, "applicable": 7, "pass_rate": 1.0},
+        "reporting": {"pass": 5, "applicable": 5, "pass_rate": 1.0}
+      }
+    }
+  },
+  "paired_raw_to_advisory": {
+    "matched_pairs": 50,
+    "fully_passed": {
+      "both_pass": 6,
+      "both_fail": 35,
+      "improved": 8,
+      "regressed": 1,
+      "net_improved": 7,
+      "mcnemar_exact_two_sided_p": 0.0390625
+    },
+    "stages": {
+      "resolution": {"improved": 34, "regressed": 1, "p": 2.0954757928848267e-09},
+      "binding": {"improved": 14, "regressed": 0, "p": 0.0001220703125},
+      "selection": {"improved": 15, "regressed": 0, "p": 0.00006103515625},
+      "execution": {"improved": 12, "regressed": 0, "p": 0.00048828125},
+      "persistence": {"improved": 0, "regressed": 0, "p": 1.0},
+      "reporting": {"improved": 2, "regressed": 0, "p": 0.5}
+    }
+  },
+  "advisory_to_enforced_descriptive": {
+    "fully_passed_rate": {"advisory": 0.28, "enforced": 1.0, "delta_pp": 72.0},
+    "resolution": {"advisory": 0.8, "enforced": 1.0, "delta_pp": 20.0},
+    "binding": {"advisory": 0.4, "enforced": 1.0, "delta_pp": 60.0},
+    "selection": {"advisory": 0.714286, "enforced": 1.0, "delta_pp": 28.5714},
+    "execution": {"advisory": 0.657143, "enforced": 1.0, "delta_pp": 34.2857},
+    "persistence": {"advisory": 0.0, "enforced": 1.0, "delta_pp": 100.0},
+    "reporting": {"advisory": 0.56, "enforced": 1.0, "delta_pp": 44.0},
+    "inferential_test": null,
+    "reason": "C2 is a deterministic engine baseline over ten unique cases, not fifty independent agent samples"
+  },
+  "usage_total": {
+    "turns": 100,
+    "input_tokens": 8391903,
+    "cached_input_tokens": 2028288,
+    "output_tokens": 212223,
+    "reasoning_output_tokens": 168517
+  },
+  "interpretation": {
+    "status": "supported_within_pilot",
+    "claim_allowed": "On this fixed sales corpus, executable enforcement closed every observed applicable stage while advisory-only access left material binding, arithmetic, persistence, and reporting errors.",
+    "claim_forbidden": "Universal model-independent superiority or a confirmatory population-level effect size.",
+    "recurring_failures": [
+      "advisory calendar-year-boundary resolution failed in 5/5 attempts",
+      "advisory plan-vintage-pinned execution arithmetic failed in 5/5 attempts",
+      "advisory scope-category-change execution failed in 5/5 attempts including one invalid trace",
+      "advisory persistence failed in 35/35 applicable attempts"
+    ],
+    "promotion_decision": "Promote the type-directed metric and explicit binding execution contract; keep the metric-type enumeration open and provisional."
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "experiment_version": "1",
+  "harness_revision": "v4",
+  "model": "gpt-5.6-terra",
+  "reasoning": "medium",
+  "attempts": [1],
+  "cases_per_condition": 10,
+  "batch": {
+    "completed": 20,
+    "errors": 0,
+    "capability_violations": 0
+  },
+  "conditions": {
+    "raw": {
+      "traces": 10,
+      "fully_passed": 1,
+      "stages": {
+        "resolution": {"pass": 1, "fail": 9, "not_applicable": 0},
+        "binding": {"pass": 0, "fail": 7, "not_applicable": 3},
+        "selection": {"pass": 2, "fail": 5, "not_applicable": 3},
+        "execution": {"pass": 3, "fail": 4, "not_applicable": 3},
+        "persistence": {"pass": 0, "fail": 7, "not_applicable": 3},
+        "reporting": {"pass": 3, "fail": 2, "not_applicable": 5}
+      },
+      "usage": {
+        "input_tokens": 666357,
+        "cached_input_tokens": 131328,
+        "output_tokens": 22266,
+        "reasoning_output_tokens": 17837
+      }
+    },
+    "advisory": {
+      "traces": 10,
+      "fully_passed": 3,
+      "stages": {
+        "resolution": {"pass": 8, "fail": 2, "not_applicable": 0},
+        "binding": {"pass": 4, "fail": 3, "not_applicable": 3},
+        "selection": {"pass": 5, "fail": 2, "not_applicable": 3},
+        "execution": {"pass": 5, "fail": 2, "not_applicable": 3},
+        "persistence": {"pass": 0, "fail": 7, "not_applicable": 3},
+        "reporting": {"pass": 3, "fail": 2, "not_applicable": 5}
+      },
+      "usage": {
+        "input_tokens": 975222,
+        "cached_input_tokens": 226304,
+        "output_tokens": 20457,
+        "reasoning_output_tokens": 15972
+      }
+    }
+  },
+  "interpretation": {
+    "status": "interim",
+    "claim_allowed": "attempt 1에서 advisory가 raw보다 resolution, binding, selection, execution pass 수가 높음",
+    "claim_forbidden": "H2 효과 크기 또는 통계적 우월성",
+    "notable_real_errors": [
+      "plan-vintage-pinned actual/gap arithmetic mismatch",
+      "scope-category-change period delta arithmetic mismatch"
+    ],
+    "remaining_requirement": "attempt 2-5의 raw/advisory 80 trace"
+  }
+}

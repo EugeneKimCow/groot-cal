@@ -1,0 +1,33 @@
+{
+  "metric": {
+    "id": "insurance.loss_ratio",
+    "name": "손해율",
+    "type": "rate",
+    "version": 1,
+    "unit": "ratio",
+    "properties": {
+      "additive_across_dims": false,
+      "additive_across_time": false,
+      "aggregation_rule": "denominator_weighted_mean",
+      "has_denominator": true,
+      "is_counted_fraction": false,
+      "bounded": {"lower": 0, "upper": null},
+      "sign": "nonnegative"
+    },
+    "bindings": {
+      "numerator_field": "incurred_claims_u",
+      "denominator_field": "earned_premium_u"
+    },
+    "generation": {"source": "challenge fixture", "grain": "월 × 권역"}
+  },
+  "dimensions": {
+    "region": {"type": "nominal", "values": ["A", "B"], "mece": true}
+  },
+  "rows": [
+    {"month": "2026-06", "region": "A", "incurred_claims_u": 40, "earned_premium_u": 100},
+    {"month": "2026-06", "region": "B", "incurred_claims_u": 90, "earned_premium_u": 100},
+    {"month": "2026-07", "region": "A", "incurred_claims_u": 72, "earned_premium_u": 120},
+    {"month": "2026-07", "region": "B", "incurred_claims_u": 60, "earned_premium_u": 80}
+  ]
+}
+

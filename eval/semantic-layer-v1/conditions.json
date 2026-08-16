@@ -1,0 +1,24 @@
+{
+  "experiment_version": "1",
+  "target_attempts_per_case": 5,
+  "conditions": {
+    "raw": {
+      "description": "원시 입력과 자유 계산만 제공",
+      "allowed_resources": ["question", "calculator", "slice/data/", "slice/plan_vintage.json", "slice/events.json"],
+      "prohibited_resources": ["slice/semantic.json", "slice/operator_registry.json", "schemas/", "docs/", "eval/", "engine.run_question"],
+      "instructions": "질문에 답하고 관측한 해석·바인딩·연산·근거를 agent-trace-v1 형식으로 기록한다. semantic 계약이나 강제 실행 엔진은 사용할 수 없다."
+    },
+    "advisory": {
+      "description": "semantic 문서와 registry를 읽을 수 있으나 실행 강제 없음",
+      "allowed_resources": ["question", "calculator", "slice/data/", "slice/plan_vintage.json", "slice/events.json", "slice/semantic.json", "slice/operator_registry.json", "schemas/query-spec-v1.schema.json", "docs/archi-2.md", "docs/operator-registry-v1.md", "docs/report-contract-v0.md", "docs/canonical-boundary-v1.md"],
+      "prohibited_resources": ["engine.run_question", "eval/", "docs/golden-set-v1.md", "docs/exemplars-v0.md"],
+      "instructions": "제공된 semantic 문서와 registry를 참고할 수 있지만 계산·선택은 자유다. 질문에 답하고 전 단계를 agent-trace-v1 형식으로 기록한다."
+    },
+    "enforced": {
+      "description": "Query Spec·registry·gate·budget이 강제된 공개 엔진만 제공",
+      "allowed_resources": ["question", "engine.run_question", "result_envelope"],
+      "prohibited_resources": ["slice/data/", "slice/plan_vintage.json", "slice/events.json"],
+      "instructions": "engine.run_question 결과만 소비한다. 원장에 직접 접근하지 않고 Result Envelope와 execution record를 agent-trace-v1로 정규화한다."
+    }
+  }
+}

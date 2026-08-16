@@ -1,0 +1,37 @@
+{
+  "catalog_version": "1",
+  "defaults": {
+    "as_of": "2026-08-06",
+    "comparison_basis": "prior_period",
+    "delta_min_u": 20,
+    "exploration_budget": {
+      "max_depth": 2,
+      "max_segments": 40,
+      "max_hypotheses": 10,
+      "max_operator_calls": 10
+    }
+  },
+  "entries": [
+    {
+      "semantic_path": "semantic.json",
+      "data": {"loader": "commerce_ledger", "path": "data/ledger.csv"},
+      "execution_profile": "commerce_extensions"
+    },
+    {
+      "fixture_path": "challenges/operating_profit.json",
+      "execution_profile": "typed_core"
+    },
+    {
+      "fixture_path": "challenges/loss_ratio.json",
+      "execution_profile": "typed_core"
+    },
+    {
+      "fixture_path": "challenges/inventory_balance.json",
+      "execution_profile": "typed_core"
+    },
+    {
+      "fixture_path": "challenges/active_customers.json",
+      "execution_profile": "typed_core"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "metric": {
+    "id": "finance.operating_profit",
+    "name": "영업이익",
+    "type": "amount",
+    "version": 1,
+    "unit": "0.1억원(u)",
+    "properties": {
+      "additive_across_dims": true,
+      "additive_across_time": true,
+      "aggregation_rule": "sum",
+      "sign": "any"
+    },
+    "bindings": {"value_field": "profit_u"},
+    "generation": {"source": "challenge fixture", "grain": "월 × 사업부"}
+  },
+  "dimensions": {
+    "business_unit": {"type": "nominal", "values": ["리테일", "기업"], "mece": true}
+  },
+  "rows": [
+    {"month": "2026-06", "business_unit": "리테일", "profit_u": 100},
+    {"month": "2026-06", "business_unit": "기업", "profit_u": -20},
+    {"month": "2026-07", "business_unit": "리테일", "profit_u": 70},
+    {"month": "2026-07", "business_unit": "기업", "profit_u": -50}
+  ]
+}
+

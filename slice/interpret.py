@@ -8,25 +8,32 @@
 """
 import re
 
+from query_spec import comparison_period
+
 
 def interpret(question, sem):
     dims = sem["dimensions"]
 
     # ── 지표 바인딩 (닫힌 어휘: 등록 지표만) ──
-    metrics = [sem["metric"]["name"]]
+    metrics = sem["metric"].get("aliases", [sem["metric"]["name"]])
     hit = [m for m in metrics if m in question]
     if not hit:
         return {"status": "x1", "reason": "지표 미확정 — 질문에서 등록된 지표를 찾지 못함",
                 "candidates": metrics,
                 "message": f"등록된 지표는 {metrics}입니다. 어느 지표를 물으시는 건가요?"}
-    metric = hit[0]
+    metric = sem["metric"]["name"]
 
     # ── 기간 바인딩 ──
     m = re.search(r"(\d{1,2})월", question)
     if m:
-        month = f"2026-{int(m.group(1)):02d}"
+        month_n = int(m.group(1))
+        if not 1 <= month_n <= 12:
+            return {"status": "clarify", "reason": "기간 범위 오류",
+                    "message": "월은 1월부터 12월 사이로 지정해 주세요."}
+        month = f"2026-{month_n:02d}"
     elif re.search(r"(지난달|전월)", question):
-        month = "2026-07"  # v0: as-of 2026-08 기준
+        as_of = sem["question_defaults"]["as_of"]
+        month = comparison_period(as_of[:7], "prior_period")
     else:
         return {"status": "clarify", "reason": "기간 미확정",
                 "message": "어느 기간을 보시겠습니까? (예: 7월, 지난달)"}
@@ -35,12 +42,13 @@ def interpret(question, sem):
     if re.search(r"계획|예산|목표", question):
         basis = "plan"
     elif re.search(r"작년|전년|YoY|yoy", question):
-        basis = "yoy"
+        basis = "year_over_year"
     else:
         basis = sem["question_defaults"]["comparison_basis"]  # prior_period
 
     # ── 질문 유형 ──
-    qtype = "change" if re.search(r"왜|원인|변했|변화|빠졌|늘었|줄었", question) else "level"
+    qtype = "change" if re.search(
+        r"왜|원인|변했|변화|빠졌|늘었|줄었|증가|감소|대비|차이|달성", question) else "level"
 
     # ── 범위(차원 값 언급) 바인딩 — 닫힌 어휘 대조 ──
     within = {}
@@ -49,15 +57,54 @@ def interpret(question, sem):
         if found:
             within[dim] = found[0] if len(found) == 1 else found
 
-    prev = f"2026-{int(month[5:7]) - 1:02d}"
-    basis_txt = {"prior_period": f"전월({prev}) 대비", "plan": "계획 대비", "yoy": "전년 동월 대비"}[basis]
-    scope_txt = ", ".join(f"{k}={v}" for k, v in within.items()) or "전 채널"
+    if basis == "plan":
+        vm = re.search(r"(20\d{2}-\d{2}-\d{2}).{0,8}(계획|예산|목표)|(계획|예산|목표).{0,8}(20\d{2}-\d{2}-\d{2})", question)
+        vintage_id = next((g for g in (vm.groups() if vm else [])
+                           if g and re.fullmatch(r"20\d{2}-\d{2}-\d{2}", g)), None)
+        if vintage_id is None:
+            return {"status": "clarify", "reason": "계획 빈티지 미확정",
+                    "message": "어느 시점에 확정된 계획과 비교할까요? (예: 2026-06-25 계획)"}
+        comp_period = None
+        operation_family = "compare_plan"
+    elif basis == "year_over_year":
+        vintage_id = None
+        comp_period = comparison_period(month, basis)
+        operation_family = "explain_change" if qtype == "change" else "inspect_level"
+    elif qtype == "change":
+        vintage_id = None
+        comp_period = comparison_period(month, basis)
+        operation_family = "explain_change"
+    else:
+        vintage_id = None
+        comp_period = None
+        basis = "none"
+        operation_family = "inspect_level"
+
+    basis_txt = {"prior_period": f"전월({comp_period}) 대비", "plan": f"계획({vintage_id}) 대비",
+                 "year_over_year": f"전년 동월({comp_period}) 대비", "none": "비교 기준 없음"}[basis]
+    scope_txt = ", ".join(f"{k}={v}" for k, v in within.items()) or "전체 범위"
+    query_spec = {
+            "spec_version": "1",
+            "question": question,
+            "subject": {"metric_id": sem["metric"]["id"],
+                        "metric_version": sem["metric"]["version"]},
+            "intent": {"operation_family": operation_family},
+            "scope": within,
+            "focal_period": month,
+            "comparison": {"kind": basis, "period": comp_period, "vintage_id": vintage_id},
+            "as_of": sem["question_defaults"]["as_of"],
+            "requested_output": {"genre": "analysis_note"},
+            "defaults_applied": (["comparison=prior_period"]
+                                 if basis == "prior_period" and not re.search(r"전월|지난달", question)
+                                 else [])}
     return {"status": "spec",
             "question": question,
-            "signature": {"external_criterion": "present" if qtype == "change" else "absent",
+            "signature": {"external_criterion": "absent" if basis == "none" else "present",
                           "question_type": qtype},
             "binding": {"metric": f"{metric}@v{sem['metric']['version']}", "month": month,
-                        "comparison_basis": basis, "within": within, "as_of": "2026-08-06"},
+                        "comparison_basis": basis, "within": within,
+                        "as_of": sem["question_defaults"]["as_of"]},
+            "query_spec": query_spec,
             "echo": f"이렇게 이해했습니다 — {metric}[v{sem['metric']['version']}], {month}, {basis_txt}, {scope_txt}"}
 
 

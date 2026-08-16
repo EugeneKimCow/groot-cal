@@ -1,0 +1,39 @@
+{
+  "metric": {
+    "id": "growth.active_customers",
+    "name": "활성 고객 수",
+    "aliases": ["활성 고객 수", "활성 고객"],
+    "type": "distinct",
+    "version": 1,
+    "unit": "명",
+    "properties": {
+      "additive_across_dims": false,
+      "additive_across_time": false,
+      "aggregation_rule": "non_aggregable",
+      "entity_type": "customer",
+      "sign": "nonnegative"
+    },
+    "bindings": {"entity_id_field": "customer_id"},
+    "generation": {"source": "challenge fixture", "grain": "월 × 고객 관측"}
+  },
+  "dimensions": {
+    "region": {
+      "type": "nominal",
+      "values": ["서울", "부산"],
+      "mece": true,
+      "entity_functional": {"customer": true}
+    }
+  },
+  "rows": [
+    {"month": "2026-06", "customer_id": "c1", "region": "서울"},
+    {"month": "2026-06", "customer_id": "c1", "region": "서울"},
+    {"month": "2026-06", "customer_id": "c2", "region": "서울"},
+    {"month": "2026-06", "customer_id": "c3", "region": "부산"},
+    {"month": "2026-07", "customer_id": "c1", "region": "서울"},
+    {"month": "2026-07", "customer_id": "c2", "region": "서울"},
+    {"month": "2026-07", "customer_id": "c2", "region": "서울"},
+    {"month": "2026-07", "customer_id": "c3", "region": "부산"},
+    {"month": "2026-07", "customer_id": "c4", "region": "서울"},
+    {"month": "2026-07", "customer_id": "c5", "region": "부산"}
+  ]
+}

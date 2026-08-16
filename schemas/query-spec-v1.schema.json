@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "groot-cal/query-spec-v1",
+  "title": "Query Spec v1",
+  "type": "object",
+  "required": ["spec_version", "question", "subject", "intent", "scope", "focal_period", "comparison", "as_of"],
+  "properties": {
+    "spec_version": {"const": "1"},
+    "question": {"type": "string", "minLength": 1},
+    "subject": {
+      "type": "object",
+      "required": ["metric_id", "metric_version"],
+      "properties": {
+        "metric_id": {"type": "string"},
+        "metric_version": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "intent": {
+      "type": "object",
+      "required": ["operation_family"],
+      "properties": {
+        "operation_family": {"enum": ["explain_change", "compare_plan", "inspect_level"]}
+      },
+      "additionalProperties": false
+    },
+    "scope": {"type": "object"},
+    "focal_period": {"type": "string", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"},
+    "comparison": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": {"enum": ["prior_period", "year_over_year", "plan", "none"]},
+        "period": {"type": ["string", "null"]},
+        "vintage_id": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "as_of": {"type": "string", "format": "date"},
+    "requested_output": {"type": "object"},
+    "defaults_applied": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}
+

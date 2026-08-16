@@ -1,6 +1,8 @@
 {
   "metric": {
+    "id": "commerce.net_sales",
     "name": "매출",
+    "aliases": ["매출", "순매출"],
     "type": "amount",
     "version": 1,
     "unit": "0.1억원(u)",
@@ -11,6 +13,7 @@
       "has_denominator": false,
       "sign": "nonnegative"
     },
+    "bindings": {"value_field": "sales_u"},
     "decomposition_identities": [
       {
         "identity": "매출 = Σ_seg 매출[seg]",
@@ -39,8 +42,14 @@
                "applies_to": {"channel": "오프라인"}}
   },
   "question_defaults": {
+    "as_of": "2026-08-06",
     "comparison_basis": "prior_period",
     "delta_min_u": 20,
-    "exploration_budget": {"max_depth": 2, "max_segments": 40}
+    "exploration_budget": {
+      "max_depth": 2,
+      "max_segments": 40,
+      "max_hypotheses": 10,
+      "max_operator_calls": 10
+    }
   }
 }

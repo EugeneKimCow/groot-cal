@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "groot-cal/operator-v1",
+  "title": "Operator Contract v1",
+  "type": "object",
+  "required": ["version", "operation_families", "output_type"],
+  "properties": {
+    "version": {"type": "integer", "minimum": 1},
+    "operation_families": {
+      "type": "array",
+      "items": {"enum": ["explain_change", "compare_plan", "inspect_level"]}
+    },
+    "metric_types": {"type": "array"},
+    "requires": {"type": "array"},
+    "inherent_scope": {"type": "object"},
+    "output_type": {"type": "string"}
+  },
+  "additionalProperties": false
+}
+

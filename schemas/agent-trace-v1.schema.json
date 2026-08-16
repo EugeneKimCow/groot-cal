@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "groot-cal/agent-trace-v1",
+  "title": "Normalized H2 Agent Trace v1",
+  "type": "object",
+  "required": ["trace_version", "condition", "case_id", "attempt", "access_log", "observation"],
+  "properties": {
+    "trace_version": {"const": "1"},
+    "condition": {"enum": ["raw", "advisory", "enforced"]},
+    "case_id": {"type": "string"},
+    "attempt": {"type": "integer", "minimum": 1},
+    "agent_ref": {"type": ["string", "null"]},
+    "access_log": {"type": "array", "items": {"type": "string"}},
+    "observation": {
+      "type": "object",
+      "required": ["resolution", "binding", "selection", "execution", "persistence", "reporting"],
+      "properties": {
+        "resolution": {"type": "object"},
+        "binding": {"type": ["object", "null"]},
+        "selection": {"type": "object"},
+        "execution": {"type": ["object", "null"]},
+        "persistence": {"type": ["object", "null"]},
+        "reporting": {"type": ["object", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "final_answer": {"type": ["string", "null"]}
+  },
+  "additionalProperties": false
+}

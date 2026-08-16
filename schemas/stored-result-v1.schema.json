@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "groot-cal/stored-result-v1",
+  "title": "Stored Analytical Result v1",
+  "type": "object",
+  "required": ["result_id", "storage_kind", "result_key", "query_spec_hash", "operator_ref", "created_at", "query_spec", "staleness", "payload"],
+  "properties": {
+    "result_id": {"type": "string"},
+    "storage_kind": {"enum": ["derived_metric", "materialized_result", "evidence_bundle", "report"]},
+    "result_key": {"type": "string"},
+    "query_spec_hash": {"type": "string"},
+    "operator_ref": {"type": "string"},
+    "metric_ref": {"type": "string"},
+    "input_snapshot_ref": {"type": "string"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "question": {"type": ["string", "null"]},
+    "query_spec": {"type": "object"},
+    "staleness": {
+      "type": "object",
+      "required": ["policy"],
+      "properties": {
+        "policy": {"enum": ["immutable_snapshot", "recompute_on_source_change", "expires_at"]},
+        "expires_at": {"type": ["string", "null"], "format": "date-time"}
+      },
+      "additionalProperties": false
+    },
+    "provenance": {"type": "object"},
+    "payload": {"type": "object"}
+  },
+  "additionalProperties": true
+}

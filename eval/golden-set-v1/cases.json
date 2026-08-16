@@ -1,0 +1,301 @@
+{
+  "golden_set_version": "1",
+  "fixture": "slice/data/ledger.csv",
+  "unit": "1u = 0.1억원",
+  "maturity": {
+    "ready": "현재 Query Spec과 강제형 실행 경로에서 자동 회귀",
+    "challenge": "별도 타입 challenge에서 산술 의미만 입증; 주 실행 경로 승격 전",
+    "planned": "계약 목표이며 구현 완료로 간주하지 않음"
+  },
+  "cases": [
+    {
+      "id": "sales-level-total",
+      "maturity": "ready",
+      "question": "7월 매출은?",
+      "assertions": [
+        {"path": "envelope.status", "equals": "spec"},
+        {"path": "bundle.results.level.status", "equals": "result"},
+        {"path": "bundle.results.level.value_u", "equals": 3860},
+        {"path": "bundle.results.level.label_ceiling.수준", "equals": "데이터 확인"}
+      ],
+      "answer_contract": {
+        "required_facts": ["2026-07 매출 386억원"],
+        "language": ["확인 종결"]
+      }
+    },
+    {
+      "id": "sales-level-online",
+      "maturity": "ready",
+      "question": "7월 온라인 매출은?",
+      "assertions": [
+        {"path": "envelope.status", "equals": "spec"},
+        {"path": "bundle.results.level.status", "equals": "result"},
+        {"path": "bundle.results.level.value_u", "equals": 1580}
+      ],
+      "answer_contract": {
+        "required_facts": ["2026-07 온라인 매출 158억원"],
+        "language": ["확인 종결"]
+      }
+    },
+    {
+      "id": "sales-change-total",
+      "maturity": "ready",
+      "question": "7월 매출이 왜 변했나?",
+      "assertions": [
+        {"path": "envelope.status", "equals": "spec"},
+        {"path": "bundle.results.contrib:channel.total.before_u", "equals": 4200},
+        {"path": "bundle.results.contrib:channel.total.after_u", "equals": 3860},
+        {"path": "bundle.results.contrib:channel.total.delta_u", "equals": -340},
+        {"result": "contrib:channel", "segment": "온라인", "field": "delta_u", "equals": -220},
+        {"result": "contrib:channel", "segment": "오프라인", "field": "delta_u", "equals": -70},
+        {"result": "contrib:channel", "segment": "B2B", "field": "delta_u", "equals": -50},
+        {"result": "contrib:customer_type", "segment": "신규", "field": "delta_u", "equals": -280},
+        {"result": "contrib:category", "segment": "가전", "field": "delta_u", "equals": -200},
+        {"result": "contrib:category", "segment": "뷰티", "field": "delta_u", "equals": 80}
+      ],
+      "answer_contract": {
+        "required_facts": ["420억원→386억원", "34억원 감소", "온라인 -22억원", "신규 -28억원", "가전 -20억원", "뷰티 +8억원"],
+        "language": ["산술 기여는 확인", "집중 해석은 시사"],
+        "forbidden": ["축간 기여분 합산", "독립 원인 또는 인과 판정"]
+      }
+    },
+    {
+      "id": "sales-change-online",
+      "maturity": "ready",
+      "question": "온라인 매출이 7월에 왜 빠졌어?",
+      "assertions": [
+        {"path": "envelope.status", "equals": "spec"},
+        {"path": "bundle.results.contrib:customer_type.total.delta_u", "equals": -220},
+        {"result": "contrib:customer_type", "segment": "신규", "field": "delta_u", "equals": -240},
+        {"result": "contrib:customer_type", "segment": "기존", "field": "delta_u", "equals": 20},
+        {"result": "contrib:category", "segment": "가전", "field": "delta_u", "equals": -100},
+        {"result": "contrib:category", "segment": "뷰티", "field": "delta_u", "equals": 19}
+      ],
+      "answer_contract": {
+        "required_facts": ["180억원→158억원", "22억원 감소", "신규 -24억원", "기존 +2억원"],
+        "language": ["산술 기여는 확인", "이벤트 설명은 시사 상한"],
+        "forbidden": ["등록 이벤트를 실제 원인으로 판정"]
+      }
+    },
+    {
+      "id": "sales-plan-total",
+      "maturity": "ready",
+      "question": "2026-06-25 계획 대비 7월 매출 어때?",
+      "assertions": [
+        {"path": "envelope.status", "equals": "spec"},
+        {"path": "bundle.results.plan_gap.total.plan_u", "equals": 4250},
+        {"path": "bundle.results.plan_gap.total.actual_u", "equals": 3860},
+        {"path": "bundle.results.plan_gap.total.gap_u", "equals": -390},
+        {"path": "bundle.results.plan_gap.total.attainment_pct", "equals": 90.8}
+      ],
+      "answer_contract": {
+        "required_facts": ["빈티지 2026-06-25", "계획 425억원", "실적 386억원", "gap -39억원", "달성률 90.8%"]
+      }
+    },
+    {
+      "id": "sales-plan-online",
+      "maturity": "ready",
+      "question": "2026-06-25 계획 대비 7월 온라인 매출 어때?",
+      "assertions": [
+        {"path": "envelope.status", "equals": "spec"},
+        {"path": "bundle.results.plan_gap.total.plan_u", "equals": 1900},
+        {"path": "bundle.results.plan_gap.total.actual_u", "equals": 1580},
+        {"path": "bundle.results.plan_gap.total.gap_u", "equals": -320},
+        {"path": "bundle.results.plan_gap.total.attainment_pct", "equals": 83.2}
+      ],
+      "answer_contract": {
+        "required_facts": ["온라인 계획 190억원", "실적 158억원", "gap -32억원", "달성률 83.2%"]
+      }
+    },
+    {
+      "id": "plan-vintage-clarification",
+      "maturity": "ready",
+      "question": "7월 계획 대비 매출은?",
+      "assertions": [
+        {"path": "envelope.status", "equals": "clarify"},
+        {"path": "envelope.reason", "equals": "계획 빈티지 미확정"}
+      ],
+      "answer_contract": {
+        "required_behavior": "계획 확정 시점을 특정해 되묻고 실행하지 않음"
+      }
+    },
+    {
+      "id": "yoy-input-suspension",
+      "maturity": "ready",
+      "question": "작년 대비 7월 매출은?",
+      "assertions": [
+        {"path": "envelope.status", "equals": "spec"},
+        {"path": "bundle.results.query_spec.status", "equals": "suspended"},
+        {"path": "bundle.results.query_spec.missing_inputs", "contains": "ledger 2025-07"}
+      ],
+      "answer_contract": {
+        "required_behavior": "2025-07 원장 부재와 재개 조건을 명시"
+      }
+    },
+    {
+      "id": "unknown-metric-clarification",
+      "maturity": "ready",
+      "question": "7월 이익이 왜 줄었지?",
+      "assertions": [
+        {"path": "envelope.status", "equals": "x1"}
+      ],
+      "answer_contract": {
+        "required_behavior": "미등록 지표로 전진하지 않고 등록 지표 후보를 제시"
+      }
+    },
+    {
+      "id": "restricted-scope-rejection",
+      "maturity": "ready",
+      "question": "7월 호남 매출은?",
+      "assertions": [
+        {"path": "envelope.status", "equals": "spec"},
+        {"path": "bundle.results.query_spec.status", "equals": "out_of_domain"}
+      ],
+      "answer_contract": {
+        "required_behavior": "region은 오프라인에만 정의됨을 밝히고 침묵 축소하지 않음"
+      }
+    },
+    {
+      "id": "operating-profit-change",
+      "maturity": "ready",
+      "question": "7월 영업이익이 왜 줄었나?",
+      "assertions": [
+        {"path": "envelope.status", "equals": "spec"},
+        {"path": "bundle.results.contrib:business_unit.status", "equals": "result"},
+        {"path": "bundle.results.contrib:business_unit.total.before", "equals": 80},
+        {"path": "bundle.results.contrib:business_unit.total.after", "equals": 20},
+        {"path": "bundle.results.contrib:business_unit.total.delta", "equals": -60},
+        {"result": "contrib:business_unit", "segment": "리테일", "field": "delta", "equals": -30},
+        {"result": "contrib:business_unit", "segment": "기업", "field": "delta", "equals": -30},
+        {"path": "bundle.results.contrib:business_unit.operator_ref", "equals": "contrib_decomp@v1"}
+      ],
+      "answer_contract": {
+        "required_facts": ["8억원→2억원", "6억원 감소", "리테일 -3억원", "기업 -3억원"],
+        "invariants": ["sign:any", "음수 원천값 허용", "지표명 기반 kernel 분기 금지"],
+        "language": ["산술 기여는 데이터 확인", "원인 판정 금지"]
+      }
+    },
+    {
+      "id": "loss-ratio-level",
+      "maturity": "ready",
+      "question": "7월 보험 손해율은?",
+      "assertions": [
+        {"path": "envelope.status", "equals": "spec"},
+        {"path": "bundle.results.level.status", "equals": "result"},
+        {"path": "bundle.results.level.numerator", "equals": 132},
+        {"path": "bundle.results.level.denominator", "equals": 200},
+        {"path": "bundle.results.level.value", "equals": 0.66},
+        {"path": "bundle.results.level.aggregation_rule", "equals": "denominator_weighted_mean"},
+        {"path": "bundle.results.level.operator_ref", "equals": "rate_level@v1"}
+      ],
+      "answer_contract": {
+        "required_facts": ["손해율 66%", "지역별 비율 단순 평균 67.5% 거부"],
+        "invariants": ["Σ분자/Σ분모", "rate에 contrib_decomp 호출 금지"],
+        "language": ["데이터 확인"]
+      }
+    },
+    {
+      "id": "inventory-balance-change",
+      "maturity": "ready",
+      "question": "7월 말 재고는 얼마이고 6월 말 대비 어느 창고에서 증가했나?",
+      "assertions": [
+        {"path": "envelope.status", "equals": "spec"},
+        {"path": "bundle.results.contrib:warehouse.status", "equals": "result"},
+        {"path": "bundle.results.contrib:warehouse.total.before", "equals": 180},
+        {"path": "bundle.results.contrib:warehouse.total.after", "equals": 190},
+        {"path": "bundle.results.contrib:warehouse.total.delta", "equals": 10},
+        {"result": "contrib:warehouse", "segment": "서울", "field": "delta", "equals": 20},
+        {"result": "contrib:warehouse", "segment": "부산", "field": "delta", "equals": -10}
+      ],
+      "answer_contract": {
+        "required_facts": ["6월 말 180개", "7월 말 190개", "10개 증가", "서울 +20개", "부산 -10개"],
+        "invariants": ["시점 잔액", "기간 합산 금지", "창고 차원 가법성 검사"],
+        "language": ["월말 간 산술 변화는 데이터 확인"]
+      }
+    },
+    {
+      "id": "active-customer-distinct-change",
+      "maturity": "ready",
+      "question": "7월 활성 고객 증가는 어느 지역에서 발생했나?",
+      "assertions": [
+        {"path": "envelope.status", "equals": "spec"},
+        {"path": "bundle.results.distinct:region.status", "equals": "result"},
+        {"path": "bundle.results.distinct:region.total.before", "equals": 3},
+        {"path": "bundle.results.distinct:region.total.after", "equals": 5},
+        {"path": "bundle.results.distinct:region.total.delta", "equals": 2},
+        {"result": "distinct:region", "segment": "서울", "field": "delta", "equals": 1},
+        {"result": "distinct:region", "segment": "부산", "field": "delta", "equals": 1}
+      ],
+      "answer_contract": {
+        "required_facts": ["활성 고객 3명→5명", "서울 +1명", "부산 +1명"],
+        "invariants": ["entity functional 차원에서만 분해", "중복 고객 이중 계수 금지"],
+        "language": ["distinct 기여는 데이터 확인"]
+      }
+    },
+    {
+      "id": "stored-result-staleness",
+      "maturity": "ready",
+      "question": "이 분석 결과가 아직 유효한가?",
+      "setup": {"materialize_question": "7월 온라인 매출은?", "result_key": "level"},
+      "assertions": [
+        {"path": "envelope.status", "equals": "spec"},
+        {"path": "bundle.results.staleness.status", "equals": "result"},
+        {"path": "bundle.results.staleness.staleness_status", "equals": "fresh"},
+        {"path": "bundle.results.staleness.policy", "equals": "recompute_on_source_change"}
+      ],
+      "answer_contract": {
+        "required_facts": ["현재 원천 스냅샷과 저장 시점 스냅샷 동일", "fresh"],
+        "invariants": ["query spec hash", "input snapshot ref", "staleness policy"],
+        "language": ["최신성 판정은 데이터 확인"]
+      }
+    },
+    {
+      "id": "bounded-reporting",
+      "maturity": "ready",
+      "question": "이 결과를 경영진 메모로 작성해줘",
+      "setup": {"report_question": "온라인 매출이 7월에 왜 빠졌어?"},
+      "assertions": [
+        {"path": "envelope.status", "equals": "spec"},
+        {"path": "bundle.results.report.status", "equals": "result"},
+        {"path": "bundle.results.report.report_version", "equals": "1"},
+        {"path": "bundle.results.report.selected_result.result_key", "equals": "contrib:customer_type"},
+        {"path": "bundle.results.report.slots.header_meta.status", "equals": "populated"},
+        {"path": "bundle.results.report.slots.headline_verdict.status", "equals": "populated"},
+        {"path": "bundle.results.report.slots.decomposition_where.status", "equals": "populated"},
+        {"path": "bundle.results.report.slots.cause_mapping_why.status", "equals": "populated"},
+        {"path": "bundle.results.report.slots.ambiguity_block.status", "equals": "populated"},
+        {"path": "bundle.results.report.slots.watchpoints_validation.status", "equals": "populated"},
+        {"path": "bundle.results.report.slots.followup_actions.status", "equals": "populated"},
+        {"path": "bundle.results.report.slots.source_basis_footer.status", "equals": "populated"},
+        {"path": "bundle.results.report.capability.raw_access", "equals": false},
+        {"path": "bundle.results.lint.status", "equals": "result"},
+        {"path": "bundle.results.lint.passed", "equals": true}
+      ],
+      "answer_contract": {
+        "invariants": ["Result Envelope 밖 숫자 접근 금지", "provenance 필수", "label ceiling 준수", "인과 판정 금지"],
+        "language": ["수치 source 역검사 통과"]
+      }
+    },
+    {
+      "id": "explicit-report-result-selection",
+      "maturity": "ready",
+      "question": "이 결과를 경영진 메모로 작성해줘",
+      "setup": {
+        "report_question": "온라인 매출이 7월에 왜 빠졌어?",
+        "report_result_key": "contrib:category"
+      },
+      "assertions": [
+        {"path": "envelope.status", "equals": "spec"},
+        {"path": "envelope.report_spec.result_selector.mode", "equals": "explicit"},
+        {"path": "bundle.results.report.status", "equals": "result"},
+        {"path": "bundle.results.report.selected_result.result_key", "equals": "contrib:category"},
+        {"path": "bundle.results.report.slots.decomposition_where.result_keys", "equals": ["contrib:category"]},
+        {"path": "bundle.results.lint.passed", "equals": true}
+      ],
+      "answer_contract": {
+        "invariants": ["복수 정상 결과 중 result_key 명시 선택", "다른 분해 축 수치 혼합 금지"],
+        "language": ["선택한 category 분해만 보고"]
+      }
+    }
+  ]
+}

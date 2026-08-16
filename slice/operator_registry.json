@@ -1,0 +1,56 @@
+{
+  "registry_version": "1",
+  "operators": {
+    "metric_level": {
+      "version": 1,
+      "operation_families": ["inspect_level"],
+      "metric_types": ["amount", "count", "balance"],
+      "output_type": "MetricLevel"
+    },
+    "rate_level": {
+      "version": 1,
+      "operation_families": ["inspect_level"],
+      "metric_types": ["rate"],
+      "requires": ["numerator", "denominator", "denominator_weighted_mean"],
+      "output_type": "MetricLevel"
+    },
+    "distinct_level": {
+      "version": 1,
+      "operation_families": ["inspect_level"],
+      "metric_types": ["distinct"],
+      "requires": ["entity_id_field"],
+      "output_type": "MetricLevel"
+    },
+    "contrib_decomp": {
+      "version": 1,
+      "operation_families": ["explain_change"],
+      "metric_types": ["amount", "count", "balance"],
+      "requires": ["additive_across_dims", "mece_dimension"],
+      "output_type": "Attribution"
+    },
+    "distinct_decomp": {
+      "version": 1,
+      "operation_families": ["explain_change"],
+      "metric_types": ["distinct"],
+      "requires": ["entity_id_field", "entity_functional_dimension"],
+      "output_type": "Attribution"
+    },
+    "plan_gap": {
+      "version": 1,
+      "operation_families": ["compare_plan"],
+      "requires": ["plan_vintage"],
+      "output_type": "Attribution"
+    },
+    "vrm_lite": {
+      "version": 1,
+      "operation_families": ["explain_change"],
+      "inherent_scope": {"channel": "온라인"},
+      "output_type": "Attribution"
+    },
+    "event_overlap_scan": {
+      "version": 1,
+      "operation_families": ["explain_change"],
+      "output_type": "Description"
+    }
+  }
+}

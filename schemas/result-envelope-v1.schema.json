@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "groot-cal/result-envelope-v1",
+  "title": "Result Envelope v1",
+  "type": "object",
+  "required": ["status"],
+  "properties": {
+    "status": {"enum": ["result", "out_of_domain", "suspended", "budget_exhausted"]},
+    "estimand": {"type": "string"},
+    "output_type": {"type": "string"},
+    "violated": {"type": "array"},
+    "missing_inputs": {"type": "array"},
+    "checks": {"type": "array"},
+    "assumptions_used": {"type": "array"},
+    "label_ceiling": {"type": "object"},
+    "provenance_ref": {"type": "string"}
+  },
+  "additionalProperties": true
+}
+

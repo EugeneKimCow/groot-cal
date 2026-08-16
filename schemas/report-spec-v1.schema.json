@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "groot-cal/report-spec-v1",
+  "title": "Report Spec v1",
+  "type": "object",
+  "required": [
+    "spec_version",
+    "genre",
+    "audience",
+    "language",
+    "result_selector",
+    "required_slots",
+    "input_capability"
+  ],
+  "properties": {
+    "spec_version": {"const": "1"},
+    "genre": {"const": "executive_memo"},
+    "audience": {"const": "executive"},
+    "language": {"const": "ko"},
+    "result_selector": {
+      "type": "object",
+      "required": ["mode", "result_key"],
+      "properties": {
+        "mode": {"enum": ["primary", "explicit"]},
+        "result_key": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "required_slots": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string"}
+    },
+    "input_capability": {"const": "result_envelope_only"}
+  },
+  "additionalProperties": false
+}
