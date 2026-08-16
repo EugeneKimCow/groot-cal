@@ -1,0 +1,75 @@
+{
+  "corpus_version": "1",
+  "purpose": "Architecture comparison corpus; expected plans are requirements, not current implementation outputs.",
+  "queries": [
+    {"id":"Q001","domain":"sales","category":"aggregation","question":"7월 총매출은 얼마인가?","requires":["metric","time_scope","aggregate"]},
+    {"id":"Q002","domain":"sales","category":"aggregation","question":"7월 지역별 주문 수를 보여줘","requires":["metric","time_scope","breakdown","aggregate"]},
+    {"id":"Q003","domain":"scm","category":"semi_additive","question":"7월 말 창고별 재고 잔액은?","requires":["metric","time_scope","breakdown","time_reduce_last"]},
+    {"id":"Q004","domain":"insurance","category":"weighted_metric","question":"7월 전체 손해율은?","requires":["metric","time_scope","ratio_of_sums"]},
+    {"id":"Q005","domain":"sales","category":"distinct","question":"7월 활성 고객 수는?","requires":["metric","time_scope","distinct_aggregate"]},
+
+    {"id":"Q006","domain":"sales","category":"comparison","question":"7월 매출은 6월보다 얼마나 변했나?","requires":["metric","two_periods","delta"]},
+    {"id":"Q007","domain":"sales","category":"comparison","question":"7월 매출의 전년 동월 성장률은?","requires":["metric","two_periods","growth_rate"]},
+    {"id":"Q008","domain":"sales","category":"plan","question":"2026-06-25 계획 대비 7월 온라인 매출 차이는?","requires":["metric","time_scope","scope_filter","plan_vintage","delta"]},
+    {"id":"Q009","domain":"finance","category":"ranking","question":"7월 영업이익이 가장 높은 사업부 5개는?","requires":["metric","time_scope","breakdown","aggregate","rank","limit"]},
+    {"id":"Q010","domain":"sales","category":"ranking","question":"전월 대비 매출 감소액이 큰 제품군 순으로 보여줘","requires":["metric","two_periods","breakdown","delta","rank"]},
+
+    {"id":"Q011","domain":"sales","category":"contribution","question":"전월 대비 매출 감소에 가장 크게 기여한 제품군은?","requires":["metric","two_periods","breakdown","additive_contribution","rank"]},
+    {"id":"Q012","domain":"finance","category":"contribution","question":"영업이익 하락을 사업부별로 분해해줘","requires":["metric","two_periods","breakdown","signed_additive_contribution"]},
+    {"id":"Q013","domain":"sales","category":"offset","question":"총매출은 거의 그대로인데 크게 증가한 세그먼트와 상쇄한 세그먼트는?","requires":["metric","two_periods","breakdown","additive_contribution","rank_both_signs","near_zero_safe"]},
+    {"id":"Q014","domain":"sales","category":"multi_dimension","question":"매출 감소에서 제품, 지역, 고객 유형 중 가장 큰 driver는?","requires":["metric","two_periods","multiple_breakdowns","additive_contribution","cross_axis_selection"]},
+    {"id":"Q015","domain":"sales","category":"nested_diagnosis","question":"가장 큰 매출 하락 제품군을 찾고 그 안에서 지역별로 다시 분해해줘","requires":["metric","two_periods","breakdown","additive_contribution","result_reference","drilldown"]},
+
+    {"id":"Q016","domain":"sales","category":"derived_metric","question":"매출 증가는 판매 수량 증가 때문인가 평균 판매단가 상승 때문인가?","requires":["multi_metric","metric_expression","two_periods","volume_rate_decomposition"]},
+    {"id":"Q017","domain":"sales","category":"mix_rate","question":"평균 판매단가 상승은 제품별 가격 인상인가 고가 제품 비중 증가인가?","requires":["multi_metric","ratio_of_sums","two_periods","mix_rate_decomposition"]},
+    {"id":"Q018","domain":"insurance","category":"mix_rate","question":"손해율 상승은 지역별 손해율 변화인가 계약 포트폴리오 mix 변화인가?","requires":["ratio_of_sums","two_periods","breakdown","mix_rate_decomposition"]},
+    {"id":"Q019","domain":"scm","category":"flow_stock","question":"재고 증가는 입고 증가와 출고 감소 중 어느 쪽 때문인가?","requires":["metric_relationship","two_periods","flow_stock_decomposition"]},
+    {"id":"Q020","domain":"sales","category":"multiplicative","question":"매출 변화를 고객 수, 구매 빈도, 객단가로 분해해줘","requires":["multi_metric","multiplicative_identity","two_periods","decomposition_convention"]},
+
+    {"id":"Q021","domain":"sales","category":"trend","question":"최근 12개월 매출 추세는 상승인가 하락인가?","requires":["metric","time_series","trend"]},
+    {"id":"Q022","domain":"sales","category":"acceleration","question":"매출은 늘고 있지만 증가 속도가 둔화되고 있는가?","requires":["metric","time_series","slope","acceleration"]},
+    {"id":"Q023","domain":"scm","category":"change_point","question":"납기 준수율이 구조적으로 악화되기 시작한 시점은 언제인가?","requires":["metric","time_series","seasonality_contract","change_point","uncertainty"]},
+    {"id":"Q024","domain":"manufacturing","category":"seasonality","question":"계절성을 제외해도 불량률 추세가 상승하는가?","requires":["ratio_of_sums","time_series","seasonal_adjustment","trend"]},
+    {"id":"Q025","domain":"sales","category":"window_comparison","question":"최근 4주 평균 매출은 직전 4주보다 증가했나?","requires":["metric","time_windows","aggregate","delta"]},
+
+    {"id":"Q026","domain":"scm","category":"outlier","question":"평균 lead time 상승은 일부 supplier의 extreme value 때문인가?","requires":["metric","distribution","robust_outlier","sensitivity"]},
+    {"id":"Q027","domain":"scm","category":"concentration","question":"지연 물량이 소수 supplier에 집중되어 있는가?","requires":["metric","breakdown","concentration"]},
+    {"id":"Q028","domain":"sales","category":"distribution","question":"고객 주문금액의 중앙값과 상위 95% 분위수는?","requires":["metric","distribution","quantile"]},
+    {"id":"Q029","domain":"manufacturing","category":"robust_comparison","question":"극단치를 제외해도 공장 A의 cycle time이 공장 B보다 긴가?","requires":["metric","group_comparison","robust_sensitivity"]},
+    {"id":"Q030","domain":"sales","category":"concentration_trend","question":"매출의 상위 고객 집중도가 지난 분기보다 높아졌나?","requires":["metric","entity","two_periods","concentration","delta"]},
+
+    {"id":"Q031","domain":"sales","category":"hierarchy","question":"카테고리에서 가장 큰 하락을 찾고 브랜드와 SKU까지 내려가줘","requires":["metric","two_periods","hierarchy","additive_contribution","conditional_drilldown"]},
+    {"id":"Q032","domain":"sales","category":"distinct_migration","question":"활성 고객 증감에서 신규, 이탈, 지역 이동을 분리해줘","requires":["entity","two_periods","set_transition","migration_decomposition"]},
+    {"id":"Q033","domain":"scm","category":"conditional_plan","question":"지연이 한 supplier에 집중되면 lane별로, 아니면 plant 추세로 분석해줘","requires":["metric","concentration","typed_condition","conditional_branch","breakdown","trend"]},
+    {"id":"Q034","domain":"sales","category":"paraphrase","question":"어느 부문이 지난달 매출 하락을 만들었나?","requires":["metric","two_periods","breakdown","additive_contribution","intent_normalization"],"equivalent_to":"Q011"},
+    {"id":"Q035","domain":"sales","category":"ambiguous","question":"실적이 왜 안 좋아?","requires":["clarification","metric_ambiguity","time_ambiguity"]},
+
+    {"id":"Q036","domain":"scm","category":"counterfactual","question":"supplier delay가 없었다면 service level 하락이 여전히 발생했는가?","requires":["counterfactual","identification_contract","assumption_ledger"]},
+    {"id":"Q037","domain":"marketing","category":"causal","question":"프로모션이 매출 증가를 유발했는가?","requires":["causal_question","assignment_mechanism","safe_refusal_or_identified_estimator"]},
+    {"id":"Q038","domain":"sales","category":"evidence","question":"매출 하락 결론을 뒷받침하는 실제 주문과 고객 예시를 보여줘","requires":["result_reference","witness","provenance","noncausal_label"]},
+    {"id":"Q039","domain":"reporting","category":"report","question":"이 분석 결과를 CFO 메모로 작성해줘","requires":["result_reference","report_spec","result_only_capability"]},
+    {"id":"Q040","domain":"governance","category":"staleness","question":"이 저장된 분석 결과는 현재 데이터에서도 유효한가?","requires":["result_reference","source_snapshot","staleness_policy"]},
+
+    {"id":"Q041","domain":"sales","category":"heldout_join","question":"복수 태그가 붙은 상품별 매출을 태그별로 합산해줘","requires":["metric","breakdown","relationship_cardinality","fanout_guard","allocation_rule"]},
+    {"id":"Q042","domain":"finance","category":"heldout_calendar","question":"회계연도 2분기 매출을 전년 회계연도 2분기와 비교해줘","requires":["metric","fiscal_calendar","time_windows","two_periods","delta"]},
+    {"id":"Q043","domain":"sales","category":"heldout_cohort","question":"6월과 7월 모두 구매한 동일 고객 코호트의 객단가 변화를 보여줘","requires":["metric_expression","entity","cohort_reference","two_periods","ratio_of_sums"]},
+    {"id":"Q044","domain":"scm","category":"heldout_time_reducer","question":"7월 일평균 재고와 7월 말 재고를 함께 비교해줘","requires":["metric","multi_metric","daily_grain","time_reduce_average","time_reduce_last"]},
+    {"id":"Q045","domain":"finance","category":"heldout_alignment","question":"매출은 늘었지만 영업이익률이 악화된 제품을 찾아줘","requires":["multi_metric","metric_expression","unit_alignment","grain_alignment","breakdown","rank"]},
+    {"id":"Q046","domain":"sales","category":"heldout_driver_estimand","question":"제품과 지역 중 매출에 더 독립적인 영향을 준 축은 무엇인가?","requires":["multi_metric","comparable_attribution_model","identification_contract","assumption_ledger"]},
+    {"id":"Q047","domain":"insurance","category":"heldout_scenario","question":"전월 지역 mix를 유지했다면 7월 손해율은 얼마였나?","requires":["ratio_of_sums","scenario_operand","deterministic_reweighting","two_periods"]},
+    {"id":"Q048","domain":"sales","category":"heldout_nulls","question":"미분류 상품을 포함한 카테고리별 매출 기여도를 보여줘","requires":["metric","breakdown","unknown_bucket_policy","additive_contribution"]},
+    {"id":"Q049","domain":"scm","category":"heldout_grain","question":"주 단위 계획과 일 단위 실적의 납기 차이를 비교해줘","requires":["multi_metric","plan_vintage","grain_alignment","calendar_alignment","delta"]},
+    {"id":"Q050","domain":"sales","category":"heldout_replay","question":"상위 기여가 50%를 넘을 때만 그 세그먼트의 고객 구성을 분석하고 실행 경로를 재현해줘","requires":["additive_contribution","typed_condition","result_reference","conditional_branch","replayable_plan","provenance"]},
+
+    {"id":"Q051","domain":"sales","category":"heldout2_scd","question":"거래 당시 고객 등급 기준으로 월별 매출을 다시 집계해줘","requires":["metric","breakdown","valid_time_join","slowly_changing_dimension","as_of_semantics"]},
+    {"id":"Q052","domain":"finance","category":"heldout2_vintage","question":"7월 마감 당시 영업이익과 현재 수정된 7월 영업이익의 차이는?","requires":["metric","two_periods","data_vintage","bitemporal_reference","delta"]},
+    {"id":"Q053","domain":"finance","category":"heldout2_currency","question":"한국과 일본 매출을 7월 말 환율 기준 원화로 환산해 비교해줘","requires":["multi_metric","unit_conversion","conversion_rate_vintage","time_scope","breakdown"]},
+    {"id":"Q054","domain":"insurance","category":"heldout2_simpson","question":"전체 손해율은 개선됐는데 모든 지역 손해율이 악화된 이유를 확인해줘","requires":["ratio_of_sums","breakdown","mix_rate_decomposition","simpson_diagnostic","two_periods"]},
+    {"id":"Q055","domain":"sales","category":"heldout2_privacy","question":"고객이 5명 미만인 지역은 숨기고 활성 고객 변화를 보여줘","requires":["distinct_aggregate","breakdown","privacy_policy","minimum_group_suppression","two_periods"]},
+    {"id":"Q056","domain":"sales","category":"heldout2_overlap","question":"중복 캠페인에 노출된 주문 매출을 캠페인별로 배분해줘","requires":["metric","many_to_many_allocation","allocation_rule","overlap_diagnostic","breakdown"]},
+    {"id":"Q057","domain":"sales","category":"heldout2_stability","question":"매출 감소 상위 제품 순위가 특정 대형 주문 하나를 빼도 유지되는가?","requires":["additive_contribution","rank","leave_one_out","ranking_stability","sensitivity"]},
+    {"id":"Q058","domain":"manufacturing","category":"heldout2_uncertainty","question":"공장별 불량률 차이의 신뢰구간과 표본 수를 보여줘","requires":["ratio_of_sums","breakdown","uncertainty","sampling_model","sample_size"]},
+    {"id":"Q059","domain":"governance","category":"heldout2_freshness","question":"매출과 환율 원천의 갱신 시점이 달라도 이 환산 결과는 최신인가?","requires":["multi_source_provenance","source_snapshot","freshness_vector","staleness_policy"]},
+    {"id":"Q060","domain":"sales","category":"heldout2_partial","question":"이번 달 누적 매출을 지난달 같은 영업일 수와 비교해줘","requires":["metric","partial_period","business_calendar","comparable_window","two_periods","delta"]}
+  ]
+}

@@ -1,0 +1,124 @@
+{
+  "experiment": "E-002",
+  "qualification": "Structural representability ceiling, not implementation completeness or correctness.",
+  "capability_universe": [
+    "acceleration", "additive_contribution", "aggregate", "assignment_mechanism",
+    "assumption_ledger", "breakdown", "causal_question", "change_point",
+    "clarification", "concentration", "conditional_branch", "conditional_drilldown",
+    "counterfactual", "cross_axis_selection", "decomposition_convention", "delta",
+    "distinct_aggregate", "distribution", "drilldown", "entity",
+    "flow_stock_decomposition", "group_comparison", "growth_rate", "hierarchy",
+    "identification_contract", "intent_normalization", "limit", "metric",
+    "metric_ambiguity", "metric_expression", "metric_relationship",
+    "migration_decomposition", "mix_rate_decomposition", "multi_metric",
+    "multiple_breakdowns", "multiplicative_identity", "near_zero_safe",
+    "noncausal_label", "plan_vintage", "provenance", "quantile", "rank",
+    "rank_both_signs", "ratio_of_sums", "report_spec", "result_only_capability",
+    "result_reference", "robust_outlier", "robust_sensitivity",
+    "safe_refusal_or_identified_estimator", "scope_filter", "seasonal_adjustment",
+    "seasonality_contract", "sensitivity", "set_transition",
+    "signed_additive_contribution", "slope", "source_snapshot", "staleness_policy",
+    "time_ambiguity", "time_reduce_last", "time_scope", "time_series",
+    "time_windows", "trend", "two_periods", "typed_condition", "uncertainty",
+    "volume_rate_decomposition", "witness"
+  ],
+  "candidates": [
+    {
+      "id": "C0-current",
+      "support_mode": "allowlist",
+      "capabilities": [
+        "metric", "time_scope", "aggregate", "time_reduce_last",
+        "ratio_of_sums", "distinct_aggregate", "two_periods", "delta",
+        "growth_rate", "scope_filter", "plan_vintage",
+        "additive_contribution", "signed_additive_contribution",
+        "multiple_breakdowns", "cross_axis_selection", "drilldown",
+        "clarification", "metric_ambiguity", "time_ambiguity",
+        "assumption_ledger", "provenance", "noncausal_label",
+        "result_reference", "report_spec", "result_only_capability",
+        "source_snapshot", "staleness_policy"
+      ],
+      "core_concepts": 18,
+      "domain_exceptions": 4,
+      "special_planner_rules": 7,
+      "notes": "Allowlist is generous: it credits hardcoded all-axis/drill behavior even when a requested axis is not bound. Intent probes separately record silent losses."
+    },
+    {
+      "id": "C1-semantic-heavy",
+      "support_mode": "denylist",
+      "unsupported": [
+        "result_reference", "typed_condition", "conditional_branch",
+        "conditional_drilldown", "drilldown", "set_transition",
+        "migration_decomposition", "counterfactual", "identification_contract",
+        "safe_refusal_or_identified_estimator"
+      ],
+      "core_concepts": 27,
+      "domain_exceptions": 12,
+      "special_planner_rules": 15,
+      "notes": "Credits static analysis recipes stored in semantics. Dynamic result flow and identified counterfactuals expose the cost of turning semantics into a workflow language."
+    },
+    {
+      "id": "C2-operator-centric",
+      "support_mode": "denylist",
+      "unsupported": [
+        "metric_expression", "metric_relationship", "multi_metric",
+        "multiplicative_identity", "hierarchy", "result_reference",
+        "typed_condition", "conditional_branch", "conditional_drilldown",
+        "drilldown", "cross_axis_selection", "multiple_breakdowns",
+        "set_transition", "migration_decomposition", "counterfactual",
+        "identification_contract", "safe_refusal_or_identified_estimator"
+      ],
+      "core_concepts": 22,
+      "domain_exceptions": 8,
+      "special_planner_rules": 13,
+      "notes": "Credits rich single operators. Composition failures can be hidden by mega-operators, which would raise operator and exception counts rather than true coverage."
+    },
+    {
+      "id": "C3-ir-centric",
+      "support_mode": "denylist",
+      "unsupported": [],
+      "additional_capabilities": [
+        "relationship_cardinality", "fanout_guard", "allocation_rule",
+        "fiscal_calendar", "cohort_reference", "daily_grain",
+        "time_reduce_average", "unit_alignment", "grain_alignment",
+        "calendar_alignment", "comparable_attribution_model",
+        "scenario_operand", "deterministic_reweighting",
+        "unknown_bucket_policy", "replayable_plan",
+        "as_of_semantics", "slowly_changing_dimension", "valid_time_join",
+        "bitemporal_reference", "data_vintage", "conversion_rate_vintage",
+        "unit_conversion", "simpson_diagnostic", "minimum_group_suppression",
+        "privacy_policy", "many_to_many_allocation", "overlap_diagnostic",
+        "leave_one_out", "ranking_stability", "sample_size", "sampling_model",
+        "freshness_vector", "multi_source_provenance", "business_calendar",
+        "comparable_window", "partial_period"
+      ],
+      "core_concepts": 20,
+      "domain_exceptions": 1,
+      "special_planner_rules": 3,
+      "notes": "Typed node taxonomy plus semantic/data/operator contracts. Full score is a design claim derived from this corpus and must be attacked with held-out cases."
+    },
+    {
+      "id": "C4-three-contract-call-dag",
+      "support_mode": "denylist",
+      "unsupported": [],
+      "additional_capabilities": [
+        "relationship_cardinality", "fanout_guard", "allocation_rule",
+        "fiscal_calendar", "cohort_reference", "daily_grain",
+        "time_reduce_average", "unit_alignment", "grain_alignment",
+        "calendar_alignment", "comparable_attribution_model",
+        "scenario_operand", "deterministic_reweighting",
+        "unknown_bucket_policy", "replayable_plan",
+        "as_of_semantics", "slowly_changing_dimension", "valid_time_join",
+        "bitemporal_reference", "data_vintage", "conversion_rate_vintage",
+        "unit_conversion", "simpson_diagnostic", "minimum_group_suppression",
+        "privacy_policy", "many_to_many_allocation", "overlap_diagnostic",
+        "leave_one_out", "ranking_stability", "sample_size", "sampling_model",
+        "freshness_vector", "multi_source_provenance", "business_calendar",
+        "comparable_window", "partial_period"
+      ],
+      "core_concepts": 15,
+      "domain_exceptions": 1,
+      "special_planner_rules": 2,
+      "notes": "Generic versioned Call+Ref DAG with semantic, analytical, and planning contracts. Full score is structural only; E-003/E-004 cover a small executable subset."
+    }
+  ]
+}
