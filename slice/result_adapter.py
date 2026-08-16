@@ -189,6 +189,47 @@ def _adapt_canonical_wire(result, result_key):
             "source_ref": f"results.{result_key}.value.value",
         }
 
+    change = None
+    if result.get("result_type") == "Attribution":
+        value = result.get("value")
+        if not isinstance(value, dict):
+            return _failure("Attribution payload requires a value object")
+        total = value.get("total")
+        if not isinstance(total, dict) or not _numeric(total.get("delta")):
+            return _failure("Attribution requires numeric total.delta")
+        unit = value.get("unit")
+        if not unit:
+            return _failure("Attribution requires an explicit unit")
+        if not result_key:
+            return _failure("Attribution normalization requires result_key")
+        pct_change = None
+        if total.get("pct_change") is not None:
+            if not _numeric(total["pct_change"]):
+                return _failure("pct_change must be numeric")
+            pct_change = {
+                "value": total["pct_change"],
+                "source_ref": f"results.{result_key}.value.total.pct_change",
+                "denominator_ref": f"results.{result_key}.value.total.before",
+            }
+        segments = []
+        for index, segment in enumerate(value.get("segments") or []):
+            if "segment" not in segment or not _numeric(segment.get("delta")):
+                return _failure(
+                    f"segment {index} requires identity and numeric delta")
+            segments.append({
+                "segment": segment["segment"],
+                "value": segment["delta"],
+                "source_ref": (
+                    f"results.{result_key}.value.segments.{index}.delta"),
+            })
+        change = {
+            "value": total["delta"],
+            "unit": unit,
+            "source_ref": f"results.{result_key}.value.total.delta",
+            "pct_change": pct_change,
+            "segments": segments,
+        }
+
     return {
         "status": "result",
         "view": {
@@ -197,7 +238,7 @@ def _adapt_canonical_wire(result, result_key):
             "operator_ref": operator_ref,
             "provenance_ref": provenance_ref,
             "scalar": scalar,
-            "change": None,
+            "change": change,
             "label_capabilities": sorted(capabilities),
             "source_shape": "canonical",
         },

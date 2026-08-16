@@ -131,11 +131,13 @@ capability, but does not block metric-level controlled routing.
 ## Increment 5 — Route one capability at a time
 
 1. Metric level (complete 2026-08-16, E-018)
-2. Period delta
-3. Additive contribution
-4. Explicit nested drilldown
-5. Plan comparison
-6. Non-additive registered operators
+2. Period delta + additive contribution + set transition (complete 2026-08-16,
+   E-019 — the public boundary makes these one capability; the hidden
+   dominant-axis drilldown and VRM outputs are deliberately excluded from the
+   routed boundary per synthesis §10)
+3. Explicit nested drilldown (blocked on dynamic Slice + failure isolation)
+4. Plan comparison
+5. Non-additive registered operators
 
 Use reversible feature selection during migration. Do not remove the old path
 until each capability's golden, adversarial, reporter, and provenance tests

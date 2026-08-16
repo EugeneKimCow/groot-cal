@@ -47,19 +47,26 @@ class ShadowPlanTest(unittest.TestCase):
         self.assertEqual(
             {"channel": ["온라인"]}, metric_slice.to_dict()["predicates"])
 
-    def test_period_delta_is_an_explicit_typed_dag(self):
+    def test_period_change_is_an_explicit_per_axis_contribution_dag(self):
+        # E-019: explain_change는 delta 루트가 아니라 현행 공개 경계와 동형인
+        # 축별 (before, after, contribution) triplet으로 컴파일된다.
         compiled, _, _ = self.compile("7월 매출이 왜 변했나?")
         self.assertEqual("result", compiled["status"], compiled)
         plan = compiled["plan"]
         self.assertEqual(
-            ["evaluate_metric@v1", "evaluate_metric@v1", "delta@v1"],
+            ["evaluate_metric@v1", "evaluate_metric@v1", "contribution@v1"] * 3,
             [call.operator_ref for call in plan.calls])
         self.assertEqual("2026-06", plan.calls[0].inputs["slice"].period)
         self.assertEqual("2026-07", plan.calls[1].inputs["slice"].period)
-        self.assertEqual(Ref("n001", "value"), plan.calls[2].inputs["before"])
-        self.assertEqual(Ref("n002", "value"), plan.calls[2].inputs["after"])
-        self.assertEqual("partial_comparison_root",
+        self.assertEqual(Ref("n01a"), plan.calls[2].inputs["before"])
+        self.assertEqual(Ref("n01b"), plan.calls[2].inputs["after"])
+        self.assertEqual(
+            {"contrib:channel": "n01c", "contrib:category": "n02c",
+             "contrib:customer_type": "n03c"},
+            plan.metadata["public_results"])
+        self.assertEqual("axis_contribution",
                          plan.metadata["intent_fulfillment"])
+        self.assertEqual("period_change", plan.metadata["capability"])
 
     def test_calendar_boundary_survives_shadow_compilation(self):
         compiled, _, _ = self.compile("1월 매출이 왜 변했나?")

@@ -151,3 +151,14 @@ selector에서 10/10로 이후 모든 capability의 상설 exit gate가 됐다. 
 반례는 예측대로 public 경계에서 나왔다: domain pack의 미검증 가정 ledger가
 누락되어 선언된 불확실성이 조용히 약해지는 문제였고, 이제 모든 경로가 보존한다.
 다음 판별 대상은 period delta + additive contribution routing(E-019)이다.
+
+E-019는 controlled routing을 period change로 확장했다. `explain_change`는 현행
+공개 경계와 동형인 축별 contribution/set-transition DAG로 컴파일되고, commerce
+이벤트 idiom은 명시적 등록 Call(`event_overlap_scan@v1`)이 됐으며, adapter는
+canonical Attribution change view를 배웠다. 값·세그먼트·백분율·이벤트 증거·
+보고서·materialization parity가 성립했다. 지배축 자동 드릴다운과 온라인 VRM
+산출물은 라우팅된 경계에서 의도적으로 부재하다 — synthesis §10이 제거한 숨은
+전략이며, 테스트가 이를 선언된 차이로 고정한다. 추가 라우팅 전 미해결: DAG
+실패 격리 의미론, share 억제 규범의 소유권, label capability의 소유권. 시연
+increment는 라우팅된 level + change 위에서 진행하고, plan comparison·drilldown·
+비가법 연산자는 게이트 뒤에 남는다.

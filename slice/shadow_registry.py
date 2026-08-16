@@ -258,4 +258,13 @@ def default_contracts():
                     OperatorPort("vintage_id", "String")),
             outputs={"": "Attribution"},
         ),
+        # E-019: commerce domain pack의 이벤트 대조 idiom을 숨은 pipeline 분기가
+        # 아니라 명시적 Call로 등록한다. 출력은 판정이 아니라 증거 행이다.
+        OperatorContract(
+            operator_ref="event_overlap_scan@v1",
+            inputs=(OperatorPort("metric", "MetricRef"),
+                    OperatorPort("before_slice", "Slice"),
+                    OperatorPort("after_slice", "Slice")),
+            outputs={"": "EventOverlap"},
+        ),
     )

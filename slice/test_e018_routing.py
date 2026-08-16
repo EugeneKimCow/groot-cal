@@ -29,7 +29,7 @@ class E018RoutingParityTest(unittest.TestCase):
     def both(self, question, contexts=None):
         contexts = contexts if contexts is not None else self.contexts
         _, current = run_question(question, contexts)
-        _, routed = run_question(question, contexts, route="c4_level")
+        _, routed = run_question(question, contexts, route="c4")
         return current, routed
 
     def views(self, current, routed):
@@ -37,8 +37,9 @@ class E018RoutingParityTest(unittest.TestCase):
                 adapt_result(routed["results"]["level"], "level"))
 
     def test_unknown_route_is_rejected(self):
+        # E-019에서 selector 이름이 c4로 일반화됐다 — 옛 이름은 거부된다.
         with self.assertRaises(ValueError):
-            run_question("7월 매출은?", self.contexts, route="c4")
+            run_question("7월 매출은?", self.contexts, route="c4_level")
 
     def test_level_parity_across_all_five_metric_algebras(self):
         for question, expected in LEVEL_CASES:
@@ -126,7 +127,7 @@ class E018RoutingParityTest(unittest.TestCase):
         self.assertEqual(stored_current["input_snapshot_ref"],
                          stored_routed["input_snapshot_ref"])
         # 같은 질의를 다시 실행해도 같은 결정적 result ID가 나온다.
-        _, again = run_question("7월 매출은?", self.contexts, route="c4_level")
+        _, again = run_question("7월 매출은?", self.contexts, route="c4")
         stored_again = materialize_result(
             again, "level", created_at="2026-08-16T00:00:00Z")
         self.assertEqual(stored_routed["result_id"], stored_again["result_id"])
@@ -138,7 +139,7 @@ class E018RoutingParityTest(unittest.TestCase):
     def test_execution_record_preserves_plan_and_binding_identity(self):
         current, routed = self.both("7월 매출은?")
         record = routed["execution_record"]
-        self.assertEqual("c4_level", record["route"])
+        self.assertEqual("c4", record["route"])
         self.assertTrue(record["plan_hash"].startswith("sha256:"))
         self.assertTrue(record["call_provenance"])
         self.assertFalse([entry for entry in record["binding_ledger"]
@@ -151,33 +152,32 @@ class E018RoutingParityTest(unittest.TestCase):
                     "max_operator_calls", "segments_examined", "max_segments",
                     "hypotheses_examined", "max_hypotheses"):
             self.assertIn(key, record["budget"], key)
-        _, again = run_question("7월 매출은?", self.contexts, route="c4_level")
+        _, again = run_question("7월 매출은?", self.contexts, route="c4")
         self.assertEqual(record["plan_hash"],
                          again["execution_record"]["plan_hash"])
 
-    def test_non_level_is_refused_never_silently_replaced(self):
-        for question in ("7월 매출이 왜 변했나?",
-                         "2026-06-25 계획 대비 7월 매출 어때?"):
-            with self.subTest(question=question):
-                _, refused = run_question(question, self.contexts,
-                                          route="c4_level")
-                self.assertEqual(["route"], sorted(refused["results"]))
-                violation = refused["results"]["route"]["violated"][0]
-                self.assertEqual("route_capability", violation["check"])
-                self.assertIsNone(refused["execution_record"])
+    def test_unrouted_family_is_refused_never_silently_replaced(self):
+        _, refused = run_question("2026-06-25 계획 대비 7월 매출 어때?",
+                                  self.contexts, route="c4")
+        self.assertEqual(["route"], sorted(refused["results"]))
+        violation = refused["results"]["route"]["violated"][0]
+        self.assertEqual("route_capability", violation["check"])
+        self.assertIsNone(refused["execution_record"])
 
     def test_explicit_fallback_matches_current_route_exactly(self):
-        for question in ("7월 매출이 왜 변했나?", "작년 대비 7월 매출은?",
+        # 라우팅 밖 family(compare_plan)와, 라우팅 대상이지만 query_spec 경계에서
+        # 실패해 동일 payload가 되는 사례.
+        for question in ("작년 대비 7월 매출은?",
                          "2026-06-25 계획 대비 7월 매출 어때?"):
             with self.subTest(question=question):
                 _, current = run_question(question, self.contexts)
                 _, fallback = run_question(question, self.contexts,
-                                           route="c4_level_or_current")
+                                           route="c4_or_current")
                 self.assertEqual(current, fallback)
 
     def test_result_and_report_workflows_ignore_the_selector(self):
-        _, prior = run_question("7월 매출은?", self.contexts, route="c4_level")
-        for route in ("current", "c4_level"):
+        _, prior = run_question("7월 매출은?", self.contexts, route="c4")
+        for route in ("current", "c4"):
             envelope, bundle = run_question(
                 "이 결과를 경영진 메모로 작성해줘", self.contexts,
                 report_context=prior, route=route)
@@ -192,20 +192,34 @@ class E018RoutingParityTest(unittest.TestCase):
                 envelope, current = run_question(case["question"], self.contexts)
                 routed_envelope, routed = run_question(
                     case["question"], self.contexts,
-                    route="c4_level_or_current")
+                    route="c4_or_current")
                 self.assertEqual(envelope["status"], routed_envelope["status"])
                 if current is None:
                     self.assertIsNone(routed)
                     continue
+                expect = case["expect"]
+                key = expect.get("result_key")
                 family = envelope["query_spec"]["intent"]["operation_family"]
-                if family != "inspect_level":
+                if family not in ("inspect_level", "explain_change"):
                     self.assertEqual(current, routed)
                     continue
-                cv, rv = self.views(current, routed)
-                self.assertEqual(cv["status"], rv["status"])
-                if cv["status"] == "result":
-                    self.assertEqual(cv["view"]["scalar"]["value"],
-                                     rv["view"]["scalar"]["value"])
+                if key == "query_spec":
+                    self.assertEqual(current["results"], routed["results"])
+                    continue
+                self.assertEqual(current["results"][key]["status"],
+                                 routed["results"][key]["status"])
+                if expect.get("result_status") != "result":
+                    continue
+                cv = adapt_result(current["results"][key], key)["view"]
+                rv = adapt_result(routed["results"][key], key)["view"]
+                if cv["scalar"] is not None:
+                    self.assertEqual(expect["value"], cv["scalar"]["value"])
+                    self.assertEqual(cv["scalar"]["value"],
+                                     rv["scalar"]["value"])
+                else:
+                    self.assertEqual(expect["value"], cv["change"]["value"])
+                    self.assertEqual(cv["change"]["value"],
+                                     rv["change"]["value"])
 
     def test_golden_level_cases_hold_normalized_expectations_on_c4_route(self):
         expectations = {
@@ -216,13 +230,13 @@ class E018RoutingParityTest(unittest.TestCase):
         for case_id, (question, expected) in expectations.items():
             with self.subTest(case=case_id):
                 _, routed = run_question(question, self.contexts,
-                                         route="c4_level")
+                                         route="c4")
                 view = adapt_result(routed["results"]["level"], "level")["view"]
                 self.assertEqual(expected, view["scalar"]["value"])
                 self.assertEqual(["data_confirmed"], view["label_capabilities"])
         # 손해율의 분자·분모·집계 규칙은 canonical 값 계약 안에 보존된다.
         _, routed = run_question("7월 보험 손해율은?", self.contexts,
-                                 route="c4_level")
+                                 route="c4")
         aggregation = routed["results"]["level"]["value"]["aggregation"]
         self.assertEqual("denominator_weighted_mean", aggregation["rule"])
         self.assertEqual(132, aggregation["components"]["numerator"])

@@ -1,7 +1,7 @@
 """Metric/result catalog 해소부터 실행 profile 선택까지의 공개 진입점."""
 import re
 
-from c4_route import execute_level_query, refuse_non_level
+from c4_route import ROUTED_FAMILIES, execute_routed_query, refuse_unrouted
 from catalog import context_by_metric_ref, resolve_metric
 from interpret import interpret
 from pipeline import _input_hash, execute_query
@@ -11,12 +11,12 @@ from reporter import (build_report_spec, create_structured_report,
 from typed_pipeline import execute_typed_query
 
 
-# E-018 가역 selector. 기본값은 현행 경로를 그대로 보존하고, c4_level은
-# inspect_level만 C4 compiler/executor로 실행하며 그 밖의 family는 명시적으로
-# 거부한다. c4_level_or_current는 비대상 family를 현행 경로로 보내는 caller의
-# 명시적 fallback 선택이다. 결과/보고 workflow 질문은 Analytical IR 밖이므로
-# selector와 무관하게 현행 경로를 유지한다.
-ROUTES = ("current", "c4_level", "c4_level_or_current")
+# E-018/E-019 가역 selector. 기본값은 현행 경로를 그대로 보존하고, c4는 라우팅
+# 승격된 family(inspect_level·explain_change)만 C4 compiler/executor로 실행하며
+# 그 밖의 family는 명시적으로 거부한다. c4_or_current는 비대상 family를 현행
+# 경로로 보내는 caller의 명시적 fallback 선택이다. 결과/보고 workflow 질문은
+# Analytical IR 밖이므로 selector와 무관하게 현행 경로를 유지한다.
+ROUTES = ("current", "c4", "c4_or_current")
 
 
 def prepare_question(question, contexts=None):
@@ -83,11 +83,11 @@ def run_question(question, contexts=None, result_catalog=None, result_ref="lates
         return envelope, None
     if route != "current":
         family = envelope["query_spec"]["intent"]["operation_family"]
-        if family == "inspect_level":
-            return envelope, execute_level_query(envelope, context, contexts)
-        if route == "c4_level":
-            return envelope, refuse_non_level(envelope, family)
-        # c4_level_or_current: caller가 명시적으로 선택한 현행 경로 fallback.
+        if family in ROUTED_FAMILIES:
+            return envelope, execute_routed_query(envelope, context, contexts)
+        if route == "c4":
+            return envelope, refuse_unrouted(envelope, family)
+        # c4_or_current: caller가 명시적으로 선택한 현행 경로 fallback.
     if context["execution_profile"] == "commerce_extensions":
         bundle = execute_query(envelope, context["sem"], context["rows"])
     elif context["execution_profile"] == "typed_core":

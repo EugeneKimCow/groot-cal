@@ -1,39 +1,36 @@
 # Next experiment
 
-## E-019 — Controlled period-delta routing
+## E-020 — Demo entry point: intent compiler → routed executor
 
-Route `explain_change`'s comparison root (simple period delta plus the current
-per-axis additive contribution outputs) through the C4 compiler/executor behind
-the same reversible selector, preserving the public bundle boundary validated
-in E-018.
+Connect the E-016 clause-binding intent compiler to the routed C4 executor
+behind an explicit CLI mode, so a Korean question can be observed end to end:
+clause binding ledger → compiled Plan → execution record → evidence-bounded
+result → rendered report. This is the closeout increment for the demo, not a
+new capability routing gate.
 
-1. Extend the routed selector to `explain_change` for metrics whose change
-   path is additive contribution or set transition; keep rate change a refusal
-   on both routes.
-2. Adapt multi-output C4 results (per-axis contribution, set transition) to the
-   public `contrib:<dim>` / `distinct:<dim>` result keys through one adapter,
-   preserving change values, segment identities, and declared before/after
-   evidence without legacy operator spelling.
-3. Run the sales three-axis change, typed operating-profit/inventory/distinct
-   changes, scoped changes, missing comparison month, vintage clarification,
-   reporting, materialization, and provenance through both selectors.
-4. Keep the H2 enforced corpus 10/10 as a routing exit gate.
-5. Refuse plan comparison and drilldown on the routed selector until their own
-   gates pass.
+1. Add an opt-in `--route c4` / `--show-plan` mode to the CLI. The default
+   invocation stays byte-identical to the current route.
+2. In demo mode, compile the question with `compile_shadow_intent`; execute
+   only plans whose capability is routed (level, period change); answer
+   clarify / out_of_domain fail-closed for everything else, naming the
+   unrouted capability instead of substituting a neighbor.
+3. Render the binding ledger (which clause bound to which reference, what was
+   not consumed), the Call DAG, budgets/gates/provenance, the normalized
+   result view, and the report labels in that order.
+4. Gate: the governed corpus adversarial 9/9 (4 lossless, 5 fail-closed) and
+   change paraphrases 5/5 reproduce through the demo CLI; current-route
+   defaults unchanged; all standing gates stay green.
 
 ## Discriminating risks
 
-- The current route emits one result key per axis from hardcoded decomposition
-  identities; the C4 plan emits explicit Calls. Key-mapping is where silent
-  reordering or dropped axes would hide.
-- Reporter dominance selection (`largest_absolute_segment_contribution`) must
-  select the same axis on both routes.
-- Distinct change carries entity sets for set transition; the public boundary
-  must not leak raw entity identifiers beyond what the current route exposes.
+- The intent compiler emits plans the Query Spec route never produces
+  (ranking, drilldown, multi-metric). The demo must refuse or clarify these
+  without executing shadow-only capabilities.
+- Intent-compiled change plans and Query-Spec-compiled change plans must agree
+  on routed capabilities — any divergence is a compiler fidelity finding.
 
-## Sequenced work after E-019
+## Sequenced work after E-020
 
-Additive contribution ranking/limit (E-020 target for the demo), then explicit
-nested drilldown (requires the dynamic Slice decision), plan comparison, and
-registered non-additive operators. After the demo increment, revisit drilldown
-data-requirement transparency before any further routing.
+Broader Korean recall with an LLM proposal adapter over the clause-binding
+contract (the C2′ experiment), then drilldown's dynamic Slice decision with
+failure-isolation semantics (unresolved #19), then plan comparison routing.

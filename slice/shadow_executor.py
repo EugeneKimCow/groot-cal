@@ -9,6 +9,7 @@ from pathlib import Path
 
 from analytical_ir import Ref, Slice
 from catalog import load_metric_catalog
+from kernel import event_overlap_scan as kernel_event_overlap_scan
 from metric_evaluator import evaluate_metric
 from shadow_registry import ShadowOperatorRegistry
 
@@ -110,6 +111,8 @@ def _invoke(operator_ref, inputs, contexts, record, scenario_path):
         return _drilldown(inputs, contexts, record)
     if operator_ref == "plan_gap@v1":
         return _plan_gap(inputs, contexts, record, scenario_path)
+    if operator_ref == "event_overlap_scan@v1":
+        return _event_scan(inputs, contexts)
     return _failure("operator_registered", f"unregistered operator {operator_ref}")
 
 
@@ -331,6 +334,25 @@ def _plan_gap(inputs, contexts, record, scenario_path):
                       "delta": actual_total - plan_total},
             "value": actual_total - plan_total, "segments": segments,
             "label_ceiling": "data_confirmed"}
+
+
+def _event_scan(inputs, contexts):
+    """등록 이벤트 대조 — 판정이 아니라 증거 행을 내는 legacy kernel 재사용.
+
+    payload는 legacy 형태 그대로 통과시킨다(canonical 사칭 없음). canonical
+    Description 계약으로의 정규화는 이후 increment의 몫이다.
+    """
+    context = contexts.get(inputs["metric"])
+    if context is None:
+        return _failure("metric_registered", inputs["metric"])
+    before, after = inputs["before_slice"], inputs["after_slice"]
+    within = {name: list(values) for name, values in after.predicates}
+    scratch = {"calls": []}
+    result = kernel_event_overlap_scan(
+        context["sem"], context["rows"], before.period, after.period,
+        scratch, within=within or None)
+    result.setdefault("segments", [])
+    return result
 
 
 def _resolve(value, results):

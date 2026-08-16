@@ -44,3 +44,15 @@
 18. E-014 now rejects duplicate bindings at live typed-operator invocation.
     Should semantic catalog loading also reject them before any query reaches
     execution, and should that registration gate apply to every binding role?
+19. E-019 kept the executor's stop-at-first-failure semantics because current
+    fixtures cannot discriminate break versus per-branch isolation (typed
+    metrics are single-axis; commerce gates are global). Which failure
+    isolation contract should independent DAG branches have, and what fixture
+    proves it, before drilldown or multi-source routing?
+20. Commerce share_of_change suppression (§4.1) lives in the legacy kernel and
+    has no consumer through the normalized view. When a renderer needs shares
+    from the C4 payload, should suppression become a registered check on
+    contribution@v1 or a reporting-contract rule?
+21. E-019's route adapter declares the change label capability set
+    (confirmed + suggestive). Should label capabilities move into operator
+    registry contracts so adapters stop owning label policy?

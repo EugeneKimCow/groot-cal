@@ -207,3 +207,18 @@ over C3 is minimal grammar, not proven implementation cost.
 - production tests: 178 discovered, 178 pass in standard sandbox
 - current golden / semantic / research: 17/17, 10/10, 58/58
 - default-route behavior changes: 0
+
+## E-019 controlled period-change routing
+
+- sales three-axis contribution parity (values/segments/pct): 3/3 axes
+- typed additive change parity: 2/2 (operating profit, period-end inventory)
+- distinct set-transition parity with explicit entrants/exits: 1/1
+- rate-change refusal deep-equality at the result key: 1/1
+- event evidence rows/overlap flags/hypotheses budget parity: 1/1
+- change memo report claim parity (14 claims) with clean lint: 1/1
+- hidden strategy outputs (drill:*, vrm:*) on routed boundary: 0 (declared)
+- deterministic contribution materialization: 1/1
+- E-019 tests: 11/11
+- production tests: 189 discovered, 189 pass in standard sandbox
+- current golden / semantic / research: 17/17, 10/10, 58/58
+- default-route behavior changes: 0

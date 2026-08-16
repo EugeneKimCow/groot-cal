@@ -153,3 +153,16 @@ was at the public boundary, as predicted: dropped domain-pack assumption ledger
 entries silently weakened declared uncertainty, and are now preserved by every
 route. Period delta plus additive contribution routing (E-019) is the active
 discriminator.
+
+E-019 extended controlled routing to period change. `explain_change` compiles to
+the per-axis contribution / set-transition DAG isomorphic to the current public
+boundary; the commerce event idiom became an explicit registered
+`event_overlap_scan@v1` Call; and the adapter learned the canonical Attribution
+change view. Parity held for values, segments, percentages, event evidence,
+reports, and materialization. The dominant-axis auto-drilldown and online-VRM
+outputs are deliberately absent from the routed boundary — the hidden strategy
+synthesis §10 removes — and a test pins that as a declared difference. Open
+before further routing: DAG failure-isolation semantics, share-suppression
+ownership, and label-capability ownership. The demo increment proceeds on
+routed level + change; plan comparison, drilldown, and non-additive operators
+stay gated.

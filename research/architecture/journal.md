@@ -556,3 +556,36 @@ still drops unconsumed year clauses on both routes — an intent-compiler concer
 for the demo entry point. E-019 routes period delta plus additive contribution,
 where per-axis result-key mapping and reporter dominance selection are the
 discriminating risks.
+
+## Iteration 10 — E-019 controlled period-change routing
+
+### Hypothesis
+
+Period change can route with parity for everything consumers depend on, while
+the rejected hidden exploration strategy (auto-drilldown, VRM) stays out of the
+routed boundary.
+
+### Experiment
+
+Extended the Query Spec compiler to per-axis contribution/set-transition DAGs,
+registered the commerce event scan as an explicit Call, taught the adapter the
+canonical Attribution view, and generalized the selector to c4/c4_or_current.
+Compared sales three-axis change, scoped change, typed and distinct changes,
+rate refusal, events, reports, and materialization across both selectors.
+
+### Result
+
+All parity gates passed: golden change expectations on canonical paths, 14
+report claims byte-identical with clean lint, identical event evidence and
+hypothesis budgets, deterministic materialization under declared
+contribution@v1 identity. drill:*/vrm:* absence is pinned as a declared
+difference. E-019 tests 11/11; product 189; golden 17/17; semantic 10/10;
+research 58/58.
+
+### Qualification and next hypothesis
+
+Executor failure isolation (break vs per-branch) is indiscriminable on current
+fixtures and recorded as unresolved #19; share-suppression and label-capability
+ownership as #20–21. Routed capabilities now cover the demo scenario; the next
+increment is the demo entry point (intent compiler → routed executor behind an
+explicit CLI mode), not further capability routing.
