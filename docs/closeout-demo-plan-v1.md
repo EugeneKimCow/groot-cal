@@ -1,5 +1,13 @@
 # 연구 마무리·시연 계획 v1
 
+> **완료 기록 (2026-08-16)**: Phase 0~4 전부 완료. Phase 2는 실행 중 하나로
+> 병합됐다 — 현행 공개 경계에서 period delta와 contribution은 한 capability라
+> E-019가 둘을 함께 라우팅했고, E-020이 시연 진입점이 됐다. 숨은 전략
+> 산출물(drill:*·vrm:online)은 synthesis §10에 따라 라우팅 경계에서 의도적으로
+> 제외했다(소비자·golden 참조 0건, 테스트로 고정). 결과 문서:
+> `pilot-implementation-status-v2.md`, `demo-script-v1.md`,
+> `research/architecture/e018~e020-comparison.md`.
+
 작성: 2026-08-16. 목적: 아키텍처 연구(E-000~E-017)와 pilot(H1·H2) 결과를 봉합해
 커밋하고, C4 경로를 시연에 필요한 최소 capability까지 정식 라우팅한 뒤, 한국어
 질의 → 절 바인딩 → Plan → 실행 → 증거 한정 결과 → 보고를 한 번에 관찰하는 시연
