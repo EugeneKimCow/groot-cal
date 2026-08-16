@@ -175,3 +175,12 @@ compilers (intent and Query Spec) meet at the same executor with identical
 numbers. The active discriminator is now the LLM proposal adapter over the
 clause-binding contract (C2′), with rank/drilldown routing gated behind
 unresolved #19.
+
+E-021 put a local LLM into the proposal slot behind the same contract. The
+finalization seam (finalize_clause_record) is now proposer-independent, and
+three deterministic guards (verbatim span recovery, relative-month
+recomputation, first-wins overlap) keep interpretation authority out of the
+model. Live measurement on two local models produced zero silent substitutions
+and zero wrong numbers; every proposal error became a refusal or a
+coarser-correct answer, and model scale bought recall only. The C2′ increment 2
+comparison (advisory vs LLM-under-contract) is the active discriminator.

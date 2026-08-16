@@ -56,3 +56,8 @@
 21. E-019's route adapter declares the change label capability set
     (confirmed + suggestive). Should label capabilities move into operator
     registry contracts so adapters stop owning label policy?
+22. E-021 showed both local models split "변동을 제품군별 기여로" into two
+    analysis clauses (fail-closed), and read "어떻게 달라졌어" as delta while
+    the paraphrase gold says contribution. Which readings are gold-label
+    ambiguity versus proposal error, and should composite analysis phrases be
+    prompt examples or registered composition vocabulary?

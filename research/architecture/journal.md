@@ -620,3 +620,35 @@ discriminator is the LLM proposal adapter over the clause-binding contract
 (C2′), which also completes H2's original comparison. Rank/drilldown routing
 would visibly enrich the demo when their gates (dynamic Slice, failure
 isolation) are settled.
+
+## Iteration 12 — E-021 local LLM proposal adapter
+
+### Hypothesis
+
+A local LLM can hold the proposal slot while the contract keeps every
+authority, so model errors can only surface as refusals or verifiably coarser
+answers.
+
+### Experiment
+
+Extracted the deterministic finalization seam (finalize_clause_record),
+injected proposers into compile_shadow_intent, and built an Ollama adapter
+with three guards: verbatim span recovery, deterministic relative-month
+recomputation, first-wins overlap. Measured the governed corpus on gemma3:12b
+and re-ran divergences on qwen2.5:72b.
+
+### Result
+
+Zero silent substitutions and zero wrong numbers on every model. gemma agreed
+8/14; all six divergences traced to one proposal error (delta-for-contribution)
+that the contract converted to type-check refusals, singleton refusals, or
+coarser-correct answers. qwen 72b resolved 4/6; one residue is gold-label
+ambiguity, one a shared composite-phrase split. Contract tests 7/7 without
+network; production 205 green.
+
+### Qualification and next hypothesis
+
+Recall scales with the model; safety did not move — it lives in the contract.
+Increment 2 is the H2-completing comparison (C1 advisory vs LLM-under-contract
+on the fixed case corpus) and broader Korean recall beyond the governed
+vocabulary (unresolved #16, #22).

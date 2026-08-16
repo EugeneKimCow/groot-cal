@@ -18,11 +18,17 @@ ROUTED_OPERATORS = frozenset({
 })
 
 
-def demo_question(question, contexts=None):
-    """질의 1건의 시연 파이프라인을 실행하고 단계별 산출물을 반환한다."""
+def demo_question(question, contexts=None, proposer=None):
+    """질의 1건의 시연 파이프라인을 실행하고 단계별 산출물을 반환한다.
+
+    ``proposer``로 절 바인딩 제안자를 교체할 수 있다(예: local LLM). 검증·
+    컴파일·산술의 결정론 권위는 제안자와 무관하게 유지된다.
+    """
     contexts = contexts or load_metric_catalog()
-    compiled = compile_shadow_intent(question, contexts=contexts)
-    outcome = {"question": question, "compiled": compiled}
+    compiled = compile_shadow_intent(question, contexts=contexts,
+                                     proposer=proposer)
+    outcome = {"question": question, "compiled": compiled,
+               "interpreter": getattr(proposer, "model", None) or "rule"}
     if compiled["status"] != "result":
         outcome["stage"] = "intent"
         return outcome
@@ -50,7 +56,8 @@ def demo_question(question, contexts=None):
 
 def render_demo(outcome, show_plan=False):
     """시연 산출물을 사람이 읽는 계층 텍스트로 렌더링한다."""
-    lines = [f"질의: {outcome['question']}"]
+    interpreter = outcome.get("interpreter", "rule")
+    lines = [f"질의: {outcome['question']}  [해석: {interpreter}]"]
     compiled = outcome["compiled"]
 
     record = compiled.get("binding_record")

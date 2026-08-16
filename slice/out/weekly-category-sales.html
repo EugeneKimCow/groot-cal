@@ -1,0 +1,300 @@
+<title>주차별 제품군 매출</title>
+<style>
+:root {
+  --surface: #fcfcfb; --card: #ffffff; --ink: #0b0b0b; --ink-2: #52514e;
+  --grid: #e7e6e2; --zero: #b9b7b0; --border: #e2e1dc;
+  --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a; --series-4: #eda100;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --surface: #1a1a19; --card: #222220; --ink: #ffffff; --ink-2: #c3c2b7;
+    --grid: #33322f; --zero: #55534d; --border: #3a3936;
+    --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500;
+  }
+}
+:root[data-theme="dark"] {
+  --surface: #1a1a19; --card: #222220; --ink: #ffffff; --ink-2: #c3c2b7;
+  --grid: #33322f; --zero: #55534d; --border: #3a3936;
+  --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500;
+}
+body { background: var(--surface); color: var(--ink); margin: 0;
+  font-family: -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; }
+main { max-width: 920px; margin: 0 auto; padding: 32px 20px 48px; }
+h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -0.01em; }
+.meta { color: var(--ink-2); font-size: 13px; margin: 0 0 20px; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+  padding: 18px 18px 8px; margin-bottom: 20px; }
+.card h2 { font-size: 14px; margin: 0 0 2px; }
+.card .sub { color: var(--ink-2); font-size: 12px; margin: 0 0 10px; }
+.legend { display: flex; gap: 14px; font-size: 12px; color: var(--ink-2); margin: 0 0 6px; }
+.chip { display: inline-flex; align-items: center; gap: 5px; }
+.swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.s0bg { background: var(--series-1); } .s1bg { background: var(--series-2); }
+.s2bg { background: var(--series-3); } .s3bg { background: var(--series-4); }
+.chart-wrap { position: relative; overflow-x: auto; }
+svg { display: block; max-width: 100%; height: auto; }
+.grid { stroke: var(--grid); stroke-width: 1; }
+.grid.zero { stroke: var(--zero); stroke-width: 1.5; }
+.tick { fill: var(--ink-2); font-size: 11px; font-variant-numeric: tabular-nums; }
+.tick.sub { font-size: 10px; opacity: 0.75; }
+.tick.unit { font-size: 10px; }
+.line { fill: none; stroke-width: 2; stroke-linejoin: round; }
+.line.dash { stroke-dasharray: 4 4; }
+.line.s0 { stroke: var(--series-1); } .line.s1 { stroke: var(--series-2); }
+.line.s2 { stroke: var(--series-3); } .line.s3 { stroke: var(--series-4); }
+.dot { stroke: var(--card); stroke-width: 2; }
+.dot.s0 { fill: var(--series-1); } .dot.s1 { fill: var(--series-2); }
+.dot.s2 { fill: var(--series-3); } .dot.s3 { fill: var(--series-4); }
+.dot.hollow { fill: var(--card); stroke-width: 2; }
+.dot.hollow.s0 { stroke: var(--series-1); } .dot.hollow.s1 { stroke: var(--series-2); }
+.dot.hollow.s2 { stroke: var(--series-3); } .dot.hollow.s3 { stroke: var(--series-4); }
+.dlabel { fill: var(--ink-2); font-size: 11.5px; }
+.dlabel .dval { fill: var(--ink); font-variant-numeric: tabular-nums; }
+.xhair { stroke: var(--zero); stroke-width: 1; stroke-dasharray: 3 3; visibility: hidden; }
+.tip { position: absolute; pointer-events: none; visibility: hidden; background: var(--card);
+  border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; font-size: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.12); min-width: 132px; }
+.tip b { display: block; margin-bottom: 4px; font-size: 11.5px; }
+.tip .row { display: flex; align-items: center; gap: 6px; justify-content: space-between;
+  font-variant-numeric: tabular-nums; }
+.tip .row .nm { display: inline-flex; align-items: center; gap: 5px; color: var(--ink-2); }
+.note { color: var(--ink-2); font-size: 12px; line-height: 1.6; margin-top: 4px; }
+details { margin-top: 8px; }
+summary { cursor: pointer; font-size: 13px; color: var(--ink-2); }
+table { border-collapse: collapse; font-size: 12.5px; margin-top: 10px;
+  font-variant-numeric: tabular-nums; }
+th, td { border: 1px solid var(--border); padding: 5px 9px; text-align: right; }
+th { color: var(--ink-2); font-weight: 600; }
+thead th { text-align: center; }
+</style>
+<main>
+<h1>주차별 제품군 매출</h1>
+<p class="meta">가상 유통사 fixture · 2026-06-01 ~ 07-31 일별 원장 2,154행 · ISO 주차 집계 · 단위 억원</p>
+
+<div class="card">
+  <h2>주간 매출</h2>
+  <p class="sub">제품군별 주간 합계. W31(7/27~31)은 5일 부분 주 — 점선·중공 마커.</p>
+  <div class="legend"><span class="chip"><span class="swatch s0bg"></span>식품</span><span class="chip"><span class="swatch s1bg"></span>생활용품</span><span class="chip"><span class="swatch s2bg"></span>뷰티</span><span class="chip"><span class="swatch s3bg"></span>가전</span></div>
+  <div class="chart-wrap" id="c1w">
+    <svg viewBox="0 0 860 300" role="img" aria-label="주간 제품군별 매출 선 그래프">
+      <line class="grid" x1="56" y1="260.0" x2="742" y2="260.0"/>
+<text class="tick" x="48" y="264.0" text-anchor="end">10</text>
+<line class="grid" x1="56" y1="213.1" x2="742" y2="213.1"/>
+<text class="tick" x="48" y="217.1" text-anchor="end">15</text>
+<line class="grid" x1="56" y1="166.2" x2="742" y2="166.2"/>
+<text class="tick" x="48" y="170.2" text-anchor="end">20</text>
+<line class="grid" x1="56" y1="119.2" x2="742" y2="119.2"/>
+<text class="tick" x="48" y="123.2" text-anchor="end">25</text>
+<line class="grid" x1="56" y1="72.3" x2="742" y2="72.3"/>
+<text class="tick" x="48" y="76.3" text-anchor="end">30</text>
+<line class="grid" x1="56" y1="25.4" x2="742" y2="25.4"/>
+<text class="tick" x="48" y="29.4" text-anchor="end">35</text>
+<text class="tick unit" x="48" y="14" text-anchor="end">억원</text>
+<text class="tick" x="56.0" y="278" text-anchor="middle">W23</text>
+<text class="tick sub" x="56.0" y="292" text-anchor="middle">6/01</text>
+<text class="tick" x="141.8" y="278" text-anchor="middle">W24</text>
+<text class="tick sub" x="141.8" y="292" text-anchor="middle">6/08</text>
+<text class="tick" x="227.5" y="278" text-anchor="middle">W25</text>
+<text class="tick sub" x="227.5" y="292" text-anchor="middle">6/15</text>
+<text class="tick" x="313.2" y="278" text-anchor="middle">W26</text>
+<text class="tick sub" x="313.2" y="292" text-anchor="middle">6/22</text>
+<text class="tick" x="399.0" y="278" text-anchor="middle">W27</text>
+<text class="tick sub" x="399.0" y="292" text-anchor="middle">6/29</text>
+<text class="tick" x="484.8" y="278" text-anchor="middle">W28</text>
+<text class="tick sub" x="484.8" y="292" text-anchor="middle">7/06</text>
+<text class="tick" x="570.5" y="278" text-anchor="middle">W29</text>
+<text class="tick sub" x="570.5" y="292" text-anchor="middle">7/13</text>
+<text class="tick" x="656.2" y="278" text-anchor="middle">W30</text>
+<text class="tick sub" x="656.2" y="292" text-anchor="middle">7/20</text>
+<text class="tick" x="742.0" y="278" text-anchor="middle">W31</text>
+<text class="tick sub" x="742.0" y="292" text-anchor="middle">7/27</text>
+<polyline class="line s0" points="56.0,25.4 141.8,23.5 227.5,24.4 313.2,29.1 399.0,39.5 484.8,35.7 570.5,43.2 656.2,68.6"/>
+<polyline class="line dash s0" points="656.2,68.6 742.0,154.9"/>
+<circle class="dot s0" cx="56.0" cy="25.4" r="4"/>
+<circle class="dot s0" cx="141.8" cy="23.5" r="4"/>
+<circle class="dot s0" cx="227.5" cy="24.4" r="4"/>
+<circle class="dot s0" cx="313.2" cy="29.1" r="4"/>
+<circle class="dot s0" cx="399.0" cy="39.5" r="4"/>
+<circle class="dot s0" cx="484.8" cy="35.7" r="4"/>
+<circle class="dot s0" cx="570.5" cy="43.2" r="4"/>
+<circle class="dot s0" cx="656.2" cy="68.6" r="4"/>
+<circle class="dot s0 hollow" cx="742.0" cy="154.9" r="4"/>
+<polyline class="line s1" points="56.0,109.8 141.8,116.4 227.5,113.6 313.2,112.7 399.0,130.5 484.8,127.7 570.5,164.3 656.2,157.7"/>
+<polyline class="line dash s1" points="656.2,157.7 742.0,218.7"/>
+<circle class="dot s1" cx="56.0" cy="109.8" r="4"/>
+<circle class="dot s1" cx="141.8" cy="116.4" r="4"/>
+<circle class="dot s1" cx="227.5" cy="113.6" r="4"/>
+<circle class="dot s1" cx="313.2" cy="112.7" r="4"/>
+<circle class="dot s1" cx="399.0" cy="130.5" r="4"/>
+<circle class="dot s1" cx="484.8" cy="127.7" r="4"/>
+<circle class="dot s1" cx="570.5" cy="164.3" r="4"/>
+<circle class="dot s1" cx="656.2" cy="157.7" r="4"/>
+<circle class="dot s1 hollow" cx="742.0" cy="218.7" r="4"/>
+<polyline class="line s2" points="56.0,199.0 141.8,202.8 227.5,201.8 313.2,199.0 399.0,189.6 484.8,175.5 570.5,185.9 656.2,198.1"/>
+<polyline class="line dash s2" points="656.2,198.1 742.0,244.0"/>
+<circle class="dot s2" cx="56.0" cy="199.0" r="4"/>
+<circle class="dot s2" cx="141.8" cy="202.8" r="4"/>
+<circle class="dot s2" cx="227.5" cy="201.8" r="4"/>
+<circle class="dot s2" cx="313.2" cy="199.0" r="4"/>
+<circle class="dot s2" cx="399.0" cy="189.6" r="4"/>
+<circle class="dot s2" cx="484.8" cy="175.5" r="4"/>
+<circle class="dot s2" cx="570.5" cy="185.9" r="4"/>
+<circle class="dot s2" cx="656.2" cy="198.1" r="4"/>
+<circle class="dot s2 hollow" cx="742.0" cy="244.0" r="4"/>
+<polyline class="line s3" points="56.0,156.8 141.8,157.7 227.5,157.7 313.2,156.8 399.0,172.7 484.8,177.4 570.5,241.2 656.2,219.6"/>
+<polyline class="line dash s3" points="656.2,219.6 742.0,243.1"/>
+<circle class="dot s3" cx="56.0" cy="156.8" r="4"/>
+<circle class="dot s3" cx="141.8" cy="157.7" r="4"/>
+<circle class="dot s3" cx="227.5" cy="157.7" r="4"/>
+<circle class="dot s3" cx="313.2" cy="156.8" r="4"/>
+<circle class="dot s3" cx="399.0" cy="172.7" r="4"/>
+<circle class="dot s3" cx="484.8" cy="177.4" r="4"/>
+<circle class="dot s3" cx="570.5" cy="241.2" r="4"/>
+<circle class="dot s3" cx="656.2" cy="219.6" r="4"/>
+<circle class="dot s3 hollow" cx="742.0" cy="243.1" r="4"/>
+<circle class="dot s0" cx="756" cy="150.9" r="4"/>
+<text class="dlabel" x="765" y="154.9">식품 <tspan class="dval">21.2억</tspan></text>
+<circle class="dot s1" cx="756" cy="214.7" r="4"/>
+<text class="dlabel" x="765" y="218.7">생활용품 <tspan class="dval">14.4억</tspan></text>
+<circle class="dot s3" cx="756" cy="239.1" r="4"/>
+<text class="dlabel" x="765" y="243.1">가전 <tspan class="dval">11.8억</tspan></text>
+<circle class="dot s2" cx="756" cy="254.1" r="4"/>
+<text class="dlabel" x="765" y="258.1">뷰티 <tspan class="dval">11.7억</tspan></text>
+      <line id="xh1" class="xhair" y1="16" y2="260"/>
+      <rect id="ov1" x="56" y="16" width="686" height="244" fill="transparent"/>
+    </svg>
+    <div class="tip" id="tip1"></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>전주 대비 증감율</h2>
+  <p class="sub">완전 주(월~일 7일)만 비교. W31 부분 주는 제외.</p>
+  <div class="legend"><span class="chip"><span class="swatch s0bg"></span>식품</span><span class="chip"><span class="swatch s1bg"></span>생활용품</span><span class="chip"><span class="swatch s2bg"></span>뷰티</span><span class="chip"><span class="swatch s3bg"></span>가전</span></div>
+  <div class="chart-wrap" id="c2w">
+    <svg viewBox="0 0 860 300" role="img" aria-label="제품군별 전주 대비 증감율 선 그래프">
+      <line class="grid" x1="56" y1="260.0" x2="742" y2="260.0"/>
+<text class="tick" x="48" y="264.0" text-anchor="end">-40</text>
+<line class="grid" x1="56" y1="222.5" x2="742" y2="222.5"/>
+<text class="tick" x="48" y="226.5" text-anchor="end">-30</text>
+<line class="grid" x1="56" y1="184.9" x2="742" y2="184.9"/>
+<text class="tick" x="48" y="188.9" text-anchor="end">-20</text>
+<line class="grid" x1="56" y1="147.4" x2="742" y2="147.4"/>
+<text class="tick" x="48" y="151.4" text-anchor="end">-10</text>
+<line class="grid zero" x1="56" y1="109.8" x2="742" y2="109.8"/>
+<text class="tick" x="48" y="113.8" text-anchor="end">0</text>
+<line class="grid" x1="56" y1="72.3" x2="742" y2="72.3"/>
+<text class="tick" x="48" y="76.3" text-anchor="end">+10</text>
+<line class="grid" x1="56" y1="34.8" x2="742" y2="34.8"/>
+<text class="tick" x="48" y="38.8" text-anchor="end">+20</text>
+<text class="tick unit" x="48" y="14" text-anchor="end">%</text>
+<text class="tick" x="56.0" y="278" text-anchor="middle">W24</text>
+<text class="tick sub" x="56.0" y="292" text-anchor="middle">6/08</text>
+<text class="tick" x="170.3" y="278" text-anchor="middle">W25</text>
+<text class="tick sub" x="170.3" y="292" text-anchor="middle">6/15</text>
+<text class="tick" x="284.7" y="278" text-anchor="middle">W26</text>
+<text class="tick sub" x="284.7" y="292" text-anchor="middle">6/22</text>
+<text class="tick" x="399.0" y="278" text-anchor="middle">W27</text>
+<text class="tick sub" x="399.0" y="292" text-anchor="middle">6/29</text>
+<text class="tick" x="513.3" y="278" text-anchor="middle">W28</text>
+<text class="tick sub" x="513.3" y="292" text-anchor="middle">7/06</text>
+<text class="tick" x="627.7" y="278" text-anchor="middle">W29</text>
+<text class="tick sub" x="627.7" y="292" text-anchor="middle">7/13</text>
+<text class="tick" x="742.0" y="278" text-anchor="middle">W30</text>
+<text class="tick sub" x="742.0" y="292" text-anchor="middle">7/20</text>
+<polyline class="line s0" points="56.0,107.6 170.3,111.0 284.7,115.1 399.0,121.9 513.3,105.3 627.7,118.9 742.0,140.6"/>
+<circle class="dot s0" cx="56.0" cy="107.6" r="4"/>
+<circle class="dot s0" cx="170.3" cy="111.0" r="4"/>
+<circle class="dot s0" cx="284.7" cy="115.1" r="4"/>
+<circle class="dot s0" cx="399.0" cy="121.9" r="4"/>
+<circle class="dot s0" cx="513.3" cy="105.3" r="4"/>
+<circle class="dot s0" cx="627.7" cy="118.9" r="4"/>
+<circle class="dot s0" cx="742.0" cy="140.6" r="4"/>
+<polyline class="line s1" points="56.0,120.0 170.3,105.3 284.7,108.3 399.0,137.6 513.3,105.0 627.7,170.7 742.0,96.7"/>
+<circle class="dot s1" cx="56.0" cy="120.0" r="4"/>
+<circle class="dot s1" cx="170.3" cy="105.3" r="4"/>
+<circle class="dot s1" cx="284.7" cy="108.3" r="4"/>
+<circle class="dot s1" cx="399.0" cy="137.6" r="4"/>
+<circle class="dot s1" cx="513.3" cy="105.0" r="4"/>
+<circle class="dot s1" cx="627.7" cy="170.7" r="4"/>
+<circle class="dot s1" cx="742.0" cy="96.7" r="4"/>
+<polyline class="line s2" points="56.0,118.9 170.3,107.6 284.7,102.7 399.0,86.9 513.3,77.6 627.7,131.6 742.0,137.2"/>
+<circle class="dot s2" cx="56.0" cy="118.9" r="4"/>
+<circle class="dot s2" cx="170.3" cy="107.6" r="4"/>
+<circle class="dot s2" cx="284.7" cy="102.7" r="4"/>
+<circle class="dot s2" cx="399.0" cy="86.9" r="4"/>
+<circle class="dot s2" cx="513.3" cy="77.6" r="4"/>
+<circle class="dot s2" cx="627.7" cy="131.6" r="4"/>
+<circle class="dot s2" cx="742.0" cy="137.2" r="4"/>
+<polyline class="line s3" points="56.0,111.7 170.3,109.8 284.7,108.0 399.0,140.3 513.3,119.6 627.7,245.7 742.0,37.8"/>
+<circle class="dot s3" cx="56.0" cy="111.7" r="4"/>
+<circle class="dot s3" cx="170.3" cy="109.8" r="4"/>
+<circle class="dot s3" cx="284.7" cy="108.0" r="4"/>
+<circle class="dot s3" cx="399.0" cy="140.3" r="4"/>
+<circle class="dot s3" cx="513.3" cy="119.6" r="4"/>
+<circle class="dot s3" cx="627.7" cy="245.7" r="4"/>
+<circle class="dot s3" cx="742.0" cy="37.8" r="4"/>
+<circle class="dot s3" cx="756" cy="33.8" r="4"/>
+<text class="dlabel" x="765" y="37.8">가전 <tspan class="dval">+19.2%</tspan></text>
+<circle class="dot s1" cx="756" cy="92.7" r="4"/>
+<text class="dlabel" x="765" y="96.7">생활용품 <tspan class="dval">+3.5%</tspan></text>
+<circle class="dot s2" cx="756" cy="133.2" r="4"/>
+<text class="dlabel" x="765" y="137.2">뷰티 <tspan class="dval">-7.3%</tspan></text>
+<circle class="dot s0" cx="756" cy="148.2" r="4"/>
+<text class="dlabel" x="765" y="152.2">식품 <tspan class="dval">-8.2%</tspan></text>
+      <line id="xh2" class="xhair" y1="16" y2="260"/>
+      <rect id="ov2" x="56" y="16" width="686" height="244" fill="transparent"/>
+    </svg>
+    <div class="tip" id="tip2"></div>
+  </div>
+</div>
+
+<p class="note">읽기: 6월 4주(W23~W26)는 ±3% 안의 안정 구간. 7월 진입(W27)부터 하락이 시작되고
+W29(7/13~19)에 가전 −36.2%·생활용품 −16.2%로 최저점, W30에 가전만 +19.2% 부분 반등.
+뷰티는 W27~28 유일한 역행 상승(+6.1% → +8.6%) 후 하락 합류 — 등록 이벤트(신규 브랜드 입점
+E5, 쿠폰 종료 E1)와 대조해 볼 지점. ※ 주 단위 집계는 실행 계약(월 grain) 밖의 ad-hoc
+분석으로, 엔진 게이트를 거치지 않은 원장 직접 계산이다.</p>
+
+<details>
+  <summary>데이터 표 (주간 매출 억원 · 전주 대비 %)</summary>
+  <div style="overflow-x:auto">
+  <table>
+    <thead>
+      <tr><th rowspan="2">주차</th><th colspan="4">주간 매출 (억원)</th><th colspan="4">전주 대비 (%)</th></tr>
+      <tr><th>식품</th><th>생활용품</th><th>뷰티</th><th>가전</th><th>식품</th><th>생활용품</th><th>뷰티</th><th>가전</th></tr>
+    </thead>
+    <tbody><tr><th>2026-W23</th><td>35.0</td><td>26.0</td><td>16.5</td><td>21.0</td><td>—</td><td>—</td><td>—</td><td>—</td></tr><tr><th>2026-W24</th><td>35.2</td><td>25.3</td><td>16.1</td><td>20.9</td><td>+0.6%</td><td>-2.7%</td><td>-2.4%</td><td>-0.5%</td></tr><tr><th>2026-W25</th><td>35.1</td><td>25.6</td><td>16.2</td><td>20.9</td><td>-0.3%</td><td>+1.2%</td><td>+0.6%</td><td>0.0%</td></tr><tr><th>2026-W26</th><td>34.6</td><td>25.7</td><td>16.5</td><td>21.0</td><td>-1.4%</td><td>+0.4%</td><td>+1.9%</td><td>+0.5%</td></tr><tr><th>2026-W27</th><td>33.5</td><td>23.8</td><td>17.5</td><td>19.3</td><td>-3.2%</td><td>-7.4%</td><td>+6.1%</td><td>-8.1%</td></tr><tr><th>2026-W28</th><td>33.9</td><td>24.1</td><td>19.0</td><td>18.8</td><td>+1.2%</td><td>+1.3%</td><td>+8.6%</td><td>-2.6%</td></tr><tr><th>2026-W29</th><td>33.1</td><td>20.2</td><td>17.9</td><td>12.0</td><td>-2.4%</td><td>-16.2%</td><td>-5.8%</td><td>-36.2%</td></tr><tr><th>2026-W30</th><td>30.4</td><td>20.9</td><td>16.6</td><td>14.3</td><td>-8.2%</td><td>+3.5%</td><td>-7.3%</td><td>+19.2%</td></tr><tr><th>2026-W31 (5일)</th><td>21.2</td><td>14.4</td><td>11.7</td><td>11.8</td><td>—</td><td>—</td><td>—</td><td>—</td></tr></tbody>
+  </table>
+  </div>
+</details>
+</main>
+<script>
+const CATS = ["식품", "생활용품", "뷰티", "가전"];
+const SW = ["--series-1","--series-2","--series-3","--series-4"];
+function wire(wrapId, tipId, xhId, ovId, xs, tips) {
+  const wrap = document.getElementById(wrapId), tip = document.getElementById(tipId);
+  const xh = document.getElementById(xhId), ov = document.getElementById(ovId);
+  const svg = wrap.querySelector("svg");
+  function show(evt) {
+    const pt = new DOMPoint(evt.clientX, evt.clientY)
+      .matrixTransform(svg.getScreenCTM().inverse());
+    let best = 0, dist = Infinity;
+    xs.forEach((x, i) => { const d = Math.abs(x - pt.x); if (d < dist) { dist = d; best = i; } });
+    xh.setAttribute("x1", xs[best]); xh.setAttribute("x2", xs[best]);
+    xh.style.visibility = "visible";
+    const t = tips[best];
+    tip.innerHTML = "<b>" + t.t + "</b>" + CATS.map((c, i) =>
+      `<div class="row"><span class="nm"><span class="swatch" style="background:var(${SW[i]})"></span>${c}</span><span>${t.v[i]}</span></div>`).join("");
+    const rect = wrap.getBoundingClientRect();
+    const px = (xs[best] / 860) * svg.getBoundingClientRect().width;
+    tip.style.left = Math.min(px + 14, rect.width - tip.offsetWidth - 4) + "px";
+    tip.style.top = "18px";
+    tip.style.visibility = "visible";
+  }
+  ov.addEventListener("mousemove", show);
+  ov.addEventListener("mouseleave", () => {
+    tip.style.visibility = "hidden"; xh.style.visibility = "hidden"; });
+}
+wire("c1w", "tip1", "xh1", "ov1", [56.0, 141.8, 227.5, 313.2, 399.0, 484.8, 570.5, 656.2, 742.0], [{"t": "2026-W23 (06/01~06/07)", "v": ["35.0억", "26.0억", "16.5억", "21.0억"]}, {"t": "2026-W24 (06/08~06/14)", "v": ["35.2억", "25.3억", "16.1억", "20.9억"]}, {"t": "2026-W25 (06/15~06/21)", "v": ["35.1억", "25.6억", "16.2억", "20.9억"]}, {"t": "2026-W26 (06/22~06/28)", "v": ["34.6억", "25.7억", "16.5억", "21.0억"]}, {"t": "2026-W27 (06/29~07/05)", "v": ["33.5억", "23.8억", "17.5억", "19.3억"]}, {"t": "2026-W28 (07/06~07/12)", "v": ["33.9억", "24.1억", "19.0억", "18.8억"]}, {"t": "2026-W29 (07/13~07/19)", "v": ["33.1억", "20.2억", "17.9억", "12.0억"]}, {"t": "2026-W30 (07/20~07/26)", "v": ["30.4억", "20.9억", "16.6억", "14.3억"]}, {"t": "2026-W31 (07/27~07/31)", "v": ["21.2억", "14.4억", "11.7억", "11.8억"]}]);
+wire("c2w", "tip2", "xh2", "ov2", [56.0, 170.3, 284.7, 399.0, 513.3, 627.7, 742.0], [{"t": "2026-W24 (전주 대비)", "v": ["+0.6%", "-2.7%", "-2.4%", "-0.5%"]}, {"t": "2026-W25 (전주 대비)", "v": ["-0.3%", "+1.2%", "+0.6%", "0.0%"]}, {"t": "2026-W26 (전주 대비)", "v": ["-1.4%", "+0.4%", "+1.9%", "+0.5%"]}, {"t": "2026-W27 (전주 대비)", "v": ["-3.2%", "-7.4%", "+6.1%", "-8.1%"]}, {"t": "2026-W28 (전주 대비)", "v": ["+1.2%", "+1.3%", "+8.6%", "-2.6%"]}, {"t": "2026-W29 (전주 대비)", "v": ["-2.4%", "-16.2%", "-5.8%", "-36.2%"]}, {"t": "2026-W30 (전주 대비)", "v": ["-8.2%", "+3.5%", "-7.3%", "+19.2%"]}]);
+</script>

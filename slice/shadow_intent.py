@@ -55,12 +55,17 @@ ANALYSIS_PATTERNS = (
 )
 
 
-def compile_shadow_intent(question, contexts=None, registry=None):
-    """Compile a governed Korean question to C4 or a clause-local refusal."""
+def compile_shadow_intent(question, contexts=None, registry=None, proposer=None):
+    """Compile a governed Korean question to C4 or a clause-local refusal.
+
+    ``proposer``는 절 바인딩 제안 함수를 교체하는 명시적 주입점이다(기본:
+    규칙 기반). 어떤 제안자든 검증·컴파일·실행의 결정론 권위는 바뀌지 않는다.
+    """
     contexts = contexts or load_metric_catalog()
     registry = registry or ShadowOperatorRegistry()
     vocabulary = _vocabulary(contexts, registry)
-    proposed = propose_clause_bindings(question, contexts, vocabulary=vocabulary)
+    proposer = proposer or propose_clause_bindings
+    proposed = proposer(question, contexts, vocabulary=vocabulary)
 
     problems = validate_binding_record(proposed, vocabulary)
     if problems:
@@ -285,7 +290,16 @@ def propose_clause_bindings(question, contexts=None, vocabulary=None):
         add(target_level, "preserved", role="output", kind="output_ref",
             value="target_level")
 
-    clauses = _apply_semantic_compatibility(clauses, vocabulary)
+    return finalize_clause_record(question, clauses, contexts, vocabulary)
+
+
+def finalize_clause_record(question, clauses, contexts, vocabulary):
+    """제안된 절 목록을 결정론적으로 마무리한다 — 제안자(규칙·LLM)와 무관한 정본.
+
+    의미 호환성 강등, 미소비 텍스트의 실토(unaccounted), clause_id 부여,
+    defaults 계산은 어느 제안자가 왔든 여기서만 수행된다.
+    """
+    clauses = _apply_semantic_compatibility(list(clauses), vocabulary)
     clauses.extend(_unaccounted_clauses(question, clauses))
     clauses = tuple(replace(row, clause_id=f"c{index:02d}")
                     for index, row in enumerate(sorted(

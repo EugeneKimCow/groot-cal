@@ -234,3 +234,20 @@ over C3 is minimal grammar, not proven implementation cost.
 - production tests: 197 discovered, 197 pass in standard sandbox
 - current golden / semantic / research: 17/17, 10/10, 58/58
 - default CLI/engine behavior changes: 0
+
+## E-021 local LLM proposal adapter (C2′ increment 1)
+
+- fail-closed contract tests (fake transport, no network): 7/7
+- live end-to-end level binding (Ollama): 1/1
+- governed corpus, gemma3:12b: full agreement 8/14; silent substitutions 0/14;
+  wrong numbers 0/14; all 6 divergences = one proposal error (delta for
+  contribution), every instance contract-converted to refusal or
+  coarser-correct answer
+- governed corpus, qwen2.5:72b (6 divergent re-run): 4/6 byte-identical DAG
+  convergence; 1 defensible delta reading (correct −340); 1 identical
+  fail-closed double-binding
+- deterministic guards exercised: span recovery (hallucinated text dropped +
+  residual confessed), relative-month recomputation, first-wins overlap
+- production tests: 205 discovered, all pass (live LLM test auto-skips
+  without Ollama); golden 17/17; semantic 10/10
+- default route / rule-based demo behavior changes: 0

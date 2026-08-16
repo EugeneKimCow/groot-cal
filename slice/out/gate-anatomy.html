@@ -1,0 +1,225 @@
+<title>게이트 해부도</title>
+<style>
+:root {
+  --surface: #fcfcfb; --card: #ffffff; --ink: #0b0b0b; --ink-2: #52514e;
+  --border: #e2e1dc; --accent: #d95a26;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --surface: #1a1a19; --card: #222220; --ink: #ffffff; --ink-2: #c3c2b7;
+    --border: #3a3936; --accent: #e8703f;
+  }
+}
+:root[data-theme="dark"] {
+  --surface: #1a1a19; --card: #222220; --ink: #ffffff; --ink-2: #c3c2b7;
+  --border: #3a3936; --accent: #e8703f;
+}
+body { background: var(--surface); color: var(--ink); margin: 0;
+  font-family: -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 32px 20px 48px; }
+h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -0.01em; }
+.meta { color: var(--ink-2); font-size: 13px; margin: 0 0 20px; }
+h2 { font-size: 15px; margin: 28px 0 8px; }
+p { font-size: 13.5px; line-height: 1.7; color: var(--ink); max-width: 66ch; }
+p.dim { color: var(--ink-2); }
+figure { margin: 0; background: var(--card); border: 1px solid var(--border);
+  border-radius: 8px; padding: 20px 12px 8px; }
+figure svg { display: block; max-width: 100%; height: auto; color: var(--ink); }
+figcaption { color: var(--ink-2); font-size: 12.5px; line-height: 1.6;
+  padding: 10px 8px 8px; }
+.box { fill: var(--card); stroke: currentColor; stroke-width: 1.2; }
+.box.soft { stroke: var(--ink-2); }
+.box.dashed { stroke-dasharray: 5 4; stroke: var(--ink-2); }
+.box.bypass { stroke: var(--accent); stroke-width: 1.6; }
+.flow { stroke: currentColor; stroke-width: 1.4; fill: none; }
+.flow.exit { stroke: var(--ink-2); stroke-width: 1.1; }
+.flow.dashed { stroke-dasharray: 4 4; stroke: var(--ink-2); }
+.flow.bypass { stroke: var(--accent); stroke-width: 1.8; }
+.t { fill: currentColor; font-size: 12.5px; }
+.t.b { font-weight: 600; }
+.t.s { font-size: 10.5px; fill: var(--ink-2); }
+.t.mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10.5px;
+  fill: var(--ink-2); }
+.t.acc { fill: var(--accent); font-size: 11px; font-weight: 600; }
+table { border-collapse: collapse; font-size: 12.5px; margin-top: 10px; width: 100%; }
+th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left;
+  vertical-align: top; line-height: 1.5; }
+th { color: var(--ink-2); font-weight: 600; white-space: nowrap; }
+td code, li code, p code { font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11.5px; color: var(--ink); background: var(--surface);
+  border: 1px solid var(--border); border-radius: 3px; padding: 0 3px; }
+ul { font-size: 13.5px; line-height: 1.7; padding-left: 20px; max-width: 70ch; }
+.wrap { overflow-x: auto; }
+</style>
+<main>
+<h1>게이트 해부도</h1>
+<p class="meta">같은 원장, 두 경로 — 실행 계약을 통과하는 질의와 그것을 우회한 주차별 ad-hoc 분석</p>
+
+<figure>
+<div class="wrap">
+<svg viewBox="0 0 900 620" role="img"
+     aria-label="정식 질의는 6단 게이트를 통과해 Result Envelope에 도달하고, 주차별 ad-hoc 분석은 게이트를 전부 우회해 원장을 직접 읽는다">
+<defs>
+  <marker id="arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+    <polygon points="0,0 8,4 0,8" fill="currentColor"/>
+  </marker>
+  <marker id="arrdim" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+    <polygon points="0,0 8,4 0,8" style="fill: var(--ink-2)"/>
+  </marker>
+  <marker id="arracc" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" orient="auto">
+    <polygon points="0,0 8,4 0,8" style="fill: var(--accent)"/>
+  </marker>
+</defs>
+
+<!-- ── 정식 경로 (왼쪽 레인) ─────────────────────────────── -->
+<text class="t s" x="290" y="12" text-anchor="middle">정식 경로 — 실행 계약</text>
+<rect class="box" x="150" y="20" width="280" height="42" rx="6"/>
+<text class="t b" x="290" y="38" text-anchor="middle">한국어 질문</text>
+<text class="t s" x="290" y="53" text-anchor="middle">"7월 매출이 왜 변했나?"</text>
+
+<line class="flow" x1="290" y1="62" x2="290" y2="88" marker-end="url(#arr)"/>
+
+<rect class="box" x="150" y="92" width="280" height="46" rx="6"/>
+<text class="t b" x="290" y="111" text-anchor="middle">① 해석 · 절 바인딩</text>
+<text class="t s" x="290" y="126" text-anchor="middle">닫힌 어휘 · 모든 절의 소비/거부 기록</text>
+<line class="flow exit" x1="150" y1="115" x2="100" y2="115" marker-end="url(#arrdim)"/>
+<text class="t mono" x="94" y="112" text-anchor="end">clarify</text>
+<text class="t mono" x="94" y="124" text-anchor="end">x1</text>
+
+<line class="flow" x1="290" y1="138" x2="290" y2="164" marker-end="url(#arr)"/>
+
+<rect class="box" x="150" y="168" width="280" height="46" rx="6"/>
+<text class="t b" x="290" y="187" text-anchor="middle">② 의미 검증 (Query Spec · Slice)</text>
+<text class="t s" x="290" y="202" text-anchor="middle">지표 버전 · 기간 · scope 등록 · 원장 존재</text>
+<line class="flow exit" x1="150" y1="191" x2="100" y2="191" marker-end="url(#arrdim)"/>
+<text class="t mono" x="94" y="188" text-anchor="end">out_of_domain</text>
+<text class="t mono" x="94" y="200" text-anchor="end">suspended</text>
+
+<line class="flow" x1="290" y1="214" x2="290" y2="240" marker-end="url(#arr)"/>
+
+<rect class="box" x="150" y="244" width="280" height="46" rx="6"/>
+<text class="t b" x="290" y="263" text-anchor="middle">③ admissibility · 탐색 예산</text>
+<text class="t s" x="290" y="278" text-anchor="middle">연산자 × metric type · depth/segments/calls 선점</text>
+<line class="flow exit" x1="150" y1="267" x2="100" y2="267" marker-end="url(#arrdim)"/>
+<text class="t mono" x="94" y="264" text-anchor="end">out_of_domain</text>
+<text class="t mono" x="94" y="276" text-anchor="end">budget_exhausted</text>
+
+<line class="flow" x1="290" y1="290" x2="290" y2="316" marker-end="url(#arr)"/>
+
+<rect class="box" x="150" y="320" width="280" height="46" rx="6"/>
+<text class="t b" x="290" y="339" text-anchor="middle">④ 데이터 게이트</text>
+<text class="t s" x="290" y="354" text-anchor="middle">커버리지 · 부호 규범 · 파티션 · 잔차 검출</text>
+<line class="flow exit" x1="150" y1="343" x2="100" y2="343" marker-end="url(#arrdim)"/>
+<text class="t mono" x="94" y="346" text-anchor="end">out_of_domain</text>
+
+<line class="flow" x1="290" y1="366" x2="290" y2="392" marker-end="url(#arr)"/>
+
+<rect class="box" x="150" y="396" width="280" height="46" rx="6"/>
+<text class="t b" x="290" y="415" text-anchor="middle">⑤ 사후 검증</text>
+<text class="t s" x="290" y="430" text-anchor="middle">identity_recheck (Σ기여=Δ) · share 억제</text>
+<line class="flow exit" x1="150" y1="419" x2="100" y2="419" marker-end="url(#arrdim)"/>
+<text class="t mono" x="94" y="422" text-anchor="end">out_of_domain</text>
+
+<line class="flow" x1="290" y1="442" x2="290" y2="468" marker-end="url(#arr)"/>
+
+<rect class="box" x="150" y="472" width="280" height="46" rx="6"/>
+<text class="t b" x="290" y="491" text-anchor="middle">Result Envelope</text>
+<text class="t s" x="290" y="506" text-anchor="middle">값 + label 상한 + provenance (spec·input hash)</text>
+
+<line class="flow" x1="290" y1="518" x2="290" y2="544" marker-end="url(#arr)"/>
+
+<rect class="box" x="150" y="548" width="280" height="46" rx="6"/>
+<text class="t b" x="290" y="567" text-anchor="middle">⑥ 보고 경계</text>
+<text class="t s" x="290" y="582" text-anchor="middle">Envelope만 소비 · claim ceiling · lint R01~R14</text>
+
+<!-- ── 등록부 (E-007 확장점) ─────────────────────────────── -->
+<rect class="box dashed" x="470" y="150" width="180" height="60" rx="6"/>
+<text class="t b" x="560" y="170" text-anchor="middle">등록 calendar/window</text>
+<text class="t s" x="560" y="185" text-anchor="middle">월 ✓ · 주간 ✗</text>
+<text class="t s" x="560" y="199" text-anchor="middle">E-007 확장점</text>
+<line class="flow dashed" x1="470" y1="185" x2="434" y2="188" marker-end="url(#arrdim)"/>
+<text class="t s" x="452" y="176" text-anchor="end">참조</text>
+
+<!-- ── 원장 (공유 저장소) ────────────────────────────────── -->
+<rect class="box soft" x="470" y="316" width="180" height="54" rx="12"/>
+<text class="t b" x="560" y="338" text-anchor="middle">일별 원장</text>
+<text class="t s" x="560" y="353" text-anchor="middle">2,154행 · 2026-06-01~07-31</text>
+<line class="flow" x1="470" y1="343" x2="434" y2="343" marker-end="url(#arr)"/>
+<text class="t s" x="452" y="333" text-anchor="end">게이트 내 읽기</text>
+
+<!-- ── ad-hoc 경로 (오른쪽 레인) ─────────────────────────── -->
+<text class="t acc" x="780" y="12" text-anchor="middle">이번 주차별 분석 — 게이트 우회</text>
+<rect class="box bypass" x="670" y="92" width="220" height="46" rx="6"/>
+<text class="t b" x="780" y="111" text-anchor="middle">분석 스크립트</text>
+<text class="t s" x="780" y="126" text-anchor="middle">질문 없음 — 코드가 직접 시작</text>
+
+<line class="flow bypass" x1="780" y1="138" x2="780" y2="316" marker-end="url(#arracc)"/>
+<text class="t acc" x="790" y="230">게이트 0개 통과</text>
+
+<line class="flow bypass" x1="650" y1="343" x2="666" y2="343" marker-end="url(#arracc)"/>
+<text class="t s" x="700" y="333">직접 읽기</text>
+
+<rect class="box bypass" x="670" y="320" width="220" height="46" rx="6"/>
+<text class="t b" x="780" y="339" text-anchor="middle">ISO 주차 groupby · % 계산</text>
+<text class="t s" x="780" y="354" text-anchor="middle">커버리지·부호·항등식 검사 없음</text>
+
+<line class="flow bypass" x1="780" y1="366" x2="780" y2="468" marker-end="url(#arracc)"/>
+
+<rect class="box bypass" x="670" y="472" width="220" height="46" rx="6"/>
+<text class="t b" x="780" y="491" text-anchor="middle">숫자 · 차트</text>
+<text class="t s" x="780" y="506" text-anchor="middle">label 상한 없음 · provenance 없음</text>
+</svg>
+</div>
+<figcaption>정식 질의는 여섯 단계의 게이트를 통과하며, 각 게이트는 통과 아니면
+닫힌 상태(clarify · suspended · out_of_domain · budget_exhausted)로 옆으로
+빠진다 — 조용한 실패가 없다. 주차별 분석(주황)은 이 스택 전체를 우회해 원장을
+직접 읽었다. 주차가 정식 질의가 되지 못한 지점은 ②의 등록부다: calendar에
+월만 등록되어 있고 주간이 없다(E-007 확장점).</figcaption>
+</figure>
+
+<h2>각 게이트가 막는 것</h2>
+<div class="wrap">
+<table>
+<thead><tr><th>단계</th><th>실제 검사 (코드의 check)</th><th>막는 것</th><th>실패 상태</th></tr></thead>
+<tbody>
+<tr><td>① 해석·바인딩</td><td>닫힌 어휘 바인딩, 절 소비 대장</td>
+<td>미등록 지표 추측, 절("2025년"·"평균")의 침묵 폐기</td><td><code>x1</code> · <code>clarify</code></td></tr>
+<tr><td>② 의미 검증</td><td><code>metric_version</code> · <code>focal_period</code> · scope 등록·<code>applies_to</code> · 원장 존재</td>
+<td>미정의 estimand, 없는 기간에 대한 그럴듯한 답</td><td><code>out_of_domain</code> · <code>suspended</code></td></tr>
+<tr><td>③ admissibility·예산</td><td><code>operator_registered</code> · <code>operation_family</code> · <code>metric_type</code> · 호출 전 예산 선점</td>
+<td>타입에 안 맞는 연산(rate에 가법 분해), 무한 탐색</td><td><code>out_of_domain</code> · <code>budget_exhausted</code></td></tr>
+<tr><td>④ 데이터 게이트</td><td><code>partition_coverage</code> · <code>sign_policy</code> · <code>mece_runtime_coverage</code> · <code>coverage_residual</code></td>
+<td>NULL·미등록 값의 조용한 누락, 환불 음수 행 오염</td><td><code>out_of_domain</code></td></tr>
+<tr><td>⑤ 사후 검증</td><td><code>identity_recheck</code>(Σ기여=Δ) · share 억제(δ_min·부호 혼재)</td>
+<td>합이 닫히지 않는 분해, 기여율 과대 해석</td><td><code>out_of_domain</code> · 억제</td></tr>
+<tr><td>⑥ 보고 경계</td><td>Envelope 한정 소비 · claim ceiling · lint R01~R14</td>
+<td>근거 등급을 넘는 단정, 출처 없는 수치 인용</td><td>라벨 강등 · BLOCK</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>주차별 분석이 건너뛴 것</h2>
+<ul>
+<li><b>표현 자체가 불가</b>: Slice의 time_window는 <code>kind: month</code>뿐이고 해석
+어휘에 "주차"가 없다. 정식 경로였다면 ①에서 clarify로 끝났을 질의다.</li>
+<li><b>커버리지·부호 무검사</b>: 원장에 미등록 category 값이나 환불 음수 행이
+있었다면 조용히 합산되거나 누락됐다 — ④가 잡는 바로 그 오염이다.</li>
+<li><b>항등식은 수동 확인</b>: Σ주간 = 8,060u = 6월 4,200 + 7월 3,860으로 닫힘을
+사람이 대조했다. 시스템 보증(⑤)이 아니라 일회성 확인이다.</li>
+<li><b>type 우연</b>: 매출은 amount(가법)라 주 단위 합이 우연히 안전했다. 같은
+코드를 손해율에 쓰면 주별 비율 합산·평균이 무사통과한다 — ③이 강제하는
+<code>denominator_weighted</code> 경로가 없다.</li>
+<li><b>상한·출처 없음</b>: −36.2% 같은 수치에 확인/시사 등급도, input snapshot
+hash도 붙지 않았다. 보고 경계(⑥)가 인용을 거부할 수치다.</li>
+</ul>
+
+<h2>E-007 확장 — 주차를 정식 질의로 만들려면</h2>
+<p>semantic contract에 세 가지를 <b>등록</b>하면 된다: (a) 원천 grain이 일별임을
+선언, (b) 주간 calendar(ISO 주 경계·부분 주 정책) 등록, (c) metric type별 허용
+reducer(amount는 주간 sum, balance는 주말 시점값 — 일평균과 구분). 그러면 같은
+<code>evaluate_metric</code> algebra와 같은 게이트 스택이 주간 Slice로 그대로
+작동한다. 연구 E-007이 검증한 것이 정확히 이 형태다: Slice는 등록된
+calendar/window를 참조하고, alignment는 컴파일 시점에 검사되며, "period-end
+잔액이 일평균 질문에 침묵 응답"하는 류의 grain 혼동이 차단된다. kernel 분기
+없이 등록만으로 수용되면 — 그것이 H1(어휘 일반성)의 관측치다.</p>
+</main>

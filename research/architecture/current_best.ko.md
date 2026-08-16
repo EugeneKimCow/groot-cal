@@ -170,3 +170,10 @@ capability는 이름을 밝혀 거부되며 결코 대체되지 않는다. 두 c
 Query Spec)는 같은 executor에서 같은 수치로 만난다. 다음 판별 대상은
 clause-binding 계약 위의 LLM proposal adapter(C2′)이고, rank/drilldown
 라우팅은 미해결 #19 뒤에 있다.
+
+E-021은 같은 계약 뒤에서 proposal 슬롯에 local LLM을 넣었다. 마무리
+seam(finalize_clause_record)은 이제 제안자 독립이며, 결정론 가드 3종(원문
+그대로의 span 복원, 상대 월 재계산, 겹침 선착순)이 해석 권위를 모델 밖에
+둔다. 두 local 모델 실측에서 침묵 치환 0·오답 수치 0 — 모든 제안 오류는
+거부 또는 검증된 거친 답이 됐고, 모델 크기는 recall만 샀다. 다음 판별 대상은
+C2′ 증분 2(advisory 대 계약-아래-LLM 비교)다.
