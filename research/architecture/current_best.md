@@ -184,3 +184,13 @@ model. Live measurement on two local models produced zero silent substitutions
 and zero wrong numbers; every proposal error became a refusal or a
 coarser-correct answer, and model scale bought recall only. The C2′ increment 2
 comparison (advisory vs LLM-under-contract) is the active discriminator.
+
+E-024 closed H2's original comparison: C2′ (an LLM interpreting under the
+contract) reached 50/50 on the analytical span of the fixed H2 corpus with a
+local 14B model — the deterministic enforced ceiling — against ≤58% for the
+frontier advisory agent. The measurement itself repaired the system twice:
+a scorer false positive (plan_gap subject consumption) and a genuine
+alias-fidelity gap (unwitnessed subject bindings now downgrade to
+clarification, deterministically). Enforcement, not model scale, carries the
+effect. Active discriminators: broad recall (#16), pushdown authority (#24),
+rank/drilldown routing (#19).

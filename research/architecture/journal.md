@@ -717,3 +717,41 @@ kernel window subsystem — recorded as schema-extension + kernel-change.
 Pushdown authority transfer (#24) and period-end selection from daily
 balances (#17) remain the backend frontier; C2′ increment 2 remains the
 active model-side discriminator.
+
+## Iteration 15 — E-024 C2′ increment 2
+
+### Hypothesis
+
+An LLM interpreting under the contract beats advisory free execution on the
+fixed H2 corpus, even with the model asymmetry reversed (local 14B vs the
+frontier agent v4 used).
+
+### Experiment
+
+Built the C2′ harness (analytical-span scoring, substitution and wrong-value
+counters, stability tracking), sanity-checked with the rule proposer, then
+ran qwen2.5-coder:14b five attempts over the ten cases, diagnosed failures,
+added deterministic fidelity guards, and re-ran.
+
+### Counterexamples and revisions
+
+The baseline exposed a scorer false positive (plan_gap consumes the subject
+metric without evaluate_metric). The measurement exposed an alias-fidelity
+gap: the model answered "이익" with operating profit where gold demands
+clarification — substitution-class, invisible to the substitution detector,
+absent from the governed corpus. Both fixed deterministically with pinned
+tests; detection power regression-tested.
+
+### Result
+
+Initial 40/50 (already above advisory's generous 58% bound) with zero
+substitutions, zero wrong values, zero instability; guarded 50/50 — the
+deterministic enforced ceiling, reached by a local 14B under contract while
+the frontier advisory agent stayed at 28% full-task / ≤58% analytical.
+
+### Qualification and next hypothesis
+
+Fixed corpus, one model family completed, analytical span only. The natural
+next discriminators: broad Korean recall (held-out corpus, unresolved #16),
+and the backend frontier (pushdown authority transfer, #24) or the demo
+frontier (rank/drilldown routing behind #19).

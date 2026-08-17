@@ -275,3 +275,17 @@ over C3 is minimal grammar, not proven implementation cost.
   deltas, monthly total — 3/3 value-identical between DuckDB SQL and the
   deterministic operators
 - metric-name branches added for the new grain: 0 (declaration-driven)
+
+## E-024 C2′ increment 2 — advisory vs LLM-under-contract
+
+- rule-proposer harness baseline: 10/10 (after fixing a scorer false
+  positive: plan_gap subject consumption flagged as substitution)
+- initial C2′ (qwen2.5-coder:14b, 50 runs): 40/50; substitutions 0; wrong
+  values 0; unstable cases 0; both failures deterministic 5/5
+- contract gap found: alias fidelity (subject text need not witness a
+  registered alias) — fixed with a deterministic adapter guard + tests
+- guarded C2′: **50/50 (100%)** — equal to deterministic enforced on the
+  analytical span
+- comparison: C1 advisory (frontier model, free execution) ≤29/50 (≤58%);
+  C2′ (local 14B under contract) 50/50
+- new tests: 5 (harness gates 3 + guard tests 2); production 224 green

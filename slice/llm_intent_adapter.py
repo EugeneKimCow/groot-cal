@@ -50,6 +50,7 @@ def make_llm_proposer(model=DEFAULT_MODEL, host=DEFAULT_HOST, transport=None):
         proposals = _parse_proposals(raw)
         clauses = _locate_and_convert(question, proposals)
         clauses = _deterministic_relative_baselines(question, clauses)
+        clauses = _fidelity_guards(clauses, vocabulary)
         return finalize_clause_record(question, clauses, contexts, vocabulary)
 
     propose.model = model
@@ -218,6 +219,47 @@ def _find_span(question, text, used):
         if not any(span[0] < other[1] and other[0] < span[1] for other in used):
             return span
         start = index + 1
+
+
+PERIOD_VALUE = re.compile(
+    r"[0-9]{4}-(0[1-9]|1[0-2])|[0-9]{4}-W(0[1-9]|[1-4][0-9]|5[0-3])")
+OUT_OF_RANGE_MONTH = re.compile(r"(?:1[3-9]|[2-9][0-9])월")
+
+
+def _fidelity_guards(clauses, vocabulary):
+    """E-024 발견 gap의 결정론 가드 — LLM의 확신을 계약 규율로 강등한다.
+
+    1. 별칭 충실성: subject가 등록 ref에 바인딩됐어도 절 텍스트가 그 ref의
+       등록 별칭을 증거하지 않으면 ambiguous로 강등한다("이익"→영업이익 같은
+       그럴듯한 확신 바인딩 차단). 미등록 ref는 검증기의 몫으로 남긴다.
+    2. 기간 정합: 유효하지 않은 기간 값(13월 등)은 거부가 아니라 반문이다 —
+       consumed의 무효 값과 unsupported로 분류된 범위 밖 월을 ambiguous로
+       정규화한다.
+    """
+    from dataclasses import replace
+    result = []
+    for row in clauses:
+        if (row.role == "subject" and row.state == "consumed" and row.value
+                and row.value.value in vocabulary["metric_refs"]):
+            aliases = sorted(
+                alias for alias, ref in vocabulary["metric_aliases"].items()
+                if ref == row.value.value)
+            if not any(alias in row.source_text for alias in aliases):
+                row = replace(
+                    row, state="ambiguous", value=None,
+                    reason=(f"'{row.source_text}'는 등록 별칭이 아닙니다 — "
+                            f"{aliases} 중 무엇인지 확인이 필요합니다"))
+        elif (row.material and row.state == "unsupported"
+                and OUT_OF_RANGE_MONTH.search(row.source_text)):
+            row = replace(row, state="ambiguous")
+        elif (row.role in {"time.target", "time.baseline"}
+                and row.state == "consumed" and row.value
+                and not PERIOD_VALUE.fullmatch(str(row.value.value))):
+            row = replace(
+                row, state="ambiguous", value=None,
+                reason=f"유효하지 않은 기간 값: {row.value.value}")
+        result.append(row)
+    return result
 
 
 def _deterministic_relative_baselines(question, clauses):

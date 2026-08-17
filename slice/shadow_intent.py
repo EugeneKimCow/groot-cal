@@ -736,8 +736,10 @@ def _has_silent_substitution(result):
             if not acceptable.intersection(operators):
                 return True
         if row.role == "subject" and row.value:
-            if not any(call.operator_ref == "evaluate_metric@v1"
-                       and call.inputs.get("metric") == row.value.value
+            # subject는 어느 Call이든 metric 입력으로 소비하면 유지된 것이다
+            # (plan_gap@v1은 evaluate_metric 없이 metric을 직접 소비한다 —
+            # E-024에서 발견된 scorer 오탐 수리).
+            if not any(call.inputs.get("metric") == row.value.value
                        for call in plan.calls):
                 return True
     return False

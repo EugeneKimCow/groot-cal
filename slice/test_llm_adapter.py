@@ -129,6 +129,35 @@ class LlmProposerContractTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             proposer("7월 매출은?", self.contexts)
 
+    def test_unwitnessed_alias_binding_downgrades_to_clarify(self):
+        # E-024 가드: "이익"→영업이익 같은 그럴듯한 확신 바인딩은 반문이 된다.
+        result = self.compile_with("7월 이익이 왜 줄었지?", {"clauses": [
+            {"text": "7월", "role": "time.target", "state": "consumed",
+             "value": "2026-07"},
+            {"text": "이익", "role": "subject", "state": "consumed",
+             "value": "finance.operating_profit@v1"},
+            {"text": "이 ", "role": None, "state": "non_semantic", "reason": "조사"},
+            {"text": "왜 줄었지", "role": "analysis", "state": "consumed",
+             "value": "contribution"},
+            {"text": "?", "role": None, "state": "non_semantic", "reason": "구두점"},
+        ]})
+        self.assertEqual("clarify", result["status"], result)
+        self.assertIn("등록 별칭", json.dumps(result.get("violated", []),
+                                          ensure_ascii=False))
+
+    def test_out_of_range_month_becomes_a_clarification(self):
+        result = self.compile_with("13월 매출이 왜 변했나?", {"clauses": [
+            {"text": "13월", "role": "time.target", "state": "unsupported",
+             "reason": "존재하지 않는 달"},
+            {"text": "매출", "role": "subject", "state": "consumed",
+             "value": "commerce.net_sales@v1"},
+            {"text": "이 ", "role": None, "state": "non_semantic", "reason": "조사"},
+            {"text": "왜 변했나", "role": "analysis", "state": "consumed",
+             "value": "contribution"},
+            {"text": "?", "role": None, "state": "non_semantic", "reason": "구두점"},
+        ]})
+        self.assertEqual("clarify", result["status"], result)
+
     def test_demo_renders_transport_failure_as_named_refusal(self):
         proposer = make_llm_proposer(transport=lambda prompt: "생각 중...")
         outcome = demo_question("7월 매출은?", self.contexts, proposer=proposer)

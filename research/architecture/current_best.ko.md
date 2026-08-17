@@ -177,3 +177,11 @@ seam(finalize_clause_record)은 이제 제안자 독립이며, 결정론 가드 
 둔다. 두 local 모델 실측에서 침묵 치환 0·오답 수치 0 — 모든 제안 오류는
 거부 또는 검증된 거친 답이 됐고, 모델 크기는 recall만 샀다. 다음 판별 대상은
 C2′ 증분 2(advisory 대 계약-아래-LLM 비교)다.
+
+E-024는 H2의 원 비교를 닫았다: C2′(계약 아래서 해석하는 LLM)가 고정 H2
+corpus의 분석 구간에서 로컬 14B 모델로 50/50 — 결정론 enforced 상한 — 에
+도달했고, frontier advisory agent는 58% 이하였다. 측정 자체가 시스템을 두 번
+수리했다: 채점기 오탐(plan_gap의 subject 소비)과 진짜 별칭 충실성 공백(증거
+없는 subject 바인딩은 이제 결정론적으로 반문 강등). 효과를 나르는 것은 모델
+크기가 아니라 강제다. 다음 판별 대상: 광역 recall(#16), pushdown 권위(#24),
+rank/drilldown 라우팅(#19).

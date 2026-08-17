@@ -1,0 +1,514 @@
+{
+ "summary": {
+  "condition": "c2prime:qwen2.5-coder:14b",
+  "attempts": 5,
+  "runs": 50,
+  "analytical_pass": 50,
+  "silent_substitutions": 0,
+  "wrong_values": 0,
+  "unstable_cases": [],
+  "scope_note": "분석 구간(해석→실행) 채점; persistence·reporting은 계약 경로에서 결정론이라 제외"
+ },
+ "rows": [
+  {
+   "case_id": "scope-online-change",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 1,
+   "seconds": 4.7
+  },
+  {
+   "case_id": "calendar-year-boundary",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "suspended",
+   "attempt": 1,
+   "seconds": 4.5
+  },
+  {
+   "case_id": "plan-vintage-missing",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "clarify",
+   "outcome": "clarify",
+   "attempt": 1,
+   "seconds": 4.1
+  },
+  {
+   "case_id": "plan-vintage-pinned",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 1,
+   "seconds": 5.1
+  },
+  {
+   "case_id": "plan-scope-online",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 1,
+   "seconds": 6.2
+  },
+  {
+   "case_id": "level-scope-online",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 1,
+   "seconds": 4.3
+  },
+  {
+   "case_id": "invalid-month",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "clarify",
+   "outcome": "clarify",
+   "attempt": 1,
+   "seconds": 4.8
+  },
+  {
+   "case_id": "yoy-input-missing",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "suspended",
+   "attempt": 1,
+   "seconds": 5.8
+  },
+  {
+   "case_id": "unknown-metric",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "clarify",
+   "outcome": "clarify",
+   "attempt": 1,
+   "seconds": 4.9
+  },
+  {
+   "case_id": "scope-category-change",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 1,
+   "seconds": 6.0
+  },
+  {
+   "case_id": "scope-online-change",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 2,
+   "seconds": 5.4
+  },
+  {
+   "case_id": "calendar-year-boundary",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "suspended",
+   "attempt": 2,
+   "seconds": 5.0
+  },
+  {
+   "case_id": "plan-vintage-missing",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "clarify",
+   "outcome": "clarify",
+   "attempt": 2,
+   "seconds": 4.4
+  },
+  {
+   "case_id": "plan-vintage-pinned",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 2,
+   "seconds": 5.6
+  },
+  {
+   "case_id": "plan-scope-online",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 2,
+   "seconds": 6.8
+  },
+  {
+   "case_id": "level-scope-online",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 2,
+   "seconds": 4.7
+  },
+  {
+   "case_id": "invalid-month",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "clarify",
+   "outcome": "clarify",
+   "attempt": 2,
+   "seconds": 5.1
+  },
+  {
+   "case_id": "yoy-input-missing",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "suspended",
+   "attempt": 2,
+   "seconds": 6.2
+  },
+  {
+   "case_id": "unknown-metric",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "clarify",
+   "outcome": "clarify",
+   "attempt": 2,
+   "seconds": 5.1
+  },
+  {
+   "case_id": "scope-category-change",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 2,
+   "seconds": 6.4
+  },
+  {
+   "case_id": "scope-online-change",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 3,
+   "seconds": 5.6
+  },
+  {
+   "case_id": "calendar-year-boundary",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "suspended",
+   "attempt": 3,
+   "seconds": 5.1
+  },
+  {
+   "case_id": "plan-vintage-missing",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "clarify",
+   "outcome": "clarify",
+   "attempt": 3,
+   "seconds": 4.6
+  },
+  {
+   "case_id": "plan-vintage-pinned",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 3,
+   "seconds": 5.7
+  },
+  {
+   "case_id": "plan-scope-online",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 3,
+   "seconds": 7.0
+  },
+  {
+   "case_id": "level-scope-online",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 3,
+   "seconds": 4.9
+  },
+  {
+   "case_id": "invalid-month",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "clarify",
+   "outcome": "clarify",
+   "attempt": 3,
+   "seconds": 5.5
+  },
+  {
+   "case_id": "yoy-input-missing",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "suspended",
+   "attempt": 3,
+   "seconds": 6.9
+  },
+  {
+   "case_id": "unknown-metric",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "clarify",
+   "outcome": "clarify",
+   "attempt": 3,
+   "seconds": 5.5
+  },
+  {
+   "case_id": "scope-category-change",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 3,
+   "seconds": 6.9
+  },
+  {
+   "case_id": "scope-online-change",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 4,
+   "seconds": 6.5
+  },
+  {
+   "case_id": "calendar-year-boundary",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "suspended",
+   "attempt": 4,
+   "seconds": 5.9
+  },
+  {
+   "case_id": "plan-vintage-missing",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "clarify",
+   "outcome": "clarify",
+   "attempt": 4,
+   "seconds": 5.3
+  },
+  {
+   "case_id": "plan-vintage-pinned",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 4,
+   "seconds": 6.7
+  },
+  {
+   "case_id": "plan-scope-online",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 4,
+   "seconds": 8.2
+  },
+  {
+   "case_id": "level-scope-online",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 4,
+   "seconds": 5.8
+  },
+  {
+   "case_id": "invalid-month",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "clarify",
+   "outcome": "clarify",
+   "attempt": 4,
+   "seconds": 6.6
+  },
+  {
+   "case_id": "yoy-input-missing",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "suspended",
+   "attempt": 4,
+   "seconds": 8.0
+  },
+  {
+   "case_id": "unknown-metric",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "clarify",
+   "outcome": "clarify",
+   "attempt": 4,
+   "seconds": 6.9
+  },
+  {
+   "case_id": "scope-category-change",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 4,
+   "seconds": 8.4
+  },
+  {
+   "case_id": "scope-online-change",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 5,
+   "seconds": 7.6
+  },
+  {
+   "case_id": "calendar-year-boundary",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "suspended",
+   "attempt": 5,
+   "seconds": 7.1
+  },
+  {
+   "case_id": "plan-vintage-missing",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "clarify",
+   "outcome": "clarify",
+   "attempt": 5,
+   "seconds": 6.3
+  },
+  {
+   "case_id": "plan-vintage-pinned",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 5,
+   "seconds": 7.6
+  },
+  {
+   "case_id": "plan-scope-online",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 5,
+   "seconds": 9.7
+  },
+  {
+   "case_id": "level-scope-online",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 5,
+   "seconds": 7.1
+  },
+  {
+   "case_id": "invalid-month",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "clarify",
+   "outcome": "clarify",
+   "attempt": 5,
+   "seconds": 7.9
+  },
+  {
+   "case_id": "yoy-input-missing",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "suspended",
+   "attempt": 5,
+   "seconds": 9.7
+  },
+  {
+   "case_id": "unknown-metric",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "clarify",
+   "outcome": "clarify",
+   "attempt": 5,
+   "seconds": 8.0
+  },
+  {
+   "case_id": "scope-category-change",
+   "passed": true,
+   "silent_substitution": false,
+   "wrong_value": false,
+   "compile_status": "result",
+   "outcome": "result",
+   "attempt": 5,
+   "seconds": 9.5
+  }
+ ]
+}
