@@ -120,6 +120,8 @@ input:focus, select:focus, button:focus { outline: 2px solid var(--accent);
     <a data-q="7월 매출은?">수준</a> ·
     <a data-q="온라인 매출이 7월에 왜 빠졌어?">기여 분해</a> ·
     <a data-q="7월 활성 고객 증가는 어느 지역에서 발생했나?">고객 전이</a> ·
+    <a data-q="W28 대비 W29 매출이 왜 변했나?">주간 분해</a> ·
+    <a data-q="W31 매출은?">부분 주 보류</a> ·
     <a data-q="7월 손해율이 왜 변했나?">거부(rate)</a> ·
     <a data-q="7월 매출 계획 대비 어때?">반문(빈티지)</a></div>
 </form>

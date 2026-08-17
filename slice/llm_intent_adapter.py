@@ -76,8 +76,10 @@ def build_prompt(question, contexts, vocabulary):
 
 ## role과 value 형식 (state가 consumed/preserved일 때만 value 필수)
 - subject: 지표 언급 → value=metric_ref (위 목록의 값 그대로)
-- time.target: 대상 기간 "N월" → value="YYYY-MM" (연도 미지정 시 {as_of[:4]}년)
-- time.baseline: 비교 기간 "N월 대비"·"전월 대비"·"작년 대비" → value="YYYY-MM"
+- time.target: 대상 기간 "N월" → value="YYYY-MM"; 주간 "WNN"·"NN주차" →
+  value="YYYY-WNN" (연도 미지정 시 {as_of[:4]}년)
+- time.baseline: 비교 기간 "N월 대비"·"전월 대비"·"작년 대비"·"WNN 대비" →
+  value="YYYY-MM" 또는 "YYYY-WNN"
 - filter: 차원 값 언급(예: "온라인", "가전") → value={{"dimension_ref": ..., "values": [...]}}
 - breakdown: "~별" 분해 축(예: "제품군별") → value=dimension_ref
 - nested_breakdown: "그 안에서 ~별" → value=dimension_ref

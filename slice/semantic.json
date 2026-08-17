@@ -11,9 +11,10 @@
       "additive_across_time": true,
       "aggregation_rule": "sum",
       "has_denominator": false,
-      "sign": "nonnegative"
+      "sign": "nonnegative",
+      "available_windows": ["month", "iso_week"]
     },
-    "bindings": {"value_field": "sales_u"},
+    "bindings": {"value_field": "sales_u", "date_field": "date"},
     "decomposition_identities": [
       {
         "identity": "매출 = Σ_seg 매출[seg]",

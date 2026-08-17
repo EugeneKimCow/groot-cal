@@ -61,3 +61,10 @@
     the paraphrase gold says contribution. Which readings are gold-label
     ambiguity versus proposal error, and should composite analysis phrases be
     prompt examples or registered composition vocabulary?
+23. E-023 accepts ISO-week periods under the clause value kind still named
+    "month". Renaming to "period" is a record-v2 wire change — when, and with
+    what migration for stored binding records?
+24. E-023 registered iso_week for the daily flow source and proved SQL value
+    identity as pushdown increment 0. The open second half of #12/#17: when
+    does execution authority move into SQL (with gates translated), and how is
+    period-end observation-time selection declared for a daily balance source?

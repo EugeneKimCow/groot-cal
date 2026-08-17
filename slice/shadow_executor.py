@@ -159,7 +159,9 @@ def _evaluate(inputs, contexts, record):
     evidence = []
     for value in candidates:
         scope = {**existing_scope, dimension: [value]}
-        segment_slice = Slice.from_scope(metric_slice.period, metric_slice.as_of, scope)
+        segment_slice = Slice.from_scope(
+            metric_slice.period, metric_slice.as_of, scope,
+            window=metric_slice.window)
         envelope = evaluate_metric(
             context["sem"]["metric"], context["sem"]["dimensions"],
             context["rows"], segment_slice, context["source_ref"])
@@ -282,7 +284,8 @@ def _drilldown(inputs, contexts, record):
         scope[parent_dimension] = [parent_value]
         return {"metric": evaluation["metric_ref"],
                 "slice": Slice.from_scope(
-                    evaluation["slice"].period, evaluation["slice"].as_of, scope),
+                    evaluation["slice"].period, evaluation["slice"].as_of, scope,
+                    window=evaluation["slice"].window),
                 "group_by": [inputs["group_by"]]}
 
     child_before = _evaluate(child_inputs(before), contexts, record)

@@ -198,9 +198,12 @@ def _value_problems(clause, vocabulary):
         if value not in REDUCER_REFS:
             return [f"{prefix}: unregistered reducer ref {value}"]
     elif clause.role in {"time.target", "time.baseline"}:
+        # 등록 period 형식: 월(YYYY-MM) 또는 ISO 주(YYYY-Wnn). kind 명칭
+        # month→period 개명은 record v2 과제로 등재(unresolved #23).
         if not isinstance(value, str) or not re.fullmatch(
-                r"[0-9]{4}-(0[1-9]|1[0-2])", value):
-            return [f"{prefix}: invalid month {value}"]
+                r"[0-9]{4}-(0[1-9]|1[0-2])|[0-9]{4}-W(0[1-9]|[1-4][0-9]|5[0-3])",
+                value):
+            return [f"{prefix}: invalid period {value}"]
     elif clause.role == "filter":
         if not isinstance(value, Mapping):
             return [f"{prefix}: predicate must be an object"]

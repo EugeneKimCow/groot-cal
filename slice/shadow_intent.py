@@ -136,6 +136,11 @@ def compile_shadow_intent(question, contexts=None, registry=None, proposer=None)
     }
 
 
+def _window_of(period):
+    """period 형식으로 등록 window를 판별한다 (YYYY-Wnn → iso_week)."""
+    return "iso_week" if period and "-W" in period else "month"
+
+
 def propose_clause_bindings(question, contexts=None, vocabulary=None):
     """Deterministically inventory clauses; validation remains authoritative."""
     contexts = contexts or load_metric_catalog()
@@ -166,12 +171,35 @@ def propose_clause_bindings(question, contexts=None, vocabulary=None):
             add(match, "ambiguous", role="time.target",
                 reason="month must be between 1 and 12", protect=True)
 
+    week_matches = list(re.finditer(
+        r"(?:(20\d{2})-)?W(\d{1,2})(?:\s*(대비))?|(\d{1,2})주차(?:\s*(대비))?",
+        question))
+    default_year = _default_as_of(contexts)[:4]
+    usable_weeks = [match for match in week_matches
+                    if not _overlaps(match.span(), protected)]
+    for index, match in enumerate(usable_weeks):
+        week_number = int(match.group(2) or match.group(4))
+        if not 1 <= week_number <= 53:
+            add(match, "ambiguous", role="time.target",
+                reason="ISO week must be between 1 and 53", protect=True)
+            continue
+        year = match.group(1) or default_year
+        period = f"{year}-W{week_number:02d}"
+        marked_baseline = bool(match.group(3) or match.group(5))
+        later = (usable_weeks[index + 1]
+                 if index + 1 < len(usable_weeks) else None)
+        between = question[match.end():later.start()] if later else ""
+        role = ("time.baseline"
+                if marked_baseline or (later and "대비" in between)
+                else "time.target")
+        add(match, "consumed", role=role, kind="month", value=period,
+            protect=True)
+
     time_matches = list(re.finditer(
         r"(?<![0-9])(?:(20\d{2})년\s*)?(1[0-2]|[1-9])월(?:\s*말)?(?:\s*(대비))?",
         question))
     usable_times = [match for match in time_matches
                     if not _overlaps(match.span(), protected)]
-    default_year = _default_as_of(contexts)[:4]
     for index, match in enumerate(usable_times):
         year = match.group(1) or default_year
         month = f"{year}-{int(match.group(2)):02d}"
@@ -317,6 +345,7 @@ def finalize_clause_record(question, clauses, contexts, vocabulary):
                   defaults.get("target_period"))
     if (resolved_analysis != "level"
             and resolved_analysis != "plan"
+            and target is not None and _window_of(target) == "month"
             and not any(row.role == "time.baseline" and row.state == "consumed"
                         for row in clauses)):
         defaults["baseline_period"] = shift_month(target, -1)
@@ -499,7 +528,8 @@ def _emit_calls(record, projection):
             calls.append(Call(call_id, "plan_gap@v1", {
                 "metric": subject,
                 "slice": Slice.from_scope(
-                    projection["target_period"], projection["as_of"], scope),
+                    projection["target_period"], projection["as_of"], scope,
+                    window=_window_of(projection["target_period"])),
                 "vintage_id": projection["scenario"],
             }))
             target_eval_ids.append(call_id)
@@ -542,7 +572,8 @@ def _emit_calls(record, projection):
                 before_id = f"n{suffix}a"
                 before_inputs = dict(common)
                 before_inputs["slice"] = Slice.from_scope(
-                    projection["baseline_period"], projection["as_of"], scope)
+                    projection["baseline_period"], projection["as_of"], scope,
+                    window=_window_of(projection["baseline_period"]))
                 calls.append(Call(before_id, "evaluate_metric@v1", before_inputs))
                 baseline_eval_ids.append(before_id)
                 subject_eval_ids[index - 1].append(before_id)
@@ -550,7 +581,8 @@ def _emit_calls(record, projection):
                         else f"n{suffix}")
             after_inputs = dict(common)
             after_inputs["slice"] = Slice.from_scope(
-                projection["target_period"], projection["as_of"], scope)
+                projection["target_period"], projection["as_of"], scope,
+                window=_window_of(projection["target_period"]))
             calls.append(Call(after_id, "evaluate_metric@v1", after_inputs))
             target_eval_ids.append(after_id)
             subject_eval_ids[index - 1].append(after_id)

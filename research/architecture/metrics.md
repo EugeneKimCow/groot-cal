@@ -262,3 +262,16 @@ over C3 is minimal grammar, not proven implementation cost.
 - production tests: 209 (system python, duckdb skip) / 209 (venv, all run)
 - UI: stdlib-only SSE server; pipeline logic shared with CLI via one
   events generator
+
+## E-023 weekly calendar registration + SQL cross-check
+
+- weekly level/change through full gates: 832u; Δ−126 with closed identity,
+  segment map equal to the prior ad-hoc computation (now certified)
+- partial-week suspension: 1/1 ("5/7일" + resume condition)
+- grain refusals on monthly-only sources: 2/2 (window_registered)
+- weekly default-baseline guard: explicit comparison required (1/1)
+- monthly wire/values unchanged; regression 219/219 on both interpreters
+- SQL cross-check (pushdown increment 0): weekly total, weekly category
+  deltas, monthly total — 3/3 value-identical between DuckDB SQL and the
+  deterministic operators
+- metric-name branches added for the new grain: 0 (declaration-driven)

@@ -1,0 +1,143 @@
+{
+ "spec": {
+  "status": "spec",
+  "question": "2026-06-25 계획 대비 7월 매출 어때?",
+  "signature": {
+   "external_criterion": "present",
+   "question_type": "change"
+  },
+  "binding": {
+   "metric": "매출@v1",
+   "month": "2026-07",
+   "comparison_basis": "plan",
+   "within": {},
+   "as_of": "2026-08-06"
+  },
+  "query_spec": {
+   "spec_version": "1",
+   "question": "2026-06-25 계획 대비 7월 매출 어때?",
+   "subject": {
+    "metric_id": "commerce.net_sales",
+    "metric_version": 1
+   },
+   "intent": {
+    "operation_family": "compare_plan"
+   },
+   "scope": {},
+   "focal_period": "2026-07",
+   "comparison": {
+    "kind": "plan",
+    "period": null,
+    "vintage_id": "2026-06-25"
+   },
+   "as_of": "2026-08-06",
+   "requested_output": {
+    "genre": "analysis_note"
+   },
+   "defaults_applied": []
+  },
+  "echo": "이렇게 이해했습니다 — 매출[v1], 2026-07, 계획(2026-06-25) 대비, 전체 범위"
+ },
+ "results": {
+  "plan_gap": {
+   "status": "result",
+   "output_type": "Attribution",
+   "estimand": "2026-07 실적 − 계획(빈티지 2026-06-25)의 채널별 gap",
+   "uncertainty_model": "none",
+   "total": {
+    "plan_u": 4250,
+    "actual_u": 3860,
+    "gap_u": -390,
+    "attainment_pct": 90.8
+   },
+   "rows": [
+    {
+     "channel": "온라인",
+     "plan_u": 1900,
+     "actual_u": 1580,
+     "gap_u": -320,
+     "attainment_pct": 83.2
+    },
+    {
+     "channel": "오프라인",
+     "plan_u": 1450,
+     "actual_u": 1430,
+     "gap_u": -20,
+     "attainment_pct": 98.6
+    },
+    {
+     "channel": "B2B",
+     "plan_u": 900,
+     "actual_u": 850,
+     "gap_u": -50,
+     "attainment_pct": 94.4
+    }
+   ],
+   "plan_basis_note": "6월 실적 +1.2% 성장 전제로 수립. 온라인 프로모션 종료 후 신규 유입 절벽 미반영. 호남B점 폐점은 기반영",
+   "label_ceiling": {
+    "gap 수치": "조건부 확인 — '빈티지 2026-06-25 계획 대비'라는 조건 명시 의무",
+    "계획 결함 해석": "데이터 시사 상한"
+   },
+   "provenance_ref": "call-001",
+   "operator_ref": "plan_gap@v1"
+  }
+ },
+ "execution_record": {
+  "registry_version": "1",
+  "calls": [
+   {
+    "operator": "plan_gap",
+    "month": "2026-07",
+    "vintage_id": "2026-06-25",
+    "within": {},
+    "outcome": "result",
+    "call_id": "call-001"
+   }
+  ],
+  "dag": [
+   {
+    "call_id": "call-001",
+    "operator": "plan_gap",
+    "depth": 1,
+    "status": "result"
+   }
+  ],
+  "gates_passed": [],
+  "operators_considered": {
+   "selected": [
+    {
+     "operator": "plan_gap",
+     "depth": 1
+    }
+   ],
+   "runtime_rejected": []
+  },
+  "budget": {
+   "max_depth": 2,
+   "max_segments": 40,
+   "max_hypotheses": 10,
+   "max_operator_calls": 10,
+   "consumed_depth": 1,
+   "segments_examined": 3,
+   "hypotheses_examined": 0,
+   "operator_calls": 1,
+   "on_exhaustion": "stop_and_report"
+  },
+  "query_spec_hash": "1b136b0ac23349ed",
+  "provenance": {
+   "metric_ref": "commerce.net_sales@v1",
+   "semantic_model_ref": "semantic.json#commerce.net_sales@v1",
+   "input_snapshot_ref": "sha256:2a228ab7e57c1659",
+   "as_of": "2026-08-06"
+  }
+ },
+ "assumption_ledger": [
+  {
+   "assumption": "세그먼트 구성의 기간 간 안정성(개방 코호트)",
+   "status": "unchecked",
+   "evidence_ref": "not_computable_v0",
+   "note": "segment_churn_rate 진단 미구현 — v1 과제"
+  }
+ ],
+ "external_reference_check": null
+}

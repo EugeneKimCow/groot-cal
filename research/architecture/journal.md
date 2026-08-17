@@ -686,3 +686,34 @@ Only the storage half of the port is done — aggregation still runs in the
 deterministic operators. SQL pushdown of logical Data Requirements is the
 open second half, and the right stage for weekly-grain registration
 (unresolved #17). C2′ increment 2 remains the active discriminator.
+
+## Iteration 14 — E-023 weekly calendar registration + SQL cross-check
+
+### Hypothesis
+
+A new grain can enter by registration alone — declared windows, no
+metric-name branches — with honest refusals for undeclared sources and
+partial periods; and SQL lowering of the same estimand is value-identical.
+
+### Experiment
+
+Added Slice.window with window-keyed period validation, available_windows +
+date_field declarations on the sales contract only, registration and
+completeness gates in the evaluator, weekly parsing in the intent compiler
+with an explicit-baseline guard, and DuckDB SQL cross-checks.
+
+### Result
+
+Weekly level (832u) and three-axis weekly contribution (Δ−126, identity
+closed) pass every gate and reproduce the earlier ad-hoc chart's numbers —
+the difference is certification. Partial week W31 suspends "(5/7일)";
+monthly-only sources refuse by name; monthly wire is byte-unchanged;
+219/219 on both interpreters; SQL agreed 3/3.
+
+### Qualification and next hypothesis
+
+Grain entry cost was two contract declarations plus a declaration-driven
+kernel window subsystem — recorded as schema-extension + kernel-change.
+Pushdown authority transfer (#24) and period-end selection from daily
+balances (#17) remain the backend frontier; C2′ increment 2 remains the
+active model-side discriminator.

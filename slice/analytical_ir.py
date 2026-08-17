@@ -23,8 +23,9 @@ class Ref:
 
 @dataclass(frozen=True)
 class Slice:
-    """A governed monthly metric slice.
+    """A governed metric slice over a registered time window.
 
+    ``window``는 등록된 calendar 종류다(기본 month, E-023부터 iso_week).
     Predicates are stored as sorted ``(dimension, values)`` tuples so equivalent
     scopes have a deterministic serialization and hash.
     """
@@ -32,18 +33,20 @@ class Slice:
     period: str
     as_of: str
     predicates: Tuple[Tuple[str, Tuple[str, ...]], ...] = ()
+    window: str = "month"
 
     @classmethod
-    def from_scope(cls, period, as_of, scope):
+    def from_scope(cls, period, as_of, scope, window="month"):
         predicates = []
         for dimension, raw_values in sorted(scope.items()):
             values = raw_values if isinstance(raw_values, list) else [raw_values]
             predicates.append((dimension, tuple(sorted(values))))
-        return cls(period=period, as_of=as_of, predicates=tuple(predicates))
+        return cls(period=period, as_of=as_of, predicates=tuple(predicates),
+                   window=window)
 
     def to_dict(self):
         return {
-            "time_window": {"kind": "month", "period": self.period},
+            "time_window": {"kind": self.window, "period": self.period},
             "as_of": self.as_of,
             "predicates": {key: list(values) for key, values in self.predicates},
         }

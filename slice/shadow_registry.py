@@ -155,11 +155,20 @@ class ShadowOperatorRegistry:
     def _type_matches(actual, expected):
         return actual in expected.split("|")
 
-    @staticmethod
-    def _slice_problems(metric_slice):
+    PERIOD_FORMATS = {
+        "month": r"[0-9]{4}-(0[1-9]|1[0-2])",
+        "iso_week": r"[0-9]{4}-W(0[1-9]|[1-4][0-9]|5[0-3])",
+    }
+
+    @classmethod
+    def _slice_problems(cls, metric_slice):
         problems = []
-        if not re.fullmatch(r"[0-9]{4}-(0[1-9]|1[0-2])", metric_slice.period):
-            problems.append(f"invalid month: {metric_slice.period}")
+        window = getattr(metric_slice, "window", "month")
+        pattern = cls.PERIOD_FORMATS.get(window)
+        if pattern is None:
+            problems.append(f"unregistered time window: {window}")
+        elif not re.fullmatch(pattern, metric_slice.period):
+            problems.append(f"invalid {window} period: {metric_slice.period}")
         try:
             date.fromisoformat(metric_slice.as_of)
         except (TypeError, ValueError):
