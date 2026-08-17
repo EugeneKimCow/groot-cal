@@ -779,3 +779,16 @@ questions pass through the full gate stack, weekly windows worked on the new
 source by registration alone, and the metric lives in both storage backends.
 The kit is ready for user data, which is where the real bottleneck
 (source semantics, not mechanics) will be measured.
+
+## Iteration 18 — E-027 unit-bucket window + Bosch onboarding
+
+Chose the (a) direction for the calendar-less Bosch source: registered an
+anonymized-unit bucket window (declared width, time_field binding) and
+de-privileged month into an ordinary registered window — calendar questions
+on this source now refuse by name, symmetric to E-023's weekly refusals.
+Onboarded failure-rate (denominator-weighted) and inspected-count over a
+(bucket × line-path) aggregate grain where both algebras are exact. The data
+immediately exposed two latent holes — substring dimension values
+double-binding as filters, and conflicting filters silently resolving
+last-wins at scope construction — both now refused deterministically. Station
+grain and bucket-label UX are the registered remainders.

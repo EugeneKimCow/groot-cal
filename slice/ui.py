@@ -124,6 +124,9 @@ input:focus, select:focus, button:focus { outline: 2px solid var(--accent);
     <a data-q="W31 매출은?">부분 주 보류</a> ·
     <a data-q="7월 매출 감소 상위 3개 제품군만 보여줘">상위 N</a> ·
     <a data-q="가장 큰 매출 하락 제품군을 찾고 그 안에서 고객 유형별로 다시 분해해줘">드릴다운</a> ·
+    <a data-q="U0300 구간 불량률은?">Bosch 불량률</a> ·
+    <a data-q="U0300 대비 U0400 검사수가 왜 변했나?">구간 변화</a> ·
+    <a data-q="3월 불량률은?">달력 거부</a> ·
     <a data-q="7월 손해율이 왜 변했나?">거부(rate)</a> ·
     <a data-q="7월 매출 계획 대비 어때?">반문(빈티지)</a></div>
 </form>

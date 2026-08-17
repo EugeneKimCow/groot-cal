@@ -311,3 +311,15 @@ over C3 is minimal grammar, not proven implementation cost.
   segments; 0.0mm dry week; 4/7-day partial-week suspension)
 - catalogs: metric registered in fixture + DuckDB backends; parity holds
 - E-026 tests 11/11; production 240 on both interpreters
+
+## E-027 unit-bucket window + Bosch onboarding
+
+- contract: unit_bucket window (width-declared, time_field-bound); month
+  de-privileged to a registered window (default preserves existing metrics)
+- onboarding gates: 5/5 (bucket rate 591/57,110; scoped path rate; count
+  change Δ−11,400 with closed identity; rate-change refusal; named
+  calendar refusal)
+- system gaps found/fixed: 2 (substring filter double-binding → global
+  longest-first; silent last-wins filter scope → projection refusal)
+- grain: (bucket × path) aggregates, 119 rows, exact for rate/count
+- E-027 tests 10/10; production 250/250 both interpreters

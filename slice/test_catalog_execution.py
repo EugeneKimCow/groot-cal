@@ -14,7 +14,8 @@ class CatalogExecutionTest(unittest.TestCase):
         self.assertEqual(
             ["commerce.net_sales", "finance.operating_profit",
              "insurance.loss_ratio", "operations.inventory_on_hand",
-             "growth.active_customers", "weather.precipitation"], got)
+             "growth.active_customers", "weather.precipitation",
+             "quality.failure_rate", "quality.inspected_parts"], got)
 
     def test_operating_profit_runs_through_query_spec_and_runtime(self):
         envelope, bundle = run_question("7월 영업이익이 왜 줄었나?")

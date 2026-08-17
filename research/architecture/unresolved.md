@@ -68,3 +68,10 @@
     identity as pushdown increment 0. The open second half of #12/#17: when
     does execution authority move into SQL (with gates translated), and how is
     period-end observation-time selection declared for a daily balance source?
+25. E-027 bucket labels (U0000) are engineering vocabulary. What user-facing
+    naming do anonymized windows get, and is edge-bucket partiality (no
+    completeness gate possible on an anonymized axis) a declaration or a
+    documentation concern?
+26. Bosch station-level questions need a second grain (part_station visit
+    grain, 52-value dimension) alongside the part grain. How do multiple
+    grains of one source register without duplicating metric identity?

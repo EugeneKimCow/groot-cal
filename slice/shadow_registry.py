@@ -158,6 +158,7 @@ class ShadowOperatorRegistry:
     PERIOD_FORMATS = {
         "month": r"[0-9]{4}-(0[1-9]|1[0-2])",
         "iso_week": r"[0-9]{4}-W(0[1-9]|[1-4][0-9]|5[0-3])",
+        "unit_bucket": r"U[0-9]{4}",
     }
 
     @classmethod

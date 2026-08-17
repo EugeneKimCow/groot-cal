@@ -65,6 +65,14 @@
         "table": "seattle_weather"
       },
       "execution_profile": "typed_core"
+    },
+    {
+      "fixture_path": "onboarded/bosch_failure_rate.json",
+      "execution_profile": "typed_core"
+    },
+    {
+      "fixture_path": "onboarded/bosch_inspected.json",
+      "execution_profile": "typed_core"
     }
   ]
 }

@@ -77,7 +77,8 @@ def build_prompt(question, contexts, vocabulary):
 
 ## role과 value 형식 (state가 consumed/preserved일 때만 value 필수)
 - subject: 지표 언급 → value=metric_ref (위 목록의 값 그대로)
-- time.target: 대상 기간 "N월" → value="YYYY-MM"; 주간 "WNN"·"NN주차" →
+- time.target: 대상 기간 "N월" → value="YYYY-MM"; 익명 단위 구간 "UNNNN" →
+  value 그대로(예: "U0300"); 주간 "WNN"·"NN주차" →
   value="YYYY-WNN" (연도 미지정 시 {as_of[:4]}년; 같은 질문에 명시 연도가
   있으면 연도 없는 월에도 그 연도를 적용)
 - time.baseline: 비교 기간 "N월 대비"·"전월 대비"·"작년 대비"·"WNN 대비" →

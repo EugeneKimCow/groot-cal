@@ -137,8 +137,12 @@ def compile_shadow_intent(question, contexts=None, registry=None, proposer=None)
 
 
 def _window_of(period):
-    """period 형식으로 등록 window를 판별한다 (YYYY-Wnn → iso_week)."""
-    return "iso_week" if period and "-W" in period else "month"
+    """period 형식으로 등록 window를 판별한다."""
+    if not period:
+        return "month"
+    if period.startswith("U"):
+        return "unit_bucket"
+    return "iso_week" if "-W" in period else "month"
 
 
 def propose_clause_bindings(question, contexts=None, vocabulary=None):
@@ -170,6 +174,17 @@ def propose_clause_bindings(question, contexts=None, vocabulary=None):
         if not 1 <= int(match.group(1)) <= 12 and not _overlaps(match.span(), protected):
             add(match, "ambiguous", role="time.target",
                 reason="month must be between 1 and 12", protect=True)
+
+    bucket_matches = list(re.finditer(
+        r"(U\d{4})(?:\s*구간)?(?:\s*(대비))?", question))
+    for index, match in enumerate(
+            m for m in bucket_matches if not _overlaps(m.span(), protected)):
+        later = bucket_matches[index + 1] if index + 1 < len(bucket_matches) else None
+        between = question[match.end():later.start()] if later else ""
+        role = ("time.baseline" if match.group(2) or (later and "대비" in between)
+                else "time.target")
+        add(match, "consumed", role=role, kind="month", value=match.group(1),
+            protect=True)
 
     week_matches = list(re.finditer(
         r"(?:(20\d{2})-)?W(\d{1,2})(?:\s*(대비))?|(\d{1,2})주차(?:\s*(대비))?",
@@ -247,13 +262,24 @@ def propose_clause_bindings(question, contexts=None, vocabulary=None):
         add(match, "ambiguous", role="subject",
             reason="multiple governed metrics match performance")
 
+    # 값이 다른 값의 부분 문자열일 수 있다("L0" ⊂ "L0-L3") — 전역 최장 우선,
+    # 수락된 span과 겹치는 후보는 버린다 (E-027에서 실데이터가 적발한 규율).
+    value_candidates = []
     for dimension_ref, values in vocabulary["dimension_values"].items():
-        for raw in sorted(values, key=lambda item: (-len(item), item)):
+        for raw in values:
             for match in re.finditer(re.escape(raw), question):
-                if _overlaps(match.span(), protected):
-                    continue
-                add(match, "consumed", role="filter", kind="predicate",
-                    value={"dimension_ref": dimension_ref, "values": [raw]})
+                value_candidates.append((match, dimension_ref, raw))
+    value_candidates.sort(
+        key=lambda item: (-(item[0].end() - item[0].start()),
+                          item[0].start(), item[1]))
+    accepted_value_spans = []
+    for match, dimension_ref, raw in value_candidates:
+        if (_overlaps(match.span(), protected)
+                or _overlaps(match.span(), accepted_value_spans)):
+            continue
+        accepted_value_spans.append(match.span())
+        add(match, "consumed", role="filter", kind="predicate",
+            value={"dimension_ref": dimension_ref, "values": [raw]})
 
     for pattern, dimension_ref in DIMENSION_ALIASES:
         if dimension_ref not in vocabulary["dimension_refs"]:
@@ -489,6 +515,13 @@ def _project(record, contexts):
         problems.append("multiple subjects require a registered composition")
     if values.get("ranking") and len(subjects) > 1:
         problems.append("ranking multiple subjects requires explicit composition")
+    filter_dimensions = [item["dimension_ref"]
+                         for item in values.get("filter", ())]
+    for dimension_ref in sorted(set(filter_dimensions)):
+        if filter_dimensions.count(dimension_ref) > 1:
+            problems.append(
+                f"conflicting filters on dimension {dimension_ref}: "
+                "explicit composition is required")
     if problems:
         return None, problems
     scenario = _one(values, "scenario")

@@ -229,13 +229,14 @@ def evaluate_metric(metric, dimensions, rows, metric_slice, semantic_model_ref,
     if bindings is None:
         return _out_of_domain(binding_checks)
 
-    _scope, scope_checks = _validate_scope(dimensions, rows, metric_slice)
+    _scope, scope_checks = _validate_scope(metric, dimensions, rows,
+                                           metric_slice)
     failed_scope = tuple(check for check in scope_checks if not check["passed"])
     if failed_scope:
         return _out_of_domain(failed_scope)
 
     period_rows = [row for row in rows
-                   if _row_period(row, metric_slice.window)
+                   if _row_period(row, metric_slice.window, metric)
                    == metric_slice.period]
     if not period_rows:
         return ResultEnvelope(
@@ -370,6 +371,7 @@ def _descriptor_problems(metric, metric_slice):
 PERIOD_FORMATS = {
     "month": r"[0-9]{4}-(0[1-9]|1[0-2])",
     "iso_week": r"[0-9]{4}-W(0[1-9]|[1-4][0-9]|5[0-3])",
+    "unit_bucket": r"U[0-9]{4}",
 }
 
 
@@ -412,7 +414,7 @@ def _validate_bindings(metric, rows, strategy):
     )
 
 
-def _validate_scope(dimensions, rows, metric_slice):
+def _validate_scope(metric, dimensions, rows, metric_slice):
     scope = {dimension: values for dimension, values in metric_slice.predicates}
     checks = []
     problems = []
@@ -435,7 +437,8 @@ def _validate_scope(dimensions, rows, metric_slice):
 
     coverage = []
     for row in rows:
-        if row.get("month") != metric_slice.period or not _matches_scope(row, scope):
+        if (_row_period(row, metric_slice.window, metric)
+                != metric_slice.period or not _matches_scope(row, scope)):
             continue
         for dimension, descriptor in dimensions.items():
             applies_to = descriptor.get("applies_to") or {}
@@ -476,38 +479,42 @@ def _validate_bounds(metric, value):
 
 
 def _validate_window(metric, metric_slice):
-    """등록된 time window만 실행한다 — grain 게이트 (E-007/E-023).
+    """등록된 time window만 실행한다 — grain 게이트 (E-007/E-023/E-027).
 
-    월간 시점 원천에 주간 질의가 침묵 응답하지 않도록, window 가용성은
-    metric 계약의 선언(available_windows)에서만 온다.
+    window 가용성은 metric 계약의 선언(available_windows)에서만 온다. 달력이
+    없는 원천(익명 시간 단위)은 month도 미등록일 수 있다 — E-027부터 month는
+    특권이 아니라 기본값일 뿐이다.
     """
     window = metric_slice.window
-    if window == "month":
-        return (_check("window_registered", True, "month is the base window"),)
-    available = tuple(metric.get("properties", {}).get(
-        "available_windows", ("month",)))
+    properties = metric.get("properties", {})
+    available = tuple(properties.get("available_windows", ("month",)))
     checks = [_check(
         "window_registered", window in available,
         (f"{window} is registered" if window in available else
          f"{window} is not registered for this source; available {available}"))]
-    if window in available and window == "iso_week":
-        has_date = bool(metric.get("bindings", {}).get("date_field"))
+    if window not in available:
+        return tuple(checks)
+    bindings = metric.get("bindings", {})
+    if window == "iso_week":
+        has_date = bool(bindings.get("date_field"))
         checks.append(_check(
             "window_date_binding", has_date,
             ("date_field binding present" if has_date else
              "iso_week window requires a date_field binding")))
+    elif window == "unit_bucket":
+        width = (properties.get("unit_bucket") or {}).get("width")
+        valid = (bool(bindings.get("time_field"))
+                 and isinstance(width, (int, float)) and width > 0)
+        checks.append(_check(
+            "window_bucket_contract", valid,
+            ("time_field binding and positive bucket width declared" if valid
+             else "unit_bucket window requires a time_field binding and "
+                  "properties.unit_bucket.width > 0")))
     return tuple(checks)
 
 
-def _matches(row, metric_slice):
-    return (_row_period(row, metric_slice.window) == metric_slice.period
-            and _matches_scope(
-                row, {dimension: values
-                      for dimension, values in metric_slice.predicates}))
-
-
-def _row_period(row, window):
-    """행이 속한 등록 window의 period 라벨. 파생은 결정론적 달력 계산이다."""
+def _row_period(row, window, metric=None):
+    """행이 속한 등록 window의 period 라벨. 파생은 결정론적 계산이다."""
     if window == "month":
         return row.get("month")
     if window == "iso_week":
@@ -516,6 +523,14 @@ def _row_period(row, window):
             return None
         iso = date.fromisoformat(raw).isocalendar()
         return f"{iso.year}-W{iso.week:02d}"
+    if window == "unit_bucket" and metric is not None:
+        time_field = metric.get("bindings", {}).get("time_field")
+        width = (metric.get("properties", {}).get("unit_bucket") or {}).get(
+            "width")
+        value = row.get(time_field) if time_field else None
+        if value is None or not width:
+            return None
+        return f"U{int(value // width * width):04d}"
     return None
 
 
