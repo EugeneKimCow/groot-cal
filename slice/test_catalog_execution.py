@@ -12,8 +12,9 @@ class CatalogExecutionTest(unittest.TestCase):
         contexts = load_metric_catalog()
         got = [c["sem"]["metric"]["id"] for c in contexts]
         self.assertEqual(
-            ["commerce.net_sales", "finance.operating_profit", "insurance.loss_ratio",
-             "operations.inventory_on_hand", "growth.active_customers"], got)
+            ["commerce.net_sales", "finance.operating_profit",
+             "insurance.loss_ratio", "operations.inventory_on_hand",
+             "growth.active_customers", "weather.precipitation"], got)
 
     def test_operating_profit_runs_through_query_spec_and_runtime(self):
         envelope, bundle = run_question("7월 영업이익이 왜 줄었나?")

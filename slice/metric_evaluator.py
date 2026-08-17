@@ -32,6 +32,9 @@ class AggregationStrategy:
     rule = None
     required_bindings = ()
     accepted_metric_types = ()
+    # 커버된 기간에서 predicate 선택이 빈 경우의 의미론: 가법·기수는 0 관측,
+    # 시점값은 스냅샷 부재(보류). E-026에서 실데이터(월별 눈 없음)가 적발.
+    empty_selection = "suspend"
 
     def validate_metric(self, metric):
         metric_type = metric.get("type")
@@ -49,6 +52,7 @@ class SumStrategy(AggregationStrategy):
     rule = "sum"
     required_bindings = ("value_field",)
     accepted_metric_types = ("amount", "count")
+    empty_selection = "zero"
 
     def aggregate(self, metric, bindings, rows):
         field = bindings["value_field"]
@@ -70,6 +74,7 @@ class RatioOfSumsStrategy(AggregationStrategy):
     rule = "denominator_weighted_mean"
     required_bindings = ("numerator_field", "denominator_field")
     accepted_metric_types = ("rate",)
+    empty_selection = "zero"   # Σ분모=0 검사가 정직한 보류를 담당한다
 
     def validate_metric(self, metric):
         checks = super().validate_metric(metric)
@@ -116,6 +121,7 @@ class RatioOfSumsStrategy(AggregationStrategy):
 class PeriodEndSumStrategy(SumStrategy):
     rule = "semi_additive:last"
     accepted_metric_types = ("balance",)
+    empty_selection = "suspend"
 
     def validate_metric(self, metric):
         checks = super().validate_metric(metric)
@@ -141,6 +147,7 @@ class EntityCardinalityStrategy(AggregationStrategy):
     rule = "non_aggregable"
     required_bindings = ("entity_id_field",)
     accepted_metric_types = ("distinct",)
+    empty_selection = "zero"
 
     def aggregate(self, metric, bindings, rows):
         field = bindings["entity_id_field"]
@@ -227,23 +234,39 @@ def evaluate_metric(metric, dimensions, rows, metric_slice, semantic_model_ref,
     if failed_scope:
         return _out_of_domain(failed_scope)
 
-    selected = [row for row in rows if _matches(row, metric_slice)]
-    if not selected:
+    period_rows = [row for row in rows
+                   if _row_period(row, metric_slice.window)
+                   == metric_slice.period]
+    if not period_rows:
         return ResultEnvelope(
             status="suspended", result_type=RESULT_TYPE,
             missing_inputs=(f"rows {metric_slice.period}",),
             pass_conditions="requested period observations must be loaded")
 
     if metric_slice.window == "iso_week":
+        # 완결성은 원천의 달력 커버리지 속성 — 세그먼트 선택과 무관하다.
         date_field = metric["bindings"]["date_field"]
-        observed_days = {row.get(date_field) for row in selected}
+        observed_days = {row.get(date_field) for row in period_rows}
         if len(observed_days) < 7:
-            # 부분 주는 조용히 답하지 않는다 — 완결성은 달력 대비 관측일 수다.
             return ResultEnvelope(
                 status="suspended", result_type=RESULT_TYPE,
                 missing_inputs=(
                     f"rows {metric_slice.period} ({len(observed_days)}/7일)",),
                 pass_conditions="완결 주(월~일 7일) 관측이 적재되면 실행 가능")
+
+    selected = [row for row in period_rows
+                if _matches_scope(
+                    row, {dimension: values
+                          for dimension, values in metric_slice.predicates})]
+    if not selected and strategy.empty_selection == "suspend":
+        # 시점값은 빈 세그먼트를 0으로 간주할 수 없다 — 스냅샷 부재.
+        predicates = {dimension: list(values)
+                      for dimension, values in metric_slice.predicates}
+        return ResultEnvelope(
+            status="suspended", result_type=RESULT_TYPE,
+            missing_inputs=(
+                f"rows {metric_slice.period} {predicates}",),
+            pass_conditions="해당 세그먼트의 시점 관측이 적재되면 실행 가능")
 
     strategy_checks = strategy.validate_metric(metric)
     failed_strategy = tuple(check for check in strategy_checks

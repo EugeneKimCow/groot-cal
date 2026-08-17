@@ -299,3 +299,15 @@ over C3 is minimal grammar, not proven implementation cost.
 - invalid-scope drilldown fail-closed: preserved
 - unrouted remainder pinned: plan_gap, align_metrics
 - E-025 tests 5/5; production 229/229 both interpreters
+
+## E-026 real-data onboarding kit + dry run
+
+- human declarations required: 9 (identity, type, unit, sign, value column,
+  MECE judgment, aliases, windows, dimension choice)
+- machine-derived: kinds, dimension values, span, nulls
+- iterations to green gates: 3; system gaps found: 3 (empty-segment
+  semantics, year-context propagation, column-level numeric typing)
+- validation gates: 4/4 (113.5mm level; −20.7mm change with zero-observation
+  segments; 0.0mm dry week; 4/7-day partial-week suspension)
+- catalogs: metric registered in fixture + DuckDB backends; parity holds
+- E-026 tests 11/11; production 240 on both interpreters

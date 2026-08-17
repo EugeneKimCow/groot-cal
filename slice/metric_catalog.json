@@ -14,7 +14,10 @@
   "entries": [
     {
       "semantic_path": "semantic.json",
-      "data": {"loader": "commerce_ledger", "path": "data/ledger.csv"},
+      "data": {
+        "loader": "commerce_ledger",
+        "path": "data/ledger.csv"
+      },
       "execution_profile": "commerce_extensions"
     },
     {
@@ -31,6 +34,10 @@
     },
     {
       "fixture_path": "challenges/active_customers.json",
+      "execution_profile": "typed_core"
+    },
+    {
+      "fixture_path": "onboarded/seattle_weather.json",
       "execution_profile": "typed_core"
     }
   ]

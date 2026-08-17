@@ -21,6 +21,7 @@ CHALLENGE_TABLES = {
     "loss_ratio": "challenges/loss_ratio.json",
     "inventory_balance": "challenges/inventory_balance.json",
     "active_customers": "challenges/active_customers.json",
+    "seattle_weather": "onboarded/seattle_weather.json",  # E-026 실데이터
 }
 
 
@@ -29,6 +30,9 @@ def _column_type(rows, name):
     if values and all(isinstance(v, int) and not isinstance(v, bool)
                       for v in values):
         return "BIGINT"
+    if values and all(isinstance(v, (int, float)) and not isinstance(v, bool)
+                      for v in values):
+        return "DOUBLE"
     return "VARCHAR"
 
 

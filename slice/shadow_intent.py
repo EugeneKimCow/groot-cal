@@ -200,8 +200,17 @@ def propose_clause_bindings(question, contexts=None, vocabulary=None):
         question))
     usable_times = [match for match in time_matches
                     if not _overlaps(match.span(), protected)]
+    # 연도 문맥 전파 (E-026): 같은 질문에 명시 연도가 정확히 하나면 연도 없는
+    # 월에도 그 연도를 적용한다. 복수의 명시 연도 사이의 연도 미상 월은 반문.
+    explicit_years = sorted({m.group(1) for m in usable_times if m.group(1)})
     for index, match in enumerate(usable_times):
-        year = match.group(1) or default_year
+        if not match.group(1) and len(explicit_years) > 1:
+            add(match, "ambiguous", role="time.target",
+                reason="복수의 명시 연도 사이에서 연도가 지정되지 않은 월",
+                protect=True)
+            continue
+        year = (match.group(1)
+                or (explicit_years[0] if explicit_years else default_year))
         month = f"{year}-{int(match.group(2)):02d}"
         later = usable_times[index + 1] if index + 1 < len(usable_times) else None
         between = question[match.end():later.start()] if later else ""

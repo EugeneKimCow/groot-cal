@@ -14,27 +14,56 @@
   "entries": [
     {
       "semantic_path": "semantic.json",
-      "data": {"loader": "duckdb", "path": "store/groot.duckdb", "table": "sales_ledger"},
+      "data": {
+        "loader": "duckdb",
+        "path": "store/groot.duckdb",
+        "table": "sales_ledger"
+      },
       "execution_profile": "commerce_extensions"
     },
     {
       "fixture_path": "challenges/operating_profit.json",
-      "data": {"loader": "duckdb", "path": "store/groot.duckdb", "table": "operating_profit"},
+      "data": {
+        "loader": "duckdb",
+        "path": "store/groot.duckdb",
+        "table": "operating_profit"
+      },
       "execution_profile": "typed_core"
     },
     {
       "fixture_path": "challenges/loss_ratio.json",
-      "data": {"loader": "duckdb", "path": "store/groot.duckdb", "table": "loss_ratio"},
+      "data": {
+        "loader": "duckdb",
+        "path": "store/groot.duckdb",
+        "table": "loss_ratio"
+      },
       "execution_profile": "typed_core"
     },
     {
       "fixture_path": "challenges/inventory_balance.json",
-      "data": {"loader": "duckdb", "path": "store/groot.duckdb", "table": "inventory_balance"},
+      "data": {
+        "loader": "duckdb",
+        "path": "store/groot.duckdb",
+        "table": "inventory_balance"
+      },
       "execution_profile": "typed_core"
     },
     {
       "fixture_path": "challenges/active_customers.json",
-      "data": {"loader": "duckdb", "path": "store/groot.duckdb", "table": "active_customers"},
+      "data": {
+        "loader": "duckdb",
+        "path": "store/groot.duckdb",
+        "table": "active_customers"
+      },
+      "execution_profile": "typed_core"
+    },
+    {
+      "fixture_path": "onboarded/seattle_weather.json",
+      "data": {
+        "loader": "duckdb",
+        "path": "store/groot.duckdb",
+        "table": "seattle_weather"
+      },
       "execution_profile": "typed_core"
     }
   ]

@@ -766,3 +766,16 @@ the legacy kernel held everywhere; the unrouted remainder (plan_gap,
 align_metrics) is pinned by updated E-020 gates. Explicit Ref-capable dynamic
 Slice lowering remains the registered target for drilldown's data
 requirements.
+
+## Iteration 17 — E-026 real-data onboarding
+
+Built the onboarding kit around one thesis — the knowledge cost is the API
+signature — and ran it against real weather observations. Nine human
+declarations, three iterations, and every failure was a system gap fixtures
+had hidden: empty segments (now a strategy-declared zero-vs-suspend
+semantics), year-context propagation (single explicit year now governs bare
+months), and per-value numeric typing (now per-column). All four validation
+questions pass through the full gate stack, weekly windows worked on the new
+source by registration alone, and the metric lives in both storage backends.
+The kit is ready for user data, which is where the real bottleneck
+(source semantics, not mechanics) will be measured.

@@ -1,0 +1,68 @@
+---
+references:
+  - "File: /slice/lint.py"
+  - "File: /slice/loop8x_measure.py"
+  - "File: /slice/run_sim.py"
+generationTime: 2026-08-12T06:29:37.165Z
+---
+flowchart TD
+    S["Start"] --> RS0["run_sim.py: main()"]
+
+    subgraph RS["slice/run_sim.py"]
+        RS0 --> RS1{"CLI scenarios provided?"}
+        RS1 -->|No| RS2["Set defaults: rise, flat, fall_dirty"]
+        RS1 -->|Yes| RS3["Use provided scenarios"]
+        RS2 --> RS4["Loop each scenario -> build(scenario)"]
+        RS3 --> RS4
+        RS4 --> RS5[["load_semantic() + load_ledger()"]]
+        RS5 --> RS6["Loop decomposition axes and call contrib_decomp()"]
+        RS6 --> RS7{"Any axis status=result?"}
+        RS7 -->|Yes| RS8["Select top axis/segment and drill remaining axes"]
+        RS7 -->|No| RS9["Skip drilldown"]
+        RS8 --> RS10[["vrm_lite() + event_overlap_scan()"]]
+        RS9 --> RS10
+        RS10 --> RS11["Compute band diagnostic and assemble bundle"]
+        RS11 --> RS12[("Write out/loop8x/<scenario>/bundle.json")]
+    end
+
+    RS12 --> M0["loop8x_measure.py: main()"]
+
+    subgraph M["slice/loop8x_measure.py"]
+        M0 --> M1[("Read baseline out/loop8/metrics.json")]
+        M1 --> M2["Loop scenarios: rise, flat, fall_dirty"]
+        M2 --> M3[["measure_scenario(sc)"]]
+        M3 --> M4[("Read out/loop8x/<sc>/bundle.json")]
+        M4 --> M5[["build_whitelist(bundle)"]]
+        M5 --> M6["Loop memo_*.md files"]
+        M6 --> M7[["common(path, whitelist)"]]
+        M7 --> M8[["lint(text, whitelist)"]]
+        M8 --> M9{"Scenario type?"}
+        M9 -->|rise| M10["Apply extra_rise() checks"]
+        M9 -->|flat| M11["Apply extra_flat() checks"]
+        M9 -->|fall_dirty| M12["Apply extra_dirty() checks"]
+        M10 --> M13["Aggregate memo metrics"]
+        M11 --> M13
+        M12 --> M13
+        M13 --> M14["Build cross-scenario comparison"]
+        M14 --> M15[("Write metrics.json + measurement.md")]
+    end
+
+    subgraph L["slice/lint.py"]
+        L0["lint(text, whitelist)"] --> L1["Split text into sentences"]
+        L1 --> L2["Loop sentences for R01,R02,R03,R04,R05,R11,R12,R08"]
+        L2 --> L3{"Any rule matched?"}
+        L3 -->|Yes| L4["Append BLOCK or WARN finding"]
+        L3 -->|No| L5["Continue sentence loop"]
+        L4 --> L5
+        L5 --> L6["Scan all numeric tokens in document"]
+        L6 --> L7{"Token in whitelist or date context?"}
+        L7 -->|No| L8["Append BLOCK R06"]
+        L7 -->|Yes| L9["Continue numeric loop"]
+        L8 --> L9
+        L9 --> L10["Check line-based R09 and doc-level R10"]
+        L10 --> L11["Return findings"]
+    end
+
+    M8 -.->|calls| L0
+    L11 --> M9
+    M15 --> E["Exit"]
