@@ -25,8 +25,14 @@ def demo_question(question, contexts=None, proposer=None):
     컴파일·산술의 결정론 권위는 제안자와 무관하게 유지된다.
     """
     contexts = contexts or load_metric_catalog()
-    compiled = compile_shadow_intent(question, contexts=contexts,
-                                     proposer=proposer)
+    try:
+        compiled = compile_shadow_intent(question, contexts=contexts,
+                                         proposer=proposer)
+    except ValueError as error:
+        # 제안자 전송·출력 실패는 추측 없이 이름을 밝혀 fail-closed로 끝난다.
+        compiled = {"status": "out_of_domain", "violated": [{
+            "check": "proposal_transport", "passed": False,
+            "detail": str(error)}]}
     outcome = {"question": question, "compiled": compiled,
                "interpreter": getattr(proposer, "model", None) or "rule"}
     if compiled["status"] != "result":

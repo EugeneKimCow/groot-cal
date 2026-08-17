@@ -94,3 +94,26 @@ natural increment 2.
 The contract holds against a live LLM proposer: interpretation errors degrade
 to refusals or verifiably coarser answers, never silent substitutions or wrong
 numbers. Model scale buys recall, not safety — safety lives in the contract.
+
+## Addendum (2026-08-17) — model selection measurement
+
+All four local models were probed on the hard set (the 6 gemma-divergent
+questions); "exact" = byte-identical Call DAG with the rule proposer.
+
+| model | exact (hard set) | warm latency | note |
+|---|---|---|---|
+| gemma3:12b | 0/6 | 3–6s | delta-for-contribution on most cues |
+| qwen2.5-coder:14b | 2/6 | 3–6s | fixes 원인/동인; code-tuned yet solid Korean |
+| qwen2.5:72b-instruct-q4 | 4/6 | 19–66s | best recall; residue is gold ambiguity + composite split |
+| gpt-oss:120b | 2/4 then transport failure | 14–39s | returns non-JSON under `format: json` (harmony/thinking format); adapter fails closed |
+
+Decisions taken:
+
+- default interactive model is now `qwen2.5-coder:14b` (env override
+  `GROOT_LLM_MODEL`); `qwen2.5:72b` is the accuracy escalation;
+  `gpt-oss:120b` is excluded until its output format is bridged.
+- proposer transport/output failures are a typed `ProposalError`; the demo
+  renders them as a named `proposal_transport` refusal instead of crashing —
+  every model failure mode now ends fail-closed at a visible boundary.
+- Safety was identical across all four models: zero silent substitutions,
+  zero wrong numbers. Model choice trades recall and latency only.

@@ -129,6 +129,13 @@ class LlmProposerContractTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             proposer("7월 매출은?", self.contexts)
 
+    def test_demo_renders_transport_failure_as_named_refusal(self):
+        proposer = make_llm_proposer(transport=lambda prompt: "생각 중...")
+        outcome = demo_question("7월 매출은?", self.contexts, proposer=proposer)
+        self.assertEqual("intent", outcome["stage"])
+        violation = outcome["compiled"]["violated"][0]
+        self.assertEqual("proposal_transport", violation["check"])
+
 
 @unittest.skipUnless(_ollama_available(), "local Ollama server unavailable")
 class LlmProposerLiveTest(unittest.TestCase):

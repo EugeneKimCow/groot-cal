@@ -68,16 +68,18 @@ def main(argv=None):
         "--show-plan", action="store_true",
         help="시연 경로에서 컴파일된 Call DAG를 함께 출력")
     parser.add_argument(
-        "--llm", nargs="?", const="gemma3:12b", default=None, metavar="MODEL",
-        help="절 바인딩 제안을 local LLM(Ollama)으로 수행 (검증·연산은 결정론 유지)")
+        "--llm", nargs="?", const="__default__", default=None, metavar="MODEL",
+        help="절 바인딩 제안을 local LLM(Ollama)으로 수행 (검증·연산은 결정론"
+             " 유지). 모델 생략 시 GROOT_LLM_MODEL 또는 qwen2.5-coder:14b")
     args = parser.parse_args(argv)
 
     if args.route == "c4":
         from demo import demo_question, render_demo
         proposer = None
         if args.llm:
-            from llm_intent_adapter import make_llm_proposer
-            proposer = make_llm_proposer(model=args.llm)
+            from llm_intent_adapter import DEFAULT_MODEL, make_llm_proposer
+            model = DEFAULT_MODEL if args.llm == "__default__" else args.llm
+            proposer = make_llm_proposer(model=model)
         outcome = demo_question(args.question, proposer=proposer)
         print(render_demo(outcome, show_plan=args.show_plan))
         return 0 if outcome["stage"] == "executed" and \

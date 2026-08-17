@@ -9,6 +9,7 @@ estimand를 치환할 수 없다.
 외부 패키지 없이 표준 라이브러리(urllib)로 Ollama HTTP API를 호출한다.
 """
 import json
+import os
 import re
 import urllib.error
 import urllib.request
@@ -20,8 +21,12 @@ from shadow_intent import _default_as_of, _vocabulary, finalize_clause_record
 from shadow_registry import ShadowOperatorRegistry
 
 
-DEFAULT_MODEL = "gemma3:12b"
+DEFAULT_MODEL = os.environ.get("GROOT_LLM_MODEL", "qwen2.5-coder:14b")
 DEFAULT_HOST = "http://localhost:11434"
+
+
+class ProposalError(ValueError):
+    """모델 출력·전송 실패 — 추측하지 않고 이름을 밝혀 fail-closed로 전달한다."""
 
 ROLE_KINDS = {
     "subject": "metric_ref", "reducer": "reducer_ref",
@@ -137,18 +142,25 @@ def _ollama_transport(model, host):
         request = urllib.request.Request(
             f"{host}/api/chat", data=payload,
             headers={"Content-Type": "application/json"})
-        with urllib.request.urlopen(request, timeout=600) as response:
-            body = json.loads(response.read().decode("utf-8"))
+        try:
+            with urllib.request.urlopen(request, timeout=600) as response:
+                body = json.loads(response.read().decode("utf-8"))
+        except (urllib.error.URLError, OSError) as error:
+            raise ProposalError(f"local LLM 전송 실패({model}): {error}") from error
         return body["message"]["content"]
 
     return call
 
 
 def _parse_proposals(raw):
-    data = json.loads(raw)
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as error:
+        raise ProposalError(
+            f"모델이 JSON 제안을 반환하지 않음: {raw[:60]!r}") from error
     rows = data.get("clauses")
     if not isinstance(rows, list):
-        raise ValueError("proposal must contain a clauses list")
+        raise ProposalError("proposal must contain a clauses list")
     return rows
 
 
