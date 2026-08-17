@@ -158,3 +158,16 @@ delta로 잘못 바인딩하면 — 수치는 여전히 정확한 거친 답이 
   (LLM proposal adapter)의 몫이다.
 - **"실데이터는?"** — 현재는 고정 fixture다. 계약·연산·거부의 형태는 데이터
   소스와 독립이며, RDBMS pushdown은 unresolved #12로 등재되어 있다.
+
+## 장면 11 — 실데이터: 온보딩된 진짜 관측이 같은 게이트를 통과한다
+
+```
+python3 run.py "2015년 3월 강수량은?" --route c4                # 113.5mm
+python3 run.py "2015년 2월 대비 3월 강수량이 왜 변했나?" --route c4
+python3 run.py "2015-W53 강수량은?" --route c4                  # 부분 주 보류
+```
+
+관찰 포인트: Seattle 일별 관측 1,461행(실제 공개 데이터, vega-datasets)이
+선언 9개로 등록되어 매출과 같은 게이트 스택을 통과한다. 눈이 없는 달의
+세그먼트는 결측이 아니라 0 관측으로 정직 처리되고, 데이터 끝의 부분 주는
+보류된다. 온보딩 대장은 `slice/onboard_seattle.py` 자체다.
