@@ -289,3 +289,13 @@ over C3 is minimal grammar, not proven implementation cost.
 - comparison: C1 advisory (frontier model, free execution) ≤29/50 (≤58%);
   C2′ (local 14B under contract) 50/50
 - new tests: 5 (harness gates 3 + guard tests 2); production 224 green
+
+## E-025 rank + drilldown demo routing
+
+- rank order parity with legacy contribution: 3/3 top segments
+- drilldown parity with scoped kernel decomposition: totals + segment map
+- child-evaluation budget confession: pre-charged, recorded, starvation
+  closes the plan (1/1)
+- invalid-scope drilldown fail-closed: preserved
+- unrouted remainder pinned: plan_gap, align_metrics
+- E-025 tests 5/5; production 229/229 both interpreters

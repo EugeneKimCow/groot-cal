@@ -755,3 +755,14 @@ Fixed corpus, one model family completed, analytical span only. The natural
 next discriminators: broad Korean recall (held-out corpus, unresolved #16),
 and the backend frontier (pushdown authority transfer, #24) or the demo
 frontier (rank/drilldown routing behind #19).
+
+## Iteration 16 — E-025 rank + drilldown demo routing
+
+Ruled that #19 (failure isolation) does not gate sequential chains, confessed
+drilldown's child evaluations into the budget and execution record (pre-charge
+check, recorded sub-calls, starvation test), and promoted rank@v1 and
+drilldown@v1 into the demo's routed vocabulary. Order and value parity with
+the legacy kernel held everywhere; the unrouted remainder (plan_gap,
+align_metrics) is pinned by updated E-020 gates. Explicit Ref-capable dynamic
+Slice lowering remains the registered target for drilldown's data
+requirements.

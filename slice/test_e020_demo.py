@@ -72,11 +72,12 @@ class E020DemoGateTest(unittest.TestCase):
              for row in contribution["segments"]})
 
     def test_adversarial_corpus_reproduces_through_demo(self):
+        # E-025에서 rank(색인 3)가 라우팅 승격되어 executed로 이동했다.
         expected_stages = {
             0: ("intent", "out_of_domain"),
             1: ("intent", "out_of_domain"),
             2: ("executed", "result"),
-            3: ("route", None),
+            3: ("executed", "result"),
             4: ("executed", "suspended"),
             5: ("intent", "out_of_domain"),
             6: ("intent", "out_of_domain"),
@@ -98,14 +99,15 @@ class E020DemoGateTest(unittest.TestCase):
                     self.assertNotIn("execution", outcome)
 
     def test_unrouted_capability_is_named_not_substituted(self):
-        outcome = self.demo("7월 매출 감소 상위 3개 제품군만 보여줘")
+        # E-025 이후 미라우팅 잔여는 plan_gap·align_metrics다.
+        outcome = self.demo("7월 매출과 영업이익은 왜 엇갈렸나?")
         detail = outcome["route_refusal"]["violated"][0]["detail"]
-        self.assertIn("rank@v1", detail)
+        self.assertIn("align_metrics@v1", detail)
         self.assertNotIn("execution", outcome)
 
     def test_render_covers_all_stage_shapes(self):
         for question in ("7월 매출은?",
-                         "7월 매출 감소 상위 3개 제품군만 보여줘",
+                         "7월 매출과 영업이익은 왜 엇갈렸나?",
                          "7월 평균 재고는?",
                          "2025년 7월 매출은?"):
             with self.subTest(question=question):

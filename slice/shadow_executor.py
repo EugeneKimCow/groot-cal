@@ -55,8 +55,7 @@ def execute_shadow_plan(plan, contexts=None, registry=None, scenario_path=None):
             break
 
         record["budget"]["operator_calls"] += 1
-        result = _invoke(call.operator_ref, inputs, context_map, record,
-                         scenario_path)
+        result = _invoke(call, inputs, context_map, record, scenario_path)
         segments = len(result.get("segments", ()))
         if record["budget"]["segments_examined"] + segments > limits["max_segments"]:
             result = _budget_failure("max_segments")
@@ -90,7 +89,8 @@ def execute_shadow_plan(plan, contexts=None, registry=None, scenario_path=None):
             "execution_record": record, "validation": checked}
 
 
-def _invoke(operator_ref, inputs, contexts, record, scenario_path):
+def _invoke(call, inputs, contexts, record, scenario_path):
+    operator_ref = call.operator_ref
     if operator_ref == "evaluate_metric@v1":
         return _evaluate(inputs, contexts, record)
     if operator_ref == "delta@v1":
@@ -108,7 +108,7 @@ def _invoke(operator_ref, inputs, contexts, record, scenario_path):
                 "metrics": list(inputs["metrics"]), "segments": [],
                 "label_ceiling": "data_confirmed"}
     if operator_ref == "drilldown@v1":
-        return _drilldown(inputs, contexts, record)
+        return _drilldown(call.call_id, inputs, contexts, record)
     if operator_ref == "plan_gap@v1":
         return _plan_gap(inputs, contexts, record, scenario_path)
     if operator_ref == "event_overlap_scan@v1":
@@ -268,7 +268,7 @@ def _rank(inputs):
             "label_ceiling": source.get("label_ceiling")}
 
 
-def _drilldown(inputs, contexts, record):
+def _drilldown(call_id, inputs, contexts, record):
     selection = inputs["selection"]
     source = selection.get("source")
     selected = selection.get("selection")
@@ -288,12 +288,25 @@ def _drilldown(inputs, contexts, record):
                     window=evaluation["slice"].window),
                 "group_by": [inputs["group_by"]]}
 
-    child_before = _evaluate(child_inputs(before), contexts, record)
-    if child_before["status"] != "result":
-        return child_before
-    child_after = _evaluate(child_inputs(after), contexts, record)
-    if child_after["status"] != "result":
-        return child_after
+    budget = record["budget"]
+    children = []
+    for suffix, evaluation in (("before", before), ("after", after)):
+        if budget["operator_calls"] + 1 > budget["max_operator_calls"]:
+            record["calls"].append({
+                "call_id": f"{call_id}.{suffix}",
+                "operator_ref": "evaluate_metric@v1",
+                "status": "budget_exhausted"})
+            return _budget_failure("max_operator_calls")
+        budget["operator_calls"] += 1
+        child = _evaluate(child_inputs(evaluation), contexts, record)
+        record["calls"].append({
+            "call_id": f"{call_id}.{suffix}",
+            "operator_ref": "evaluate_metric@v1",
+            "status": child["status"]})
+        if child["status"] != "result":
+            return child
+        children.append(child)
+    child_before, child_after = children
     result = _contribution(child_before, child_after)
     if result["status"] == "result":
         result["parent_scope"] = {parent_dimension: parent_value}

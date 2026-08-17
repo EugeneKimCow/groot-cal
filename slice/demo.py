@@ -2,19 +2,22 @@
 
 한국어 질의 한 건을 절 바인딩 대장 → 컴파일된 Plan → 실행 기록 → 증거 한정
 결과의 순서로 관찰한다. 기본 CLI 경로는 바꾸지 않는다. 라우팅 승격되지 않은
-capability(rank·drilldown·plan 비교·metric 정렬)는 인접 분석으로 대체하지 않고
-그 이름을 밝히며 fail-closed로 끝난다 — 거부가 기능이다.
+capability(plan 비교·metric 정렬)는 인접 분석으로 대체하지 않고 그 이름을
+밝히며 fail-closed로 끝난다 — 거부가 기능이다.
 """
 from catalog import load_metric_catalog
 from shadow_executor import execute_shadow_plan
 from shadow_intent import compile_shadow_intent
 
 
-# E-018/E-019에서 라우팅 승격된 실행 어휘. 이 밖의 연산자를 포함한 Plan은
-# shadow 검증만 완료된 상태이므로 시연 경로에서 실행하지 않는다.
+# E-018/E-019/E-025에서 라우팅 승격된 실행 어휘. 이 밖의 연산자(plan_gap·
+# align_metrics)를 포함한 Plan은 shadow 검증만 완료된 상태이므로 시연 경로에서
+# 실행하지 않는다. rank·drilldown은 순차 의존 체인이라 실패 격리(#19)의 차단을
+# 받지 않고, drilldown 자식 평가는 예산·기록에 실토된다(E-025).
 ROUTED_OPERATORS = frozenset({
     "evaluate_metric@v1", "delta@v1", "contribution@v1",
     "set_transition@v1", "event_overlap_scan@v1",
+    "rank@v1", "drilldown@v1",
 })
 
 
@@ -172,9 +175,19 @@ def _result_lines(key, result):
 
     ceiling = result.get("label_ceiling")
     lines = []
+    if result.get("output_type") == "RankedSelection":
+        lines.append(f"   {key}: 상위 {len(result['segments'])}개 "
+                     f"[상한: {ceiling}]")
+        for rank_index, row in enumerate(result["segments"], start=1):
+            lines.append(f"      {rank_index}. {row['segment']}: "
+                         f"Δ={row.get('delta', row.get('value'))}")
+        return lines
     total = result.get("total")
     if isinstance(total, dict) and "delta" in total:
         axis = f" (축: {result['group_by']})" if result.get("group_by") else ""
+        parent = result.get("parent_scope")
+        if parent:
+            axis += f" [상위 선택: {parent}]"
         lines.append(f"   {key}{axis}: Δ={total['delta']} "
                      f"(before {total.get('before')} → after {total.get('after')}) "
                      f"[상한: {ceiling}]")
