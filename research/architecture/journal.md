@@ -652,3 +652,37 @@ Recall scales with the model; safety did not move — it lives in the contract.
 Increment 2 is the H2-completing comparison (C1 advisory vs LLM-under-contract
 on the fixed case corpus) and broader Korean recall beyond the governed
 vocabulary (unresolved #16, #22).
+
+## Iteration 13 — E-022 DuckDB storage port + query window
+
+### Hypothesis
+
+Storage can swap behind the catalog boundary with zero observable change, and
+the demo pipeline can carry an interactive surface without new authority.
+
+### Experiment
+
+Built store/groot.duckdb from the existing sources with order-preserving
+_seq, registered a duckdb loader with explicit-failure semantics, kept the
+default catalog untouched behind GROOT_CATALOG, and served the demo events
+generator over SSE from a stdlib HTTP server.
+
+### Counterexample and revision
+
+The generated binary first landed in slice/data/, which the frozen H2
+isolation allowlist copies wholesale — the resource payload choked on
+non-UTF-8 bytes. The DB moved to slice/store/; the frozen runner was not
+modified.
+
+### Result
+
+Byte parity everywhere: rows, hashes, and engine bundles identical across
+backends; 209 tests green on both interpreters; UI streams stages and
+evidence-bounded results for executed, refused, and LLM-interpreted paths.
+
+### Qualification and next hypothesis
+
+Only the storage half of the port is done — aggregation still runs in the
+deterministic operators. SQL pushdown of logical Data Requirements is the
+open second half, and the right stage for weekly-grain registration
+(unresolved #17). C2′ increment 2 remains the active discriminator.

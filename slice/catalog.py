@@ -1,6 +1,7 @@
 """실행 가능한 metric domain pack을 로드하고 질문의 닫힌 지표 어휘를 해소한다."""
 import copy
 import json
+import os
 from pathlib import Path
 
 from kernel import load_ledger
@@ -9,8 +10,37 @@ from kernel import load_ledger
 HERE = Path(__file__).parent
 
 
+def _load_rows(data, base):
+    """등록된 data loader만 실행한다. 미등록 loader·부재 backend는 명시 실패."""
+    loader = data["loader"]
+    if loader == "commerce_ledger":
+        return load_ledger(base / data["path"])
+    if loader == "duckdb":
+        try:
+            import duckdb
+        except ModuleNotFoundError as error:
+            raise RuntimeError(
+                "duckdb backend 필요 — 프로젝트 venv로 실행하세요 "
+                "(.venv/bin/python3)") from error
+        connection = duckdb.connect(str(base / data["path"]), read_only=True)
+        try:
+            cursor = connection.execute(
+                f'SELECT * FROM "{data["table"]}" ORDER BY _seq')
+            columns = [column[0] for column in cursor.description]
+            rows = [dict(zip(columns, values)) for values in cursor.fetchall()]
+        finally:
+            connection.close()
+        for row in rows:
+            row.pop("_seq", None)
+        return rows
+    raise ValueError(f"지원하지 않는 data loader: {loader}")
+
+
 def load_metric_catalog(path=None):
-    catalog_path = Path(path) if path else HERE / "metric_catalog.json"
+    if path is None:
+        path = os.environ.get("GROOT_CATALOG")
+    catalog_path = (HERE / path if path and not Path(path).is_absolute()
+                    else Path(path)) if path else HERE / "metric_catalog.json"
     catalog = json.loads(catalog_path.read_text())
     contexts = []
     for entry in catalog["entries"]:
@@ -18,14 +48,12 @@ def load_metric_catalog(path=None):
             source = catalog_path.parent / entry["fixture_path"]
             fixture = json.loads(source.read_text())
             sem = {"metric": fixture["metric"], "dimensions": fixture["dimensions"]}
-            rows = fixture["rows"]
+            rows = (_load_rows(entry["data"], catalog_path.parent)
+                    if "data" in entry else fixture["rows"])
         else:
             source = catalog_path.parent / entry["semantic_path"]
             sem = json.loads(source.read_text())
-            data = entry["data"]
-            if data["loader"] != "commerce_ledger":
-                raise ValueError(f"지원하지 않는 data loader: {data['loader']}")
-            rows = load_ledger(catalog_path.parent / data["path"])
+            rows = _load_rows(entry["data"], catalog_path.parent)
 
         sem = copy.deepcopy(sem)
         sem["question_defaults"] = {

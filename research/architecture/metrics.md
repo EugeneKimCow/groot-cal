@@ -251,3 +251,14 @@ over C3 is minimal grammar, not proven implementation cost.
 - production tests: 205 discovered, all pass (live LLM test auto-skips
   without Ollama); golden 17/17; semantic 10/10
 - default route / rule-based demo behavior changes: 0
+
+## E-022 DuckDB storage port + query window
+
+- backend parity: 5/5 metrics rows·sem·input-hash identical; 4/4 engine
+  bundles byte-identical across backends
+- counterexamples found/fixed: 1 (DB binary inside the frozen H2 allowlist
+  directory; relocated to store/)
+- silent fallbacks in the loader: 0 (absent backend fails by name)
+- production tests: 209 (system python, duckdb skip) / 209 (venv, all run)
+- UI: stdlib-only SSE server; pipeline logic shared with CLI via one
+  events generator

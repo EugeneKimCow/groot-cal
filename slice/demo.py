@@ -18,13 +18,18 @@ ROUTED_OPERATORS = frozenset({
 })
 
 
-def demo_question(question, contexts=None, proposer=None):
-    """질의 1건의 시연 파이프라인을 실행하고 단계별 산출물을 반환한다.
+def demo_question_events(question, contexts=None, proposer=None):
+    """질의 1건을 실행하며 진행 단계를 이벤트로 낸다.
 
-    ``proposer``로 절 바인딩 제안자를 교체할 수 있다(예: local LLM). 검증·
-    컴파일·산술의 결정론 권위는 제안자와 무관하게 유지된다.
+    ``{"kind": "stage", "text": ...}``를 단계마다 내고, 마지막에
+    ``{"kind": "outcome", "outcome": ...}``를 낸다. ``proposer``로 절 바인딩
+    제안자를 교체할 수 있다(예: local LLM). 검증·컴파일·산술의 결정론 권위는
+    제안자와 무관하게 유지된다.
     """
+    interpreter = getattr(proposer, "model", None) or "rule"
     contexts = contexts or load_metric_catalog()
+    outcome = {"question": question, "interpreter": interpreter}
+    yield {"kind": "stage", "text": f"① 해석·절 바인딩 제안 [{interpreter}]"}
     try:
         compiled = compile_shadow_intent(question, contexts=contexts,
                                          proposer=proposer)
@@ -33,16 +38,24 @@ def demo_question(question, contexts=None, proposer=None):
         compiled = {"status": "out_of_domain", "violated": [{
             "check": "proposal_transport", "passed": False,
             "detail": str(error)}]}
-    outcome = {"question": question, "compiled": compiled,
-               "interpreter": getattr(proposer, "model", None) or "rule"}
+    outcome["compiled"] = compiled
     if compiled["status"] != "result":
+        check = (compiled.get("violated") or [{}])[0].get("check", "clause_binding")
+        yield {"kind": "stage",
+               "text": f"② 컴파일 종료 [{compiled['status'].upper()}] {check}"}
         outcome["stage"] = "intent"
-        return outcome
+        yield {"kind": "outcome", "outcome": outcome}
+        return
 
     plan = compiled["plan"]
+    yield {"kind": "stage",
+           "text": (f"② 검증·컴파일 통과 — {len(plan.calls)}개 Call, "
+                    f"{compiled['plan_hash'][:18]}…")}
     unrouted = sorted({call.operator_ref for call in plan.calls}
                       - ROUTED_OPERATORS)
     if unrouted:
+        yield {"kind": "stage",
+               "text": f"③ 라우팅 거부 — 미라우팅 capability {unrouted}"}
         outcome["stage"] = "route"
         outcome["route_refusal"] = {
             "status": "out_of_domain",
@@ -53,10 +66,23 @@ def demo_question(question, contexts=None, proposer=None):
                            "기본 CLI(route 미지정)로 가능합니다."),
             }],
         }
-        return outcome
+        yield {"kind": "outcome", "outcome": outcome}
+        return
 
+    yield {"kind": "stage", "text": "③ C4 executor 실행 (예산·게이트 강제)"}
     outcome["stage"] = "executed"
     outcome["execution"] = execute_shadow_plan(plan, contexts=contexts)
+    yield {"kind": "stage",
+           "text": f"④ 결과 [{outcome['execution']['status'].upper()}]"}
+    yield {"kind": "outcome", "outcome": outcome}
+
+
+def demo_question(question, contexts=None, proposer=None):
+    """질의 1건의 시연 파이프라인을 실행하고 최종 산출물만 반환한다."""
+    outcome = None
+    for event in demo_question_events(question, contexts, proposer):
+        if event["kind"] == "outcome":
+            outcome = event["outcome"]
     return outcome
 
 

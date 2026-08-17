@@ -146,3 +146,15 @@ delta로 잘못 바인딩하면 — 수치는 여전히 정확한 거친 답이 
   (LLM proposal adapter)의 몫이다.
 - **"실데이터는?"** — 현재는 고정 fixture다. 계약·연산·거부의 형태는 데이터
   소스와 독립이며, RDBMS pushdown은 unresolved #12로 등재되어 있다.
+
+## 장면 0 — 질의 윈도우 (권장 시작점)
+
+```
+cd slice && ../.venv/bin/python3 ui.py     # http://localhost:8787
+```
+
+브라우저에서 질문을 입력하면 진행 단계(해석→검증·컴파일→실행→결과)가 텍스트로
+흐르고, 증거 한정 결과가 피드에 쌓인다. 해석기는 규칙/local LLM을 카드마다
+선택할 수 있고, 헤더에 데이터 소스(DuckDB 저장소)가 표시된다. 장면 1~10의 모든
+질문을 이 창에서 실행할 수 있다. 저장소 구축은 최초 1회:
+`../.venv/bin/python3 build_duckdb.py`.
